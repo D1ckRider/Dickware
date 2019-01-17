@@ -25,11 +25,12 @@ enum class RbotWeaponsAvailable : int
 {
 	PISTOL,
 	DEAGLE,
+	REVOLVER,
 	SCOUT,
 	AWP,
 	AUTO,
-	SHOTGUN,
-	RIFLE
+	RIFLE,
+	SHOTGUN
 };
 
 enum class RbotMenuAvailable : int

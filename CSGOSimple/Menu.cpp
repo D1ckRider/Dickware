@@ -27,7 +27,7 @@ void Menu::Render()
     if ( !Loaded || g_Unload )
         return;
 
-    Components.StartWindow ( "DickWare", ImVec2 ( 810, 500 ), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize );
+    Components.StartWindow ( "DickWare", ImVec2 ( 830, 500 ), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize );
     static char* NavBarItems[] = { "s", "o", "t", "u", "4", "v" };
     static char* NavBarItemsText[] = { "ragebot", "legitbot", "visuals", "misc", "skinchanger", "settings" };
     static int NavBarSelected = 0;
@@ -68,36 +68,82 @@ void Menu::RenderRagebot()
 
     Components.Label ( "Ragebot" );
     Components.Checkbox ( "Enable", "rbot" );
-    Components.SliderFloat ( "Hitchance", "rbot_min_hitchance", 0.f, 100.f );
-    Components.SliderFloat ( "Min damage", "rbot_mindamage", 0.f, 100.f );
-    Components.SliderInt ( "Baim after x shots", "rbot_baim_after_shots", 0, 10 );
-    Components.SliderInt ( "Force baim after x shots", "rbot_force_baim_after_shots", 0, 10 );
-    Components.Checkbox ( "Baim while moving", "rbot_baim_while_moving" );
-    Components.Checkbox ( "Auto scope", "rbot_autoscope" );
-    Components.Checkbox ( "Auto stop", "rbot_autostop" );
-    Components.Checkbox ( "Auto crouch", "rbot_autocrouch" );
-	//Components.Checkbox("Slow Walk", "rbot_slowwalk");
-    //Components.Checkbox("Lby prediction", "rbot_lby_prediction");
-    #ifdef _DEBUG
-    Components.Checkbox ( "Fakelag prediction", "rbot_flag_prediction" );
-    #endif // _DEBUG
 
-    const char* ShootingModes[] = { "normal", "in fakelag", "fakelag while shooting" };
-    Components.ComboBox ( "Shooting mode", ShootingModes, IM_ARRAYSIZE ( ShootingModes ), "rbot_shooting_mode" );
 
-    #ifdef _DEBUG
-    Components.Checkbox ( "Lagcompensation", "rbot_lagcompensation" );
-    #endif // _DEBUG
-    Components.Checkbox ( "Force unlag", "rbot_force_unlage" );
+	static char* WeaponConfigSelectionItems[] = { "G", "A", "J", "a", "Z", "Y", "W", "c" };
+	static char* WeaponConfigSelectionItemsText[] = { "Pistol", "Deagle", "R8", "Scout", "AWP", "Auto", "Rifle", "Shotgun" };
+	static int WeaponSelected = 0;
+	Components.NavbarIcons(WeaponConfigSelectionItems, WeaponConfigSelectionItemsText, IM_ARRAYSIZE(WeaponConfigSelectionItems), WeaponSelected, IconsFont);
 
-    Components.Checkbox ( "Resolver", "rbot_resolver" );
-    const char* BaimModes[] = { "never", "auto" };
-    Components.ComboBox ( "Baim mode", BaimModes, IM_ARRAYSIZE ( BaimModes ), "rbot_baimmode" );
-    Components.Checkbox ( "Air baim", "rbot_resolver_air_baim" );
-    //Components.SliderInt("Brut after x shots", "rbot_brutforce_after_shots", 0, 10);
 
-    //Components.SliderFloat("Pointscale head", "rbot_head_scale", 0.f, 1.f);
-    //Components.SliderFloat("Pointscale body", "rbot_body_scale", 0.f, 1.f);
+	switch ((RbotWeaponsAvailable)WeaponSelected)
+	{
+		case RbotWeaponsAvailable::PISTOL:
+			Components.SliderFloat("Hitchance", "rbot_pistol_min_hitchance", 0.f, 100.f);
+			Components.SliderFloat("Min damage", "rbot_pistol_mindamage", 0.f, 100.f);
+			Components.SliderInt("Baim after x shots", "rbot_pistol_baim_after_shots", 0, 10);
+			Components.SliderInt("Force baim after x shots", "rbot_pistol_force_baim_after_shots", 0, 10);
+			Components.Checkbox("Baim while moving", "rbot_pistol_baim_while_moving");
+			
+			break;
+		case RbotWeaponsAvailable::DEAGLE:
+			Components.SliderFloat("Hitchance", "rbot_deagle_min_hitchance", 0.f, 100.f);
+			Components.SliderFloat("Min damage", "rbot_deagle_mindamage", 0.f, 100.f);
+			Components.SliderInt("Baim after x shots", "rbot_deagle_baim_after_shots", 0, 10);
+			Components.SliderInt("Force baim after x shots", "rbot_deagle_force_baim_after_shots", 0, 10);
+			Components.Checkbox("Baim while moving", "rbot_deagle_baim_while_moving");
+			break;
+		case RbotWeaponsAvailable::REVOLVER:
+			Components.SliderFloat("Hitchance", "rbot_revolver_min_hitchance", 0.f, 100.f);
+			Components.SliderFloat("Min damage", "rbot_revolver_mindamage", 0.f, 100.f);
+			Components.SliderInt("Baim after x shots", "rbot_revolver_baim_after_shots", 0, 10);
+			Components.SliderInt("Force baim after x shots", "rbot_revolver_force_baim_after_shots", 0, 10);
+			Components.Checkbox("Baim while moving", "rbot_revolver_baim_while_moving");
+			break;
+		case RbotWeaponsAvailable::SCOUT:
+			Components.SliderFloat("Hitchance", "rbot_scout_min_hitchance", 0.f, 100.f);
+			Components.SliderFloat("Min damage", "rbot_scout_mindamage", 0.f, 100.f);
+			Components.SliderInt("Baim after x shots", "rbot_scout_baim_after_shots", 0, 10);
+			Components.SliderInt("Force baim after x shots", "rbot_scout_force_baim_after_shots", 0, 10);
+			Components.Checkbox("Baim while moving", "rbot_scout_baim_while_moving");
+			break;
+		case RbotWeaponsAvailable::AWP:
+			Components.SliderFloat("Hitchance", "rbot_awp_min_hitchance", 0.f, 100.f);
+			Components.SliderFloat("Min damage", "rbot_awp_mindamage", 0.f, 100.f);
+			Components.SliderInt("Baim after x shots", "rbot_awp_baim_after_shots", 0, 10);
+			Components.SliderInt("Force baim after x shots", "rbot_awp_force_baim_after_shots", 0, 10);
+			Components.Checkbox("Baim while moving", "rbot_awp_baim_while_moving");
+			break;
+		case RbotWeaponsAvailable::AUTO:
+			Components.SliderFloat("Hitchance", "rbot_auto_min_hitchance", 0.f, 100.f);
+			Components.SliderFloat("Min damage", "rbot_auto_mindamage", 0.f, 100.f);
+			Components.SliderInt("Baim after x shots", "rbot_auto_baim_after_shots", 0, 10);
+			Components.SliderInt("Force baim after x shots", "rbot_auto_force_baim_after_shots", 0, 10);
+			Components.Checkbox("Baim while moving", "rbot_auto_baim_while_moving");
+			break;
+		case RbotWeaponsAvailable::RIFLE:
+			Components.SliderFloat("Hitchance", "rbot_rifle_min_hitchance", 0.f, 100.f);
+			Components.SliderFloat("Min damage", "rbot_rifle_mindamage", 0.f, 100.f);
+			Components.SliderInt("Baim after x shots", "rbot_rifle_baim_after_shots", 0, 10);
+			Components.SliderInt("Force baim after x shots", "rbot_rifle_force_baim_after_shots", 0, 10);
+			Components.Checkbox("Baim while moving", "rbot_rifle_baim_while_moving");
+			break;
+		case RbotWeaponsAvailable::SHOTGUN:
+			Components.SliderFloat("Hitchance", "rbot_shotgun_min_hitchance", 0.f, 100.f);
+			Components.SliderFloat("Min damage", "rbot_shotgun_mindamage", 0.f, 100.f);
+			Components.SliderInt("Baim after x shots", "rbot_shotgun_baim_after_shots", 0, 10);
+			Components.SliderInt("Force baim after x shots", "rbot_shotgun_force_baim_after_shots", 0, 10);
+			Components.Checkbox("Baim while moving", "rbot_shotgun_baim_while_moving");
+			break;
+	}
+
+	const char* BaimModes[] = { "never", "auto" };
+	Components.ComboBox("Baim mode", BaimModes, IM_ARRAYSIZE(BaimModes), "rbot_baimmode");
+	Components.Checkbox("Air baim", "rbot_resolver_air_baim");
+	//Components.SliderInt("Brut after x shots", "rbot_brutforce_after_shots", 0, 10);
+
+	//Components.SliderFloat("Pointscale head", "rbot_head_scale", 0.f, 1.f);
+	//Components.SliderFloat("Pointscale body", "rbot_body_scale", 0.f, 1.f);
 
     Components.BeginChild ( "#hitboxes", ImVec2 ( 0.f, 204.f ) );
     Components.Checkbox ( "Head", "rbot_hitbox_head" );
@@ -223,6 +269,24 @@ void Menu::RenderRagebot()
             break;
     }
 
+	Components.Checkbox("Auto scope", "rbot_autoscope");
+	Components.Checkbox("Auto stop", "rbot_autostop");
+	Components.Checkbox("Auto crouch", "rbot_autocrouch");
+	Components.Checkbox("Slow Walk", "rbot_slowwalk");
+	//Components.Checkbox("Lby prediction", "rbot_lby_prediction");
+#ifdef _DEBUG
+	Components.Checkbox("Fakelag prediction", "rbot_flag_prediction");
+#endif // _DEBUG
+
+	const char* ShootingModes[] = { "normal", "in fakelag", "fakelag while shooting" };
+	Components.ComboBox("Shooting mode", ShootingModes, IM_ARRAYSIZE(ShootingModes), "rbot_shooting_mode");
+
+#ifdef _DEBUG
+	Components.Checkbox("Lagcompensation", "rbot_lagcompensation");
+#endif // _DEBUG
+	Components.Checkbox("Force unlag", "rbot_force_unlage");
+
+	Components.Checkbox("Resolver", "rbot_resolver");
     Components.EndChild();
 }
 

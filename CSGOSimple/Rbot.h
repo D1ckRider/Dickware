@@ -40,6 +40,7 @@ public:
     void PrecacheShit();
     bool HitChance ( QAngle angles, C_BasePlayer* ent, float chance );
 private:
+	void UpdateWeaponConfig(C_BaseCombatWeapon* weapon);
     bool InFakeLag ( C_BasePlayer* player );
     float Simtimes[128];
 
@@ -66,15 +67,20 @@ private:
 
     void UpdateConfigData();
 
-    bool HitboxHead          = false;
-    bool HitboxNeck          = false;
-    bool HitboxChest         = false;
-    bool HitboxPelvis        = false;
-    bool HitboxStomach       = false;
-    bool HitboxArm           = false;
-    bool HitboxLeg           = false;
-    bool HitboxFoot          = false;
-    float MinDmg             = FLT_MAX;
+	/* Configuration values */
+    bool  HitboxHead          = false;
+    bool  HitboxNeck          = false;
+    bool  HitboxChest         = false;
+    bool  HitboxPelvis        = false;
+    bool  HitboxStomach       = false;
+    bool  HitboxArm           = false;
+    bool  HitboxLeg           = false;
+    bool  HitboxFoot          = false;
+	float Hitchance			 = 0.f;
+	float MinDmg             = FLT_MAX;
+	int   BAimAfter			 = 0;
+	int   ForceBAimAfter	 = 0;
+	bool  MovingBAim		 = false;
     float HitboxHeadScale    = 0.f;
     float HitboxNeckScale    = 0.f;
     float HitboxChestScale   = 0.f;

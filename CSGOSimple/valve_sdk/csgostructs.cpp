@@ -173,29 +173,35 @@ bool C_BaseCombatWeapon::IsMachinegun()
 
 bool C_BaseCombatWeapon::IsDeagle()
 {
-	switch (GetCSWeaponData()->WeaponType)
+	/*switch (GetCSWeaponData()->WeaponType)
 	{
 	case WEAPON_DEAGLE:
 		return true;
 	default:
 		return false;
-	}
+	}*/
+	if (std::strcmp(GetCSWeaponData()->szWeaponName, "weapon_deagle") == 0)
+		return true;
+	return false;
 }
 
 bool C_BaseCombatWeapon::IsRevolver()
 {
-	switch (GetCSWeaponData()->WeaponType)
+	/*switch (GetCSWeaponData()->WeaponType)
 	{
 	case WEAPON_REVOLVER:
 		return true;
 	default:
 		return false;
-	}
+	}*/
+	if (std::strcmp(GetCSWeaponData()->szWeaponName, "weapon_revolver") == 0)
+		return true;
+	return false;
 }
 
 bool C_BaseCombatWeapon::IsAutoSniper()
 {
-	switch (GetCSWeaponData()->WeaponType)
+	/*switch (GetCSWeaponData()->WeaponType)
 	{
 	case WEAPON_SCAR20:
 		return true;
@@ -203,29 +209,38 @@ bool C_BaseCombatWeapon::IsAutoSniper()
 		return true;
 	default:
 		return false;
-	}
+	}*/
+	if (std::strcmp(GetCSWeaponData()->szWeaponName, "weapon_g3sg1") == 0 || std::strcmp(GetCSWeaponData()->szWeaponName, "weapon_scar20") == 0)
+		return true;
+	return false;
 }
 
 bool C_BaseCombatWeapon::IsScout()
 {
-	switch (GetCSWeaponData()->WeaponType)
+	/*switch (GetCSWeaponData()->WeaponType)
 	{
 	case WEAPON_SSG08:
 		return true;
 	default:
 		return false;
-	}
+	}*/
+	if (std::strcmp(GetCSWeaponData()->szWeaponName, "weapon_ssg08") == 0)
+		return true;
+	return false;
 }
 
 bool C_BaseCombatWeapon::IsAwp()
 {
-	switch (GetCSWeaponData()->WeaponType)
+	/*switch (GetCSWeaponData()->WeaponType)
 	{
 	case WEAPON_AWP:
 		return true;
 	default:
 		return false;
-	}
+	}*/
+	if (std::strcmp(GetCSWeaponData()->szWeaponName, "weapon_awp") == 0)
+		return true;
+	return false;
 }
 
 bool C_BaseCombatWeapon::IsZeus()

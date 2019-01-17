@@ -1,6 +1,7 @@
 
 #include "Lbot.h"
 #include "helpers\math.hpp"
+#include "Logger.h"
 #include "ConfigSystem.h"
 #include "ConsoleHelper.h"
 #include "helpers\input.hpp"
@@ -20,6 +21,11 @@ void Lbot::OnCreateMove(CUserCmd* cmd)
         return;
     }
     UpdateWeaponConfig(weapon);
+
+	if (GetAsyncKeyState(VK_DELETE))
+	{
+		g_Logger.Info("WEAPON", "FOV is " + std::to_string(WeaponFov));
+	}
 
     std::deque<int> hb_enabled;
 
@@ -78,28 +84,7 @@ void Lbot::UpdateWeaponConfig(C_BaseCombatWeapon* weapon)
     Todo flickbot etc.
     */
 
-    if (weapon->IsPistol())
-    {
-        WeaponFov = g_Config.GetFloat("lbot_pistol_fov");
-        WeaponSmooth = g_Config.GetFloat("lbot_pistol_smooth");
-        WeaponRandomness = g_Config.GetFloat("lbot_pistol_randomize");
-        WeaponDelay = g_Config.GetFloat("lbot_pistol_delay");
-        WeaponFlickbot = g_Config.GetBool("lbot_pistol_flickbot");
-
-        WeaponRcs = g_Config.GetBool("lbot_pistol_rcs");
-        WeaponRecoilX = g_Config.GetFloat("lbot_pistol_rcs_x");
-        WeaponRecoilY = g_Config.GetFloat("lbot_pistol_rcs_y");
-
-        WeaponHitboxHead = g_Config.GetBool("lbot_pistol_hitbox_head");
-        WeaponHitboxNeck = g_Config.GetBool("lbot_pistol_hitbox_neck");
-        WeaponHitboxChest = g_Config.GetBool("lbot_pistol_hitbox_chest");
-        WeaponHitboxPelvis = g_Config.GetBool("lbot_pistol_hitbox_pelvis");
-        WeaponHitboxStomach = g_Config.GetBool("lbot_pistol_hitbox_stomach");
-        WeaponHitboxArm = g_Config.GetBool("lbot_pistol_hitbox_arm");
-        WeaponHitboxLeg = g_Config.GetBool("lbot_pistol_hitbox_leg");
-        WeaponHitboxFoot = g_Config.GetBool("lbot_pistol_hitbox_foot");
-    }
-	else if (weapon->IsDeagle())
+	if (weapon->IsDeagle())
 	{
 		WeaponFov = g_Config.GetFloat("lbot_deagle_fov");
 		WeaponSmooth = g_Config.GetFloat("lbot_deagle_smooth");
@@ -141,6 +126,27 @@ void Lbot::UpdateWeaponConfig(C_BaseCombatWeapon* weapon)
 		WeaponHitboxLeg = g_Config.GetBool("lbot_scout_hitbox_leg");
 		WeaponHitboxFoot = g_Config.GetBool("lbot_scout_hitbox_foot");
 	}
+    if (weapon->IsPistol())
+    {
+        WeaponFov = g_Config.GetFloat("lbot_pistol_fov");
+        WeaponSmooth = g_Config.GetFloat("lbot_pistol_smooth");
+        WeaponRandomness = g_Config.GetFloat("lbot_pistol_randomize");
+        WeaponDelay = g_Config.GetFloat("lbot_pistol_delay");
+        WeaponFlickbot = g_Config.GetBool("lbot_pistol_flickbot");
+
+        WeaponRcs = g_Config.GetBool("lbot_pistol_rcs");
+        WeaponRecoilX = g_Config.GetFloat("lbot_pistol_rcs_x");
+        WeaponRecoilY = g_Config.GetFloat("lbot_pistol_rcs_y");
+
+        WeaponHitboxHead = g_Config.GetBool("lbot_pistol_hitbox_head");
+        WeaponHitboxNeck = g_Config.GetBool("lbot_pistol_hitbox_neck");
+        WeaponHitboxChest = g_Config.GetBool("lbot_pistol_hitbox_chest");
+        WeaponHitboxPelvis = g_Config.GetBool("lbot_pistol_hitbox_pelvis");
+        WeaponHitboxStomach = g_Config.GetBool("lbot_pistol_hitbox_stomach");
+        WeaponHitboxArm = g_Config.GetBool("lbot_pistol_hitbox_arm");
+        WeaponHitboxLeg = g_Config.GetBool("lbot_pistol_hitbox_leg");
+        WeaponHitboxFoot = g_Config.GetBool("lbot_pistol_hitbox_foot");
+    }
     else if (weapon->IsSniper())
     {
         WeaponFov = g_Config.GetFloat("lbot_sniper_fov");

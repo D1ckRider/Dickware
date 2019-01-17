@@ -27,6 +27,17 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
         return;
 
     CurrentCmd = cmd;
+	UpdateWeaponConfig(weapon);
+
+	// Get debug config info
+	if (GetAsyncKeyState(VK_DELETE))
+	{
+		if (weapon->IsDeagle())
+			g_Logger.Info("SUCC","Weapon is a Deagle");
+		std::string name = weapon->GetCSWeaponData()->szWeaponName;
+		g_Logger.Info("WEAPON", "Weapon name is " + name);
+		g_Logger.Info("INFO", "Min Damage is " + std::to_string(MinDmg));
+	}
 
     if ( weapon->IsKnife() )
         return;
@@ -38,8 +49,8 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
     }
 
 	// SlowWalk usage
-	if (weapon->IsAutoSniper()) {
-		
+	if (weapon->IsAutoSniper()) 
+	{
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND) {
 			SlowWalk(cmd, 40);
 		}
@@ -51,7 +62,6 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
 	}
 	if (weapon->IsScout()) {
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND) {
-
 			SlowWalk(cmd, 70);
 		}
 	}
@@ -61,7 +71,7 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
 		}
 	}
 
-
+	
 
     //Console.WriteLine(g_GlobalVars->curtime - weapon->m_flNextPrimaryAttack());
     //if (g_Saver.curtime - weapon->m_flNextPrimaryAttack() < 0.f) return;
@@ -112,7 +122,8 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
         return;
     }
 
-    if ( !HitChance ( newAng, entity, g_Config.GetFloat ( "rbot_min_hitchance" ) ) )
+    //if ( !HitChance ( newAng, entity, g_Config.GetFloat ( "rbot_min_hitchance" ) ) )
+	if ( !HitChance ( newAng, entity, Hitchance ) )
     {
         if ( g_Config.GetBool ( "rbot_autostop" ) )
             AutoStop ( cmd );
@@ -266,6 +277,83 @@ void Rbot::OnFireEvent ( IGameEvent* event )
     }
 }
 
+void Rbot::UpdateWeaponConfig(C_BaseCombatWeapon * weapon)
+{
+	if ( weapon->IsDeagle() )
+	{
+		Hitchance = g_Config.GetFloat("rbot_deagle_min_hitchance");
+		Hitchance = g_Config.GetFloat("rbot_deagle_min_hitchance");
+		MinDmg = g_Config.GetFloat("rbot_deagle_mindamage");
+
+		BAimAfter = g_Config.GetInt("rbot_deagle_baim_after_shots");
+		ForceBAimAfter = g_Config.GetInt("rbot_deagle_force_baim_after_shots");
+		MovingBAim = g_Config.GetBool("rbot_deagle_baim_while_moving");
+	}
+	else if ( weapon->IsRevolver() )
+	{
+		Hitchance = g_Config.GetFloat("rbot_revolver_min_hitchance");
+		MinDmg = g_Config.GetFloat("rbot_revolver_mindamage");
+
+		BAimAfter = g_Config.GetInt("rbot_revolver_baim_after_shots");
+		ForceBAimAfter = g_Config.GetInt("rbot_revolver_force_baim_after_shots");
+		MovingBAim = g_Config.GetBool("rbot_revolver_baim_while_moving");
+	}
+	else if ( weapon->IsScout() )
+	{
+		Hitchance = g_Config.GetFloat("rbot_scout_min_hitchance");
+		MinDmg = g_Config.GetFloat("rbot_scout_mindamage");
+
+		BAimAfter = g_Config.GetInt("rbot_scout_baim_after_shots");
+		ForceBAimAfter = g_Config.GetInt("rbot_scout_force_baim_after_shots");
+		MovingBAim = g_Config.GetBool("rbot_scout_baim_while_moving");
+	}
+	else if ( weapon->IsAwp() )
+	{
+		Hitchance = g_Config.GetFloat("rbot_awp_min_hitchance");
+		MinDmg = g_Config.GetFloat("rbot_awp_mindamage");
+
+		BAimAfter = g_Config.GetInt("rbot_awp_baim_after_shots");
+		ForceBAimAfter = g_Config.GetInt("rbot_awp_force_baim_after_shots");
+		MovingBAim = g_Config.GetBool("rbot_awp_baim_while_moving");
+	}
+	else if ( weapon->IsAutoSniper() )
+	{
+		Hitchance = g_Config.GetFloat("rbot_auto_min_hitchance");
+		MinDmg = g_Config.GetFloat("rbot_auto_mindamage");
+
+		BAimAfter = g_Config.GetInt("rbot_auto_baim_after_shots");
+		ForceBAimAfter = g_Config.GetInt("rbot_auto_force_baim_after_shots");
+		MovingBAim = g_Config.GetBool("rbot_auto_baim_while_moving");
+	}
+	else if (weapon->IsPistol())
+	{
+		Hitchance = g_Config.GetFloat("rbot_pistol_min_hitchance");
+		MinDmg = g_Config.GetFloat("rbot_pistol_mindamage");
+
+		BAimAfter = g_Config.GetInt("rbot_pistol_baim_after_shots");
+		ForceBAimAfter = g_Config.GetInt("rbot_pistol_force_baim_after_shots");
+		MovingBAim = g_Config.GetBool("rbot_pistol_baim_while_moving");
+	}
+	else if ( weapon->IsRifle() )
+	{
+		Hitchance = g_Config.GetFloat("rbot_rifle_min_hitchance");
+		MinDmg = g_Config.GetFloat("rbot_rifle_mindamage");
+
+		BAimAfter = g_Config.GetInt("rbot_rifle_baim_after_shots");
+		ForceBAimAfter = g_Config.GetInt("rbot_rifle_force_baim_after_shots");
+		MovingBAim = g_Config.GetBool("rbot_rifle_baim_while_moving");
+	}
+	else
+	{
+		Hitchance = g_Config.GetFloat("rbot_shotgun_min_hitchance");
+		MinDmg = g_Config.GetFloat("rbot_shotgun_mindamage");
+
+		BAimAfter = g_Config.GetInt("rbot_shotgun_baim_after_shots");
+		ForceBAimAfter = g_Config.GetInt("rbot_shotgun_force_baim_after_shots");
+		MovingBAim = g_Config.GetBool("rbot_shotgun_baim_while_moving");
+	}
+}
+
 bool Rbot::InFakeLag ( C_BasePlayer* player )
 {
     bool rBool = true;
@@ -293,13 +381,12 @@ void Rbot::AutoCrouch ( CUserCmd* cmd )
 
 void Rbot::SlowWalk( CUserCmd * cmd, float speed )
 {
-	if (g_Config.GetBool("rbot_slowwalk")) // || !GetAsyncKeyState(VK_SHIFT))
+	if (g_Config.GetBool("rbot_slowwalk")  || !GetAsyncKeyState(VK_SHIFT))
 		return;
 
-	/*if (speed <= 0.f)
+	if (speed <= 0.f)
 		return;
-		*/
-	g_Logger.Info("SLOWWALK", "ACTUALLY INTO SLOWWALK");
+
 	float min_speed = (float)(Math::FASTSQRT((cmd->forwardmove)*(cmd->forwardmove) + (cmd->sidemove)*(cmd->sidemove) + (cmd->upmove)*(cmd->upmove)));
 	if (min_speed <= 0.f)
 		return;
@@ -311,7 +398,6 @@ void Rbot::SlowWalk( CUserCmd * cmd, float speed )
 		return;
 
 	float finalSpeed = speed / min_speed;
-	g_Logger.Info("SLOWWALK", "Final speed is");
 
 	cmd->forwardmove *= finalSpeed;
 	cmd->sidemove *= finalSpeed;
@@ -474,11 +560,11 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
     bool BestBacktrack = false;
     TickRecord BestBacktrackRecord;
 
-    int baim_after_shots = g_Config.GetInt ( "rbot_baim_after_shots" );
-    int force_baim_after_shots = g_Config.GetInt ( "rbot_force_baim_after_shots" );
+    /*int baim_after_shots = g_Config.GetInt ( "rbot_baim_after_shots" );
+    int force_baim_after_shots = g_Config.GetInt ( "rbot_force_baim_after_shots" );*/
     bool rbot_lagcompensation = g_Config.GetBool ( "rbot_lagcompensation" );
     bool rbot_force_unlage = g_Config.GetBool ( "rbot_force_unlage" );
-    bool rbot_baim_while_moving = g_Config.GetBool ( "rbot_baim_while_moving" );
+    // bool rbot_baim_while_moving = g_Config.GetBool ( "rbot_baim_while_moving" );
     bool rbot_resolver = g_Config.GetBool ( "rbot_resolver" );
     int rbot_baimmode = g_Config.GetInt ( "rbot_baimmode" );
 
@@ -518,13 +604,13 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
         if ( !rbot_resolver )
             baim = BaimMode::NONE;
 
-        if ( g_Resolver.GResolverData[i].Shots > baim_after_shots && baim_after_shots != 0 )
+        if ( g_Resolver.GResolverData[i].Shots > BAimAfter && ForceBAimAfter != 0 )
             baim = BaimMode::BAIM;
 
-        if ( rbot_baim_while_moving && g_LocalPlayer->m_vecVelocity().Length() > 0.1f )
+        if ( MovingBAim && g_LocalPlayer->m_vecVelocity().Length() > 0.1f )
             baim = BaimMode::BAIM;
 
-        if ( g_Resolver.GResolverData[i].Shots > force_baim_after_shots && force_baim_after_shots != 0 )
+        if ( g_Resolver.GResolverData[i].Shots > BAimAfter && ForceBAimAfter != 0 )
             baim = BaimMode::FORCE_BAIM;
 
         if ( rbot_baimmode == 0 ) baim = BaimMode::NONE;
@@ -1046,5 +1132,5 @@ void Rbot::UpdateConfigData()
     if ( HitboxFoot )
         HitboxHeadScale = g_Config.GetFloat ( "rbot_hitbox_foot_scale" );
 
-    MinDmg = g_Config.GetFloat ( "rbot_mindamage" );
+    //MinDmg = g_Config.GetFloat ( "rbot_mindamage" );
 }
