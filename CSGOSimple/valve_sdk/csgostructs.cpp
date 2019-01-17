@@ -171,6 +171,63 @@ bool C_BaseCombatWeapon::IsMachinegun()
     }
 }
 
+bool C_BaseCombatWeapon::IsDeagle()
+{
+	switch (GetCSWeaponData()->WeaponType)
+	{
+	case WEAPON_DEAGLE:
+		return true;
+	default:
+		return false;
+	}
+}
+
+bool C_BaseCombatWeapon::IsRevolver()
+{
+	switch (GetCSWeaponData()->WeaponType)
+	{
+	case WEAPON_REVOLVER:
+		return true;
+	default:
+		return false;
+	}
+}
+
+bool C_BaseCombatWeapon::IsAutoSniper()
+{
+	switch (GetCSWeaponData()->WeaponType)
+	{
+	case WEAPON_SCAR20:
+		return true;
+	case WEAPON_G3SG1:
+		return true;
+	default:
+		return false;
+	}
+}
+
+bool C_BaseCombatWeapon::IsScout()
+{
+	switch (GetCSWeaponData()->WeaponType)
+	{
+	case WEAPON_SSG08:
+		return true;
+	default:
+		return false;
+	}
+}
+
+bool C_BaseCombatWeapon::IsAwp()
+{
+	switch (GetCSWeaponData()->WeaponType)
+	{
+	case WEAPON_AWP:
+		return true;
+	default:
+		return false;
+	}
+}
+
 bool C_BaseCombatWeapon::IsZeus()
 {
     if (this->m_Item().m_iItemDefinitionIndex() == WEAPON_TASER)
@@ -195,6 +252,7 @@ float C_BaseCombatWeapon::GetSpread()
 {
     return CallVFunction<float(__thiscall*)(void*)>(this, 440)(this); //436 440
 }
+
 
 void C_BaseCombatWeapon::UpdateAccuracyPenalty()
 {

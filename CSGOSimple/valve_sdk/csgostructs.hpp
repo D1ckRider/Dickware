@@ -217,12 +217,20 @@ public:
     bool IsKnife();
     bool IsReloading();
 
+	
+	// Base Subsections
     bool IsRifle(); //
     bool IsPistol(); //
     bool IsSubmachinegun();
     bool IsSniper(); //
     bool IsShotgun();
     bool IsMachinegun();
+	// Special Subsections
+	bool IsDeagle();
+	bool IsRevolver();
+	bool IsAutoSniper();
+	bool IsScout();
+	bool IsAwp();
     //bool IsGrenade();
     bool IsZeus();
     //bool IsShotBeingFired();

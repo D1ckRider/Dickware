@@ -99,6 +99,48 @@ void Lbot::UpdateWeaponConfig(C_BaseCombatWeapon* weapon)
         WeaponHitboxLeg = g_Config.GetBool("lbot_pistol_hitbox_leg");
         WeaponHitboxFoot = g_Config.GetBool("lbot_pistol_hitbox_foot");
     }
+	else if (weapon->IsDeagle())
+	{
+		WeaponFov = g_Config.GetFloat("lbot_deagle_fov");
+		WeaponSmooth = g_Config.GetFloat("lbot_deagle_smooth");
+		WeaponRandomness = g_Config.GetFloat("lbot_deagle_randomize");
+		WeaponDelay = g_Config.GetFloat("lbot_deagle_delay");
+		WeaponFlickbot = g_Config.GetBool("lbot_deagle_flickbot");
+
+		WeaponRcs = g_Config.GetBool("lbot_deagle_rcs");
+		WeaponRecoilX = g_Config.GetFloat("lbot_deagle_rcs_x");
+		WeaponRecoilY = g_Config.GetFloat("lbot_deagle_rcs_y");
+
+		WeaponHitboxHead = g_Config.GetBool("lbot_deagle_hitbox_head");
+		WeaponHitboxNeck = g_Config.GetBool("lbot_deagle_hitbox_neck");
+		WeaponHitboxChest = g_Config.GetBool("lbot_deagle_hitbox_chest");
+		WeaponHitboxPelvis = g_Config.GetBool("lbot_deagle_hitbox_pelvis");
+		WeaponHitboxStomach = g_Config.GetBool("lbot_deagle_hitbox_stomach");
+		WeaponHitboxArm = g_Config.GetBool("lbot_deagle_hitbox_arm");
+		WeaponHitboxLeg = g_Config.GetBool("lbot_deagle_hitbox_leg");
+		WeaponHitboxFoot = g_Config.GetBool("lbot_deagle_hitbox_foot");
+	}
+	else if (weapon->IsScout())
+	{
+		WeaponFov = g_Config.GetFloat("lbot_scout_fov");
+		WeaponSmooth = g_Config.GetFloat("lbot_scout_smooth");
+		WeaponRandomness = g_Config.GetFloat("lbot_scout_randomize");
+		WeaponDelay = g_Config.GetFloat("lbot_scout_delay");
+		WeaponFlickbot = g_Config.GetBool("lbot_scout_flickbot");
+
+		WeaponRcs = g_Config.GetBool("lbot_scout_rcs");
+		WeaponRecoilX = g_Config.GetFloat("lbot_scoute_rcs_x");
+		WeaponRecoilY = g_Config.GetFloat("lbot_scout_rcs_y");
+
+		WeaponHitboxHead = g_Config.GetBool("lbot_scout_hitbox_head");
+		WeaponHitboxNeck = g_Config.GetBool("lbot_scout_hitbox_neck");
+		WeaponHitboxChest = g_Config.GetBool("lbot_scout_hitbox_chest");
+		WeaponHitboxPelvis = g_Config.GetBool("lbot_scout_hitbox_pelvis");
+		WeaponHitboxStomach = g_Config.GetBool("lbot_scout_hitbox_stomach");
+		WeaponHitboxArm = g_Config.GetBool("lbot_scout_hitbox_arm");
+		WeaponHitboxLeg = g_Config.GetBool("lbot_scout_hitbox_leg");
+		WeaponHitboxFoot = g_Config.GetBool("lbot_scout_hitbox_foot");
+	}
     else if (weapon->IsSniper())
     {
         WeaponFov = g_Config.GetFloat("lbot_sniper_fov");

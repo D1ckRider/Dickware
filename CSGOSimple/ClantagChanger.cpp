@@ -14,7 +14,7 @@ void ClantagChanger::OnCreateMove()
     {
         return;
     }
-    static std::string text = " gudcheat ";
+    static std::string text = " DickWare ";
     //static int OrgTextLength = text.size();
     //static int CurrentTextLength = OrgTextLength;
 

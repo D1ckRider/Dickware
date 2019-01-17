@@ -37,6 +37,32 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
         return;
     }
 
+	// SlowWalk usage
+	if (weapon->IsAutoSniper()) {
+		
+		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND) {
+			SlowWalk(cmd, 40);
+		}
+	}
+	if (weapon->IsAwp()) {
+		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND) {
+			SlowWalk(cmd, 33);
+		}
+	}
+	if (weapon->IsScout()) {
+		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND) {
+
+			SlowWalk(cmd, 70);
+		}
+	}
+	if (!weapon->IsSniper()) { //for every weapon btw
+		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND) {
+			SlowWalk(cmd, 34);
+		}
+	}
+
+
+
     //Console.WriteLine(g_GlobalVars->curtime - weapon->m_flNextPrimaryAttack());
     //if (g_Saver.curtime - weapon->m_flNextPrimaryAttack() < 0.f) return;
 
@@ -263,6 +289,33 @@ void Rbot::AutoStop ( CUserCmd* cmd )
 void Rbot::AutoCrouch ( CUserCmd* cmd )
 {
     cmd->buttons |= IN_DUCK;
+}
+
+void Rbot::SlowWalk( CUserCmd * cmd, float speed )
+{
+	if (g_Config.GetBool("rbot_slowwalk")) // || !GetAsyncKeyState(VK_SHIFT))
+		return;
+
+	/*if (speed <= 0.f)
+		return;
+		*/
+	g_Logger.Info("SLOWWALK", "ACTUALLY INTO SLOWWALK");
+	float min_speed = (float)(Math::FASTSQRT((cmd->forwardmove)*(cmd->forwardmove) + (cmd->sidemove)*(cmd->sidemove) + (cmd->upmove)*(cmd->upmove)));
+	if (min_speed <= 0.f)
+		return;
+
+	if (cmd->buttons & IN_DUCK)
+		speed *= 2.94117647f;
+
+	if (min_speed <= speed)
+		return;
+
+	float finalSpeed = speed / min_speed;
+	g_Logger.Info("SLOWWALK", "Final speed is");
+
+	cmd->forwardmove *= finalSpeed;
+	cmd->sidemove *= finalSpeed;
+	cmd->upmove *= finalSpeed;
 }
 
 void Rbot::ZeusBot ( CUserCmd* cmd, C_BaseCombatWeapon* weapon )

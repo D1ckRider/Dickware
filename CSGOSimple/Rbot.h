@@ -43,8 +43,11 @@ private:
     bool InFakeLag ( C_BasePlayer* player );
     float Simtimes[128];
 
+
+
     void AutoStop ( CUserCmd* cmd );
     void AutoCrouch ( CUserCmd* cmd );
+	void SlowWalk ( CUserCmd* cmd, float speed );
 
     CUserCmd* CurrentCmd = nullptr;
 
@@ -63,23 +66,23 @@ private:
 
     void UpdateConfigData();
 
-    bool HitboxHead = false;
-    bool HitboxNeck = false;
-    bool HitboxChest = false;
-    bool HitboxPelvis = false;
-    bool HitboxStomach = false;
-    bool HitboxArm = false;
-    bool HitboxLeg = false;
-    bool HitboxFoot = false;
-    float MinDmg = FLT_MAX;
-    float HitboxHeadScale = 0.f;
-    float HitboxNeckScale = 0.f;
-    float HitboxChestScale = 0.f;
-    float HitboxPelvisScale = 0.f;
+    bool HitboxHead          = false;
+    bool HitboxNeck          = false;
+    bool HitboxChest         = false;
+    bool HitboxPelvis        = false;
+    bool HitboxStomach       = false;
+    bool HitboxArm           = false;
+    bool HitboxLeg           = false;
+    bool HitboxFoot          = false;
+    float MinDmg             = FLT_MAX;
+    float HitboxHeadScale    = 0.f;
+    float HitboxNeckScale    = 0.f;
+    float HitboxChestScale   = 0.f;
+    float HitboxPelvisScale  = 0.f;
     float HitboxStomachScale = 0.f;
-    float HitboxArmScale = 0.f;
-    float HitboxLegScale = 0.f;
-    float HitboxFootScale = 0.f;
+    float HitboxArmScale     = 0.f;
+    float HitboxLegScale     = 0.f;
+    float HitboxFootScale    = 0.f;
 };
 
 extern RbotMatrixData matrixData[128];

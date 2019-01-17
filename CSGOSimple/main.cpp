@@ -53,7 +53,7 @@ DWORD WINAPI OnDllAttach ( LPVOID base )
 
         // Panic button
         #ifdef _DEBUG
-        InputSys::Get().RegisterHotkey ( VK_DELETE, [base]()
+        InputSys::Get().RegisterHotkey ( VK_NUMPAD0, [base]()
         {
             g_Unload = true;
         } );

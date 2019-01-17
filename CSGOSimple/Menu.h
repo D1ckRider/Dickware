@@ -8,6 +8,7 @@ enum class MenuAvailable : int
     LEGITBOT,
     VISUALS,
     MISC,
+	SKINCHANGER,
     SETTINGS
 };
 
@@ -18,6 +19,17 @@ enum class VisualsMenuAvailable : int
     TEAM,
     MISC,
     GLOBAL
+};
+
+enum class RbotWeaponsAvailable : int
+{
+	PISTOL,
+	DEAGLE,
+	SCOUT,
+	AWP,
+	AUTO,
+	SHOTGUN,
+	RIFLE
 };
 
 enum class RbotMenuAvailable : int
@@ -31,10 +43,12 @@ enum class RbotMenuAvailable : int
 enum class LbotWeaponsAvailable : int
 {
     PISTOL,
+	DEAGLE,
     SMG,
     MG,
     RIFLE,
     SHOTGUN,
+	SCOUT,
     SNIPER
 };
 
@@ -52,6 +66,7 @@ public:
     void RenderLegitbot();
     void RenderVisuals();
     void RenderMisc();
+	void RenderSkinchanger();
     void RenderSettings();
 private:
     MenuHelper::components Components;

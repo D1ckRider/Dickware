@@ -27,9 +27,9 @@ void Menu::Render()
     if ( !Loaded || g_Unload )
         return;
 
-    Components.StartWindow ( "cheat", ImVec2 ( 766, 500 ), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize );
-    static char* NavBarItems[] = { "s", "o", "t", "u", "v" };
-    static char* NavBarItemsText[] = { "ragebot", "legitbot", "visuals", "misc", "settings" };
+    Components.StartWindow ( "DickWare", ImVec2 ( 810, 500 ), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize );
+    static char* NavBarItems[] = { "s", "o", "t", "u", "4", "v" };
+    static char* NavBarItemsText[] = { "ragebot", "legitbot", "visuals", "misc", "skinchanger", "settings" };
     static int NavBarSelected = 0;
     Components.NavbarIcons ( NavBarItems, NavBarItemsText, IM_ARRAYSIZE ( NavBarItems ), NavBarSelected, IconsFont );
 
@@ -50,7 +50,9 @@ void Menu::Render()
         case MenuAvailable::MISC:
             RenderMisc();
             break;
-
+		case MenuAvailable::SKINCHANGER:
+			RenderSkinchanger();
+			break;
         case MenuAvailable::SETTINGS:
             RenderSettings();
             break;
@@ -74,6 +76,7 @@ void Menu::RenderRagebot()
     Components.Checkbox ( "Auto scope", "rbot_autoscope" );
     Components.Checkbox ( "Auto stop", "rbot_autostop" );
     Components.Checkbox ( "Auto crouch", "rbot_autocrouch" );
+	//Components.Checkbox("Slow Walk", "rbot_slowwalk");
     //Components.Checkbox("Lby prediction", "rbot_lby_prediction");
     #ifdef _DEBUG
     Components.Checkbox ( "Fakelag prediction", "rbot_flag_prediction" );
@@ -234,8 +237,8 @@ void Menu::RenderLegitbot()
     Components.Columns ( 2, false );
 
 
-    static char* WeaponConfigSelectionItems[] = { "G", "L", "f", "W", "c", "Z" };
-    static char* WeaponConfigSelectionItemsText[] = { "pistol", "smg", "mg", "rifle", "shotgun", "sniper" };
+    static char* WeaponConfigSelectionItems[] = { "G", "A", "L", "f", "W", "c", "a", "Z" };
+    static char* WeaponConfigSelectionItemsText[] = { "pistol", "deagle", "smg", "mg", "rifle", "shotgun", "scout", "sniper" };
     static int WeaponSelected = 0;
     Components.NavbarIcons ( WeaponConfigSelectionItems, WeaponConfigSelectionItemsText, IM_ARRAYSIZE ( WeaponConfigSelectionItems ), WeaponSelected, IconsFont );
 
@@ -271,6 +274,33 @@ void Menu::RenderLegitbot()
             Components.EndChild();
             break;
 
+		case LbotWeaponsAvailable::DEAGLE:
+			Components.SliderFloat("Fov", "lbot_deagle_fov", 0.f, 15.f);
+			Components.SliderFloat("Smooth", "lbot_deagle_smooth", 1.f, 30.f);
+			Components.SliderFloat("Randomize", "lbot_deagle_randomize", 0.f, 10.f);
+			Components.SliderFloat("Delay", "lbot_deagle_delay", 0.f, 1.f);
+			Components.Checkbox("Flickbot", "lbot_deagle_flickbot");
+
+			Components.Spacing();
+
+			Components.Checkbox("Rcs", "lbot_deagle_rcs");
+			Components.SliderFloat("Amount x", "lbot_deagle_rcs_x", 0.f, 1.f);
+			Components.SliderFloat("Amount y", "lbot_deagle_rcs_y", 0.f, 1.f);
+
+			Components.Spacing();
+
+			Components.Label("Hitboxes:");
+			Components.BeginChild("#hitboxes", ImVec2(0.f, 204.f));
+			Components.Checkbox("head", "lbot_deagle_hitbox_head");
+			Components.Checkbox("neck", "lbot_deagle_hitbox_neck");
+			Components.Checkbox("chest", "lbot_deagle_hitbox_chest");
+			Components.Checkbox("pelvis", "lbot_deagle_hitbox_pelvis");
+			Components.Checkbox("stomach", "lbot_deagle_hitbox_stomach");
+			Components.Checkbox("arm", "lbot_deagle_hitbox_arm");
+			Components.Checkbox("leg", "lbot_deagle_hitbox_leg");
+			Components.Checkbox("foot", "lbot_deagle_hitbox_foot");
+			Components.EndChild();
+			break;
         case LbotWeaponsAvailable::SMG:
             Components.SliderFloat ( "Fov", "lbot_smg_fov", 0.f, 15.f );
             Components.SliderFloat ( "Smooth", "lbot_smg_smooth", 1.f, 30.f );
@@ -382,7 +412,33 @@ void Menu::RenderLegitbot()
             Components.Checkbox ( "foot", "lbot_shotgun_hitbox_foot" );
             Components.EndChild();
             break;
+		case LbotWeaponsAvailable::SCOUT:
+			Components.SliderFloat("Fov", "lbot_scout_fov", 0.f, 15.f);
+			Components.SliderFloat("Smooth", "lbot_scout_smooth", 1.f, 30.f);
+			Components.SliderFloat("Randomize", "lbot_scout_randomize", 0.f, 10.f);
+			Components.SliderFloat("Delay", "lbot_scout_delay", 0.f, 1.f);
+			Components.Checkbox("Flickbot", "lbot_scout_flickbot");
 
+			Components.Spacing();
+
+			Components.Checkbox("Rcs", "lbot_scout_rcs");
+			Components.SliderFloat("Amount x", "lbot_scout_rcs_x", 0.f, 1.f);
+			Components.SliderFloat("Amount y", "lbot_scout_rcs_y", 0.f, 1.f);
+
+			Components.Spacing();
+
+			Components.Label("Hitboxes:");
+			Components.BeginChild("#hitboxes", ImVec2(0.f, 204.f));
+			Components.Checkbox("head", "lbot_scout_hitbox_head");
+			Components.Checkbox("neck", "lbot_scout_hitbox_neck");
+			Components.Checkbox("chest", "lbot_scout_hitbox_chest");
+			Components.Checkbox("pelvis", "lbot_scout_hitbox_pelvis");
+			Components.Checkbox("stomach", "lbot_scout_hitbox_stomach");
+			Components.Checkbox("arm", "lbot_scout_hitbox_arm");
+			Components.Checkbox("leg", "lbot_scout_hitbox_leg");
+			Components.Checkbox("foot", "lbot_scout_hitbox_foot");
+			Components.EndChild();
+			break;
         case LbotWeaponsAvailable::SNIPER:
             Components.SliderFloat ( "Fov", "lbot_sniper_fov", 0.f, 15.f );
             Components.SliderFloat ( "Smooth", "lbot_sniper_smooth", 1.f, 30.f );
@@ -612,6 +668,16 @@ void Menu::RenderMisc()
 
 
     Components.EndChild();
+}
+
+void Menu::RenderSkinchanger()
+{
+	Components.BeginChild("#skinchanger", ImVec2(0, 0));
+
+	Components.Label("Skinchanger");
+	Components.Label("Not today");
+
+	Components.EndChild();
 }
 
 void Menu::RenderSettings()
