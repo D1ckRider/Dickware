@@ -1,4 +1,4 @@
 # Dickware 
 
-One more shitpaste ¯\\_(ツ)_/¯
+One more shitpaste ¯\\\_(ツ)\_/¯
 
