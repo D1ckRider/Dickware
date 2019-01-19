@@ -45,6 +45,7 @@ public:
     std::deque<std::string> Configs;
     std::string AppdataFolder = "";
     std::array<SkinSaverData, 33> skinOptions;
+	std::string LoadGameConfig();
     void LoadSkins();
     void SaveSkins();
 private:

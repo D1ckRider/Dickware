@@ -5,6 +5,7 @@
 
 void Misc::OnCreateMove(CUserCmd* cmd)
 {
+	pCmd = cmd;
     if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
     {
         return;
@@ -34,6 +35,18 @@ void Misc::OnFrameStageNotify(ClientFrameStage_t stage)
         case FRAME_RENDER_END:
             break;
     }
+}
+
+void Misc::ExecuteGameConfig(const std::string & config)
+{
+	g_EngineClient->ExecuteClientCmd(config.c_str());
+}
+
+void Misc::SetLocalPlayerReady()
+{
+	static auto SetLocalPlayerReadyFn = reinterpret_cast<bool(__stdcall*)(const char*)>(Utils::PatternScan(L"client_panorama.dll", "55 8B EC 83 E4 F8 8B 4D 08 BA ? ? ? ? E8 ? ? ? ? 85 C0 75 12"));
+	if (SetLocalPlayerReadyFn)
+		SetLocalPlayerReadyFn("deferred");
 }
 
 void Misc::NoCrouchCooldown(CUserCmd* cmd)

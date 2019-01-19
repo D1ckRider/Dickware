@@ -7,6 +7,8 @@
 #include "includes/INIReader.h"
 #include <iostream>
 #include <filesystem>
+#include <fstream>
+#include <streambuf>
 #include <string>
 #include "Logger.h"
 namespace fs = std::filesystem;
@@ -199,6 +201,22 @@ void ConfigSystem::CreateConfig ( std::string file )
     g_Logger.Success ( "CONFIG", "config " + orgfile + " created" );
 
     RefreshConfigList();
+}
+
+std::string ConfigSystem::LoadGameConfig()
+{
+	if (!fs::exists(AppdataFolder + "GameConfig.txt"))
+		return "";
+	std::ifstream t(AppdataFolder + "GameConfig.txt");
+	std::string str;
+
+	t.seekg(0, std::ios::end);
+	str.reserve(t.tellg());
+	t.seekg(0, std::ios::beg);
+
+	str.assign((std::istreambuf_iterator<char>(t)),
+		std::istreambuf_iterator<char>());
+	return str;
 }
 
 void ConfigSystem::LoadSkins()

@@ -2,6 +2,7 @@
 #include "Backtrack.h"
 #include "Rbot.h"
 #include "ConfigSystem.h"
+#include "helpers/input.hpp"
 #include "helpers/math.hpp"
 #include "Autowall.h"
 #include "Logger.h"
@@ -32,8 +33,6 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
 	// Get debug config info
 	if (GetAsyncKeyState(VK_DELETE))
 	{
-		if (weapon->IsDeagle())
-			g_Logger.Info("SUCC","Weapon is a Deagle");
 		std::string name = weapon->GetCSWeaponData()->szWeaponName;
 		g_Logger.Info("WEAPON", "Weapon name is " + name);
 		g_Logger.Info("INFO", "Min Damage is " + std::to_string(MinDmg));
@@ -381,7 +380,7 @@ void Rbot::AutoCrouch ( CUserCmd* cmd )
 
 void Rbot::SlowWalk( CUserCmd * cmd, float speed )
 {
-	if (g_Config.GetBool("rbot_slowwalk")  || !GetAsyncKeyState(VK_SHIFT))
+	if (g_Config.GetBool("rbot_slowwalk") || !InputSys::Get().IsKeyDown(g_Config.GetInt("rbot_slowwalk_hotkey")) ) //|| !GetAsyncKeyState(VK_SHIFT))
 		return;
 
 	if (speed <= 0.f)
@@ -601,19 +600,27 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
 
         BaimMode baim = g_Resolver.GResolverData[i].Resolved ? BaimMode::NONE : BaimMode::BAIM;
 
-        if ( !rbot_resolver )
-            baim = BaimMode::NONE;
+		if (ForceBAim)
+		{
 
-        if ( g_Resolver.GResolverData[i].Shots > BAimAfter && ForceBAimAfter != 0 )
-            baim = BaimMode::BAIM;
+		}
+		else
+		{
+			if (!rbot_resolver)
+				baim = BaimMode::NONE;
 
-        if ( MovingBAim && g_LocalPlayer->m_vecVelocity().Length() > 0.1f )
-            baim = BaimMode::BAIM;
+			if (g_Resolver.GResolverData[i].Shots > BAimAfter && ForceBAimAfter != 0)
+				baim = BaimMode::BAIM;
 
-        if ( g_Resolver.GResolverData[i].Shots > BAimAfter && ForceBAimAfter != 0 )
-            baim = BaimMode::FORCE_BAIM;
+			if (MovingBAim && g_LocalPlayer->m_vecVelocity().Length() > 0.1f)
+				baim = BaimMode::BAIM;
 
-        if ( rbot_baimmode == 0 ) baim = BaimMode::NONE;
+			if (g_Resolver.GResolverData[i].Shots > BAimAfter && ForceBAimAfter != 0)
+				baim = BaimMode::FORCE_BAIM;
+
+			if (rbot_baimmode == 0) baim = BaimMode::NONE;
+		}
+        
 
 
         //if(g_Resolver.GResolverData[i].ForceBaim) { baim = BaimMode::FORCE_BAIM; }

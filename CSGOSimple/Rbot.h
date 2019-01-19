@@ -34,6 +34,8 @@ struct RbotMatrixData
 class Rbot : public Singleton<Rbot>
 {
 public:
+	// FIXME: What a shitcode 3:
+	bool ForceBAim = false;
     void CreateMove ( CUserCmd* cmd, bool& bSendPacket );
     void OnFireEvent ( IGameEvent* event );
     bool GetBestHitboxPoint ( C_BasePlayer* entity, float& damage, Vector& hitbox, BaimMode baim, bool& WillKill, matrix3x4_t matrix[MAXSTUDIOBONES] = nullptr, mstudiohitboxset_t* StudioSet = nullptr, bool NoPointscale = false );
@@ -81,6 +83,7 @@ private:
 	int   BAimAfter			 = 0;
 	int   ForceBAimAfter	 = 0;
 	bool  MovingBAim		 = false;
+	
     float HitboxHeadScale    = 0.f;
     float HitboxNeckScale    = 0.f;
     float HitboxChestScale   = 0.f;

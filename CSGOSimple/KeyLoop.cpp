@@ -3,6 +3,8 @@
 #include "ConfigSystem.h"
 #include "helpers/input.hpp"
 #include "RuntimeSaver.h"
+#include "Rbot.h"
+#include "Logger.h"
 
 void KeyLoop::OnCreateMove()
 {
@@ -10,6 +12,14 @@ void KeyLoop::OnCreateMove()
     {
         g_Config.Set("vis_misc_thirdperson", !g_Config.GetBool("vis_misc_thirdperson"));
     }
+
+	// FIXME: 3:
+	if (InputSys::Get().WasKeyPressed(g_Config.GetInt("rbot_forceaim_hotkey")))
+	{
+		Rbot::Get().ForceBAim = !Rbot::Get().ForceBAim;
+		g_Logger.Info("INFO", "ForceBAim is " + std::to_string(Rbot::Get().ForceBAim));
+	}
+		
 
     if (InputSys::Get().WasKeyPressed(g_Config.GetInt("rbot_manual_key_right")))
     {

@@ -4,7 +4,7 @@
 #include "ConfigSystem.h"
 #include "ConsoleHelper.h"
 #include "options.hpp"
-
+#include "Misc.h"
 
 ImFont* IconsFont;
 Menu::Menu()
@@ -140,6 +140,8 @@ void Menu::RenderRagebot()
 	const char* BaimModes[] = { "never", "auto" };
 	Components.ComboBox("Baim mode", BaimModes, IM_ARRAYSIZE(BaimModes), "rbot_baimmode");
 	Components.Checkbox("Air baim", "rbot_resolver_air_baim");
+	Components.Hotkey("Force BAim hotkey", "rbot_forceaim_hotkey");
+
 	//Components.SliderInt("Brut after x shots", "rbot_brutforce_after_shots", 0, 10);
 
 	//Components.SliderFloat("Pointscale head", "rbot_head_scale", 0.f, 1.f);
@@ -273,6 +275,7 @@ void Menu::RenderRagebot()
 	Components.Checkbox("Auto stop", "rbot_autostop");
 	Components.Checkbox("Auto crouch", "rbot_autocrouch");
 	Components.Checkbox("Slow Walk", "rbot_slowwalk");
+	Components.Hotkey("Slow Walk Hotkey", "rbot_slowwalk_hotkey");
 	//Components.Checkbox("Lby prediction", "rbot_lby_prediction");
 #ifdef _DEBUG
 	Components.Checkbox("Fakelag prediction", "rbot_flag_prediction");
@@ -709,6 +712,10 @@ void Menu::RenderMisc()
     //Components.Checkbox("Anti untrusted", "misc_antiuntrusted");
 
     Components.Spacing();
+
+	if (Components.Button("Load Game CFG"))
+		g_EngineClient->ExecuteClientCmd(g_Config.LoadGameConfig().c_str());
+		//Misc::Get().ExecuteGameConfig("cl_showpos 1");
 
     //buybot
     static const char* Pistols[] = { "none", "glock|usp|p2000", "duals", "tec9|fiveseven", "deagle|r8" };
