@@ -48,27 +48,21 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
     }
 
 	// SlowWalk usage
-	if (weapon->IsAutoSniper()) 
-	{
-		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND) {
+	if ( weapon->GetItemDefinitionIndex() == WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == WEAPON_G3SG1 )
+		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 40);
-		}
-	}
-	if (weapon->IsAwp()) {
-		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND) {
+
+	if ( weapon->GetItemDefinitionIndex() == WEAPON_AWP )
+		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 33);
-		}
-	}
-	if (weapon->IsScout()) {
-		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND) {
+
+	if ( weapon->GetItemDefinitionIndex() == WEAPON_SSG08 )
+		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 70);
-		}
-	}
-	if (!weapon->IsSniper()) { //for every weapon btw
-		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND) {
+
+	if ( !weapon->IsSniper() )  //for every weapon btw
+		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 34);
-		}
-	}
 
 	
 
@@ -278,7 +272,7 @@ void Rbot::OnFireEvent ( IGameEvent* event )
 
 void Rbot::UpdateWeaponConfig(C_BaseCombatWeapon * weapon)
 {
-	if ( weapon->IsDeagle() )
+	if ( weapon->GetItemDefinitionIndex() == WEAPON_DEAGLE )
 	{
 		Hitchance = g_Config.GetFloat("rbot_deagle_min_hitchance");
 		Hitchance = g_Config.GetFloat("rbot_deagle_min_hitchance");
@@ -288,7 +282,7 @@ void Rbot::UpdateWeaponConfig(C_BaseCombatWeapon * weapon)
 		ForceBAimAfter = g_Config.GetInt("rbot_deagle_force_baim_after_shots");
 		MovingBAim = g_Config.GetBool("rbot_deagle_baim_while_moving");
 	}
-	else if ( weapon->IsRevolver() )
+	else if ( weapon->GetItemDefinitionIndex() == WEAPON_REVOLVER )
 	{
 		Hitchance = g_Config.GetFloat("rbot_revolver_min_hitchance");
 		MinDmg = g_Config.GetFloat("rbot_revolver_mindamage");
@@ -297,7 +291,7 @@ void Rbot::UpdateWeaponConfig(C_BaseCombatWeapon * weapon)
 		ForceBAimAfter = g_Config.GetInt("rbot_revolver_force_baim_after_shots");
 		MovingBAim = g_Config.GetBool("rbot_revolver_baim_while_moving");
 	}
-	else if ( weapon->IsScout() )
+	else if ( weapon->GetItemDefinitionIndex() == WEAPON_SSG08 )
 	{
 		Hitchance = g_Config.GetFloat("rbot_scout_min_hitchance");
 		MinDmg = g_Config.GetFloat("rbot_scout_mindamage");
@@ -306,7 +300,7 @@ void Rbot::UpdateWeaponConfig(C_BaseCombatWeapon * weapon)
 		ForceBAimAfter = g_Config.GetInt("rbot_scout_force_baim_after_shots");
 		MovingBAim = g_Config.GetBool("rbot_scout_baim_while_moving");
 	}
-	else if ( weapon->IsAwp() )
+	else if ( weapon->GetItemDefinitionIndex() == WEAPON_AWP )
 	{
 		Hitchance = g_Config.GetFloat("rbot_awp_min_hitchance");
 		MinDmg = g_Config.GetFloat("rbot_awp_mindamage");
@@ -315,7 +309,7 @@ void Rbot::UpdateWeaponConfig(C_BaseCombatWeapon * weapon)
 		ForceBAimAfter = g_Config.GetInt("rbot_awp_force_baim_after_shots");
 		MovingBAim = g_Config.GetBool("rbot_awp_baim_while_moving");
 	}
-	else if ( weapon->IsAutoSniper() )
+	else if ( weapon->GetItemDefinitionIndex() == WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == WEAPON_G3SG1 )
 	{
 		Hitchance = g_Config.GetFloat("rbot_auto_min_hitchance");
 		MinDmg = g_Config.GetFloat("rbot_auto_mindamage");
@@ -549,6 +543,11 @@ bool Rbot::HitChance ( QAngle angles, C_BasePlayer* ent, float chance )
     return false;
 }
 
+BaimMode* Rbot::GetBAimStatus()
+{
+	return &baim;
+}
+
 int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hitpos, bool& bBacktrack )
 {
     int BestEntityIndex = -1;
@@ -598,11 +597,11 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
         TickRecord CBacktrackRecord;
         bool CUsingBacktrack = false;
 
-        BaimMode baim = g_Resolver.GResolverData[i].Resolved ? BaimMode::NONE : BaimMode::BAIM;
+        baim = g_Resolver.GResolverData[i].Resolved ? BaimMode::NONE : BaimMode::BAIM;
 
 		if (ForceBAim)
 		{
-
+			baim = BaimMode::FORCE_BAIM;
 		}
 		else
 		{

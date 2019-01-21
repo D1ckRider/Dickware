@@ -41,6 +41,7 @@ public:
     bool GetBestHitboxPoint ( C_BasePlayer* entity, float& damage, Vector& hitbox, BaimMode baim, bool& WillKill, matrix3x4_t matrix[MAXSTUDIOBONES] = nullptr, mstudiohitboxset_t* StudioSet = nullptr, bool NoPointscale = false );
     void PrecacheShit();
     bool HitChance ( QAngle angles, C_BasePlayer* ent, float chance );
+	BaimMode* GetBAimStatus();
 private:
 	void UpdateWeaponConfig(C_BaseCombatWeapon* weapon);
     bool InFakeLag ( C_BasePlayer* player );
@@ -68,6 +69,8 @@ private:
     //mstudiohitboxset_t *PrecachedSet;
 
     void UpdateConfigData();
+
+	BaimMode baim;
 
 	/* Configuration values */
     bool  HitboxHead          = false;

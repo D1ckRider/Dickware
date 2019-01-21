@@ -80,11 +80,7 @@ void Lbot::OnCreateMove(CUserCmd* cmd)
 
 void Lbot::UpdateWeaponConfig(C_BaseCombatWeapon* weapon)
 {
-    /*
-    Todo flickbot etc.
-    */
-
-	if (weapon->IsDeagle())
+	if ( weapon->GetItemDefinitionIndex() == WEAPON_DEAGLE )
 	{
 		WeaponFov = g_Config.GetFloat("lbot_deagle_fov");
 		WeaponSmooth = g_Config.GetFloat("lbot_deagle_smooth");
@@ -105,7 +101,7 @@ void Lbot::UpdateWeaponConfig(C_BaseCombatWeapon* weapon)
 		WeaponHitboxLeg = g_Config.GetBool("lbot_deagle_hitbox_leg");
 		WeaponHitboxFoot = g_Config.GetBool("lbot_deagle_hitbox_foot");
 	}
-	else if (weapon->IsScout())
+	else if ( weapon->GetItemDefinitionIndex() == WEAPON_SSG08 )
 	{
 		WeaponFov = g_Config.GetFloat("lbot_scout_fov");
 		WeaponSmooth = g_Config.GetFloat("lbot_scout_smooth");
@@ -126,7 +122,7 @@ void Lbot::UpdateWeaponConfig(C_BaseCombatWeapon* weapon)
 		WeaponHitboxLeg = g_Config.GetBool("lbot_scout_hitbox_leg");
 		WeaponHitboxFoot = g_Config.GetBool("lbot_scout_hitbox_foot");
 	}
-    if (weapon->IsPistol())
+    else if (weapon->IsPistol())
     {
         WeaponFov = g_Config.GetFloat("lbot_pistol_fov");
         WeaponSmooth = g_Config.GetFloat("lbot_pistol_smooth");
@@ -168,7 +164,7 @@ void Lbot::UpdateWeaponConfig(C_BaseCombatWeapon* weapon)
         WeaponHitboxLeg = g_Config.GetBool("lbot_sniper_hitbox_leg");
         WeaponHitboxFoot = g_Config.GetBool("lbot_sniper_hitbox_foot");
     }
-    else if (weapon->IsSubmachinegun())
+    else if ( weapon->IsSubmachinegun() )
     {
         WeaponFov = g_Config.GetFloat("lbot_smg_fov");
         WeaponSmooth = g_Config.GetFloat("lbot_smg_smooth");
@@ -189,7 +185,7 @@ void Lbot::UpdateWeaponConfig(C_BaseCombatWeapon* weapon)
         WeaponHitboxLeg = g_Config.GetBool("lbot_smg_hitbox_leg");
         WeaponHitboxFoot = g_Config.GetBool("lbot_smg_hitbox_foot");
     }
-    else if (weapon->IsMachinegun())
+    else if ( weapon->IsMachinegun() )
     {
         WeaponFov = g_Config.GetFloat("lbot_mg_fov");
         WeaponSmooth = g_Config.GetFloat("lbot_mg_smooth");
@@ -210,7 +206,7 @@ void Lbot::UpdateWeaponConfig(C_BaseCombatWeapon* weapon)
         WeaponHitboxLeg = g_Config.GetBool("lbot_mg_hitbox_leg");
         WeaponHitboxFoot = g_Config.GetBool("lbot_mg_hitbox_foot");
     }
-    else if (weapon->IsShotgun())
+    else if ( weapon->IsShotgun() )
     {
         WeaponFov = g_Config.GetFloat("lbot_shotgun_fov");
         WeaponSmooth = g_Config.GetFloat("lbot_shotgun_smooth");

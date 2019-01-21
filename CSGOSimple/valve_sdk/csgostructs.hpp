@@ -225,12 +225,7 @@ public:
     bool IsSniper(); //
     bool IsShotgun();
     bool IsMachinegun();
-	// Special Subsections
-	bool IsDeagle();
-	bool IsRevolver();
-	bool IsAutoSniper();
-	bool IsScout();
-	bool IsAwp();
+	int GetItemDefinitionIndex();
     //bool IsGrenade();
     bool IsZeus();
     //bool IsShotBeingFired();
