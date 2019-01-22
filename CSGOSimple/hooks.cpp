@@ -418,8 +418,8 @@ namespace Hooks
     {
         static auto ofunc = sound_hook.get_original<EmitSound1> ( index::EmitSound1 );
 
-		if (!strcmp(pSoundEntry, "UIPanorama.popup_accept_match_beep"))
-			Misc::Get().SetLocalPlayerReady();
+		/*if (!strcmp(pSoundEntry, "UIPanorama.popup_accept_match_beep"))
+			Misc::Get().SetLocalPlayerReady();(*/
 
         /*
         if (!strcmp(pSoundEntry, "UIPanorama.popup_accept_match_beep")) {

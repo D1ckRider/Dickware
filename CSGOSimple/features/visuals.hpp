@@ -95,6 +95,7 @@ public:
 	void LbyIndicator();
 	void PingIndicator();
 	void LCIndicator();
+	void BAimIndicator();
 
 	void AutowallCrosshair();
 

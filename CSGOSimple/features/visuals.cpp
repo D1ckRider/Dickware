@@ -12,6 +12,7 @@
 #include "../Logger.h"
 #include "../ConsoleHelper.h"
 #include "../Autowall.h"
+#include "../Rbot.h"
 
 RECT GetBBox ( C_BaseEntity* ent )
 {
@@ -778,6 +779,23 @@ void Visuals::LCIndicator()
     CurrentIndicatorHeight += 34.f;
 }
 
+void Visuals::BAimIndicator()
+{
+	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
+		return;
+
+	Color clr = Color::Red;
+	int x, y;
+	g_EngineClient->GetScreenSize(x, y);
+
+	if (*Rbot::Get().GetBAimStatus() == BaimMode::FORCE_BAIM)
+		clr = Color::Green;
+	ImVec2 t = g_pDefaultFont->CalcTextSizeA(34.f, FLT_MAX, 0.0f, "BAIM");
+
+	Render::Get().RenderTextNoOutline("BAIM", ImVec2(10, y - 100.f - CurrentIndicatorHeight), 34.f, clr);
+
+}
+
 void Visuals::AutowallCrosshair()
 {
     /*
@@ -1164,6 +1182,7 @@ void Visuals::AddToDrawList()
     {
         LbyIndicator();
         PingIndicator();
+		BAimIndicator();
 
         if ( g_Config.GetInt ( "misc_fakelag_mode" ) == 1 )
             LCIndicator();

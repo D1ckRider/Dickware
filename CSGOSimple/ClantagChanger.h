@@ -10,4 +10,3 @@ public:
 private:
     void Marquee(std::string& clantag);
 };
-
