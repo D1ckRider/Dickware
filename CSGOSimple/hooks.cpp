@@ -28,6 +28,7 @@
 #include "Lbot.h"
 #include "Misc.h"
 #include "ConsoleHelper.h"
+#include "Settings.h"
 //#include "Asuswalls.h"
 #include "NoSmoke.h"
 #pragma intrinsic(_ReturnAddress)
@@ -289,7 +290,8 @@ namespace Hooks
 
         Misc::Get().OnCreateMove ( cmd );
 
-        if ( g_Config.GetBool ( "misc_bhop" ) )
+        //if ( g_Config.GetBool ( "misc_bhop" ) )
+		if(Settings::Misc::BHop)
             BunnyHop::Get().OnCreateMove ( cmd );
 
         //if (rbot) AntiAim::Get().Fakewalk(cmd, bSendPacket);
@@ -305,11 +307,13 @@ namespace Hooks
             Rbot::Get().CreateMove ( cmd, bSendPacket );
         }
 
-        if ( !rbot && g_Config.GetBool ( "lbot" ) )
+        //if ( !rbot && g_Config.GetBool ( "lbot" ) )
+		if(!rbot && Settings::Aimbot::Enabled)
         {
             Lbot::Get().OnCreateMove ( cmd );
 
-            if ( g_Config.GetBool ( "lbot_backtrack" ) )
+            //if ( g_Config.GetBool ( "lbot_backtrack" ) )
+			if(Settings::Aimbot::Backtrack)
                 Backtrack::Get().FinishLegitBacktrack ( cmd );
         }
 
@@ -319,7 +323,8 @@ namespace Hooks
         if ( g_Config.GetBool ( "misc_buybot" ) )
             BuyBot::Get().OnCreateMove();
 
-        if ( g_Config.GetBool ( "misc_clantagchanger" ) )
+        //if ( g_Config.GetBool ( "misc_clantagchanger" ) )
+		if ( Settings::Misc::Clantag )
             ClantagChanger::Get().OnCreateMove();
 
         prediction->end_prediction ( cmd );
@@ -344,7 +349,8 @@ namespace Hooks
 
         if ( g_LocalPlayer && g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER && g_LocalPlayer->m_nMoveType() != MOVETYPE_NOCLIP )
         {
-            if ( g_Config.GetBool ( "misc_autostrafe" ) )
+            //if ( g_Config.GetBool ( "misc_autostrafe" ) )
+			if ( Settings::Misc::AutoStrafe )
                 BunnyHop::Get().AutoStrafe ( cmd, OldViewangles );
             else
                 MovementFix::Get().Correct ( OldViewangles, cmd, OldForwardmove, OldSidemove );
@@ -407,7 +413,8 @@ namespace Hooks
             if ( bSkip )
                 return;
 
-            if ( g_LocalPlayer && InputSys::Get().IsKeyDown ( VK_TAB ) && g_Config.GetBool ( "misc_showranks" ) )
+            //if ( g_LocalPlayer && InputSys::Get().IsKeyDown ( VK_TAB ) && g_Config.GetBool ( "misc_showranks" ) )
+			if ( g_LocalPlayer && InputSys::Get().IsKeyDown(VK_TAB) && Settings::Misc::RankReveal )
                 Utils::RankRevealAll();
 
             Render::Get().BeginScene();

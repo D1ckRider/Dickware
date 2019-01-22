@@ -1,7 +1,7 @@
 
 #include "Misc.h"
 #include "ConfigSystem.h"
-
+#include "Settings.h"
 
 void Misc::OnCreateMove(CUserCmd* cmd)
 {
@@ -51,7 +51,8 @@ void Misc::SetLocalPlayerReady()
 
 void Misc::NoCrouchCooldown(CUserCmd* cmd)
 {
-    if (!g_Config.GetBool("misc_no_crouch_cooldown"))
+    //if (!g_Config.GetBool("misc_no_crouch_cooldown"))
+	if(!Settings::Misc::NoCrouchCooldown)
     {
         return;
     }
