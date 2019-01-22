@@ -5,6 +5,7 @@
 #include "ConsoleHelper.h"
 #include "options.hpp"
 #include "Misc.h"
+#include "Settings.h"
 
 ImFont* IconsFont;
 Menu::Menu()
@@ -314,8 +315,10 @@ void Menu::RenderLegitbot()
     switch ( ( LbotWeaponsAvailable ) WeaponSelected )
     {
         case LbotWeaponsAvailable::PISTOL:
-            Components.SliderFloat ( "Fov", "lbot_pistol_fov", 0.f, 15.f );
-            Components.SliderFloat ( "Smooth", "lbot_pistol_smooth", 1.f, 30.f );
+            //Components.SliderFloat ( "Fov", "lbot_pistol_fov", 0.f, 15.f );
+			ImGui::SliderFloat("FOV", &Settings::Aimbot::WeaponAimSetting[0].FOV, 0.f, 15.f);
+            //Components.SliderFloat ( "Smooth", "lbot_pistol_smooth", 1.f, 30.f );
+			ImGui::SliderFloat("Smooth", &Settings::Aimbot::WeaponAimSetting[0].Smooth, 1.f, 30.f);
             Components.SliderFloat ( "Randomize", "lbot_pistol_randomize", 0.f, 10.f );
             Components.SliderFloat ( "Delay", "lbot_pistol_delay", 0.f, 1.f );
 
@@ -341,8 +344,10 @@ void Menu::RenderLegitbot()
             break;
 
 		case LbotWeaponsAvailable::DEAGLE:
-			Components.SliderFloat("Fov", "lbot_deagle_fov", 0.f, 15.f);
-			Components.SliderFloat("Smooth", "lbot_deagle_smooth", 1.f, 30.f);
+			//Components.SliderFloat("Fov", "lbot_deagle_fov", 0.f, 15.f);
+			ImGui::SliderFloat("FOV", &Settings::Aimbot::WeaponAimSetting[1].FOV, 0.f, 15.f);
+			ImGui::SliderFloat("Smooth", &Settings::Aimbot::WeaponAimSetting[1].Smooth, 1.f, 30.f);
+			//Components.SliderFloat("Smooth", "lbot_deagle_smooth", 1.f, 30.f);
 			Components.SliderFloat("Randomize", "lbot_deagle_randomize", 0.f, 10.f);
 			Components.SliderFloat("Delay", "lbot_deagle_delay", 0.f, 1.f);
 
@@ -759,11 +764,16 @@ void Menu::RenderSettings()
     static int Selected = -1;
     int i = 0;
 
-    for ( auto config = g_Config.Configs.begin(); config != g_Config.Configs.end(); config++, i++ )
+    /*for ( auto config = g_Config.Configs.begin(); config != g_Config.Configs.end(); config++, i++ )
     {
         if ( ImGui::Selectable ( config->data(), i == Selected ) )
             Selected = i;
-    }
+    }*/
+	for (auto config = Settings::Configs.begin(); config != Settings::Configs.end(); config++, i++)
+	{
+		if (ImGui::Selectable(config->data(), i == Selected))
+			Selected = i;
+	}
 
     Components.EndChild();
 
@@ -774,19 +784,24 @@ void Menu::RenderSettings()
     Components.SameLine();
     ImGui::InputText ( "  ", str0, IM_ARRAYSIZE ( str0 ) );
 
-    if ( Components.Button ( "Create" ) && str0 != "" )
-        g_Config.CreateConfig ( str0 );
+	if (Components.Button("Create") && str0 != "")
+		//g_Config.CreateConfig ( str0 );
+		Settings::CreateConfig(str0);
 
-    if ( Components.Button ( "Save" ) )
-        g_Config.Save ( g_Config.Configs[Selected] );
+	if (Components.Button("Save"))
+		//g_Config.Save ( g_Config.Configs[Selected] );
+		Settings::SaveSettings(Settings::Configs[Selected]);
 
     Components.SameLine();
 
-    if ( Components.Button ( "Load" ) )
-        g_Config.Load ( g_Config.Configs[Selected] );
+	if (Components.Button("Load"))
+		//g_Config.Load ( g_Config.Configs[Selected] );
+		Settings::LoadSettings(Settings::Configs[Selected]);
 
-    if ( Components.Button ( "Refresh" ) )
-        g_Config.RefreshConfigList();
+
+	if (Components.Button("Refresh"))
+		//g_Config.RefreshConfigList();
+		Settings::RefreshConfigList();
 
     Components.SameLine();
 

@@ -7,6 +7,7 @@
 #include "helpers\input.hpp"
 #include "RuntimeSaver.h"
 #include "Backtrack.h"
+#include "Settings.h"
 
 void Lbot::OnCreateMove(CUserCmd* cmd)
 {
@@ -82,8 +83,11 @@ void Lbot::UpdateWeaponConfig(C_BaseCombatWeapon* weapon)
 {
 	if ( weapon->GetItemDefinitionIndex() == WEAPON_DEAGLE )
 	{
-		WeaponFov = g_Config.GetFloat("lbot_deagle_fov");
-		WeaponSmooth = g_Config.GetFloat("lbot_deagle_smooth");
+		//WeaponFov = g_Config.GetFloat("lbot_deagle_fov");
+		WeaponFov = Settings::Aimbot::WeaponAimSetting[1].FOV;
+		//WeaponSmooth = g_Config.GetFloat("lbot_deagle_smooth");
+		WeaponSmooth = Settings::Aimbot::WeaponAimSetting[1].Smooth;
+		//WeaponSmooth = AimbotSettings.WeaponAimSetting[1].Smooth;
 		WeaponRandomness = g_Config.GetFloat("lbot_deagle_randomize");
 		WeaponDelay = g_Config.GetFloat("lbot_deagle_delay");
 		WeaponFlickbot = g_Config.GetBool("lbot_deagle_flickbot");
@@ -124,8 +128,10 @@ void Lbot::UpdateWeaponConfig(C_BaseCombatWeapon* weapon)
 	}
     else if (weapon->IsPistol())
     {
-        WeaponFov = g_Config.GetFloat("lbot_pistol_fov");
-        WeaponSmooth = g_Config.GetFloat("lbot_pistol_smooth");
+        //WeaponFov = g_Config.GetFloat("lbot_pistol_fov");
+        //WeaponSmooth = g_Config.GetFloat("lbot_pistol_smooth");
+		WeaponFov = Settings::Aimbot::WeaponAimSetting[0].FOV;
+		WeaponSmooth = Settings::Aimbot::WeaponAimSetting[0].Smooth;
         WeaponRandomness = g_Config.GetFloat("lbot_pistol_randomize");
         WeaponDelay = g_Config.GetFloat("lbot_pistol_delay");
         WeaponFlickbot = g_Config.GetBool("lbot_pistol_flickbot");
