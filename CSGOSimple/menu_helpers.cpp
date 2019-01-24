@@ -390,6 +390,34 @@ void MenuHelper::components::ColorCheckbox(std::string text, std::string setting
     CurrentItem++;
 }
 
+void MenuHelper::components::ColorCheckbox(std::string text, bool & name, Color & color)
+{
+	Color c = color;
+	Color orgc = c;
+	std::string color_name = " ";
+	for (int i = 0; i < CurrentItem; i++)
+	{
+		color_name += " ";
+	}
+	ImGuiEx::ColorEdit4(color_name.c_str(), &c, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
+	if (c != orgc)
+	{
+		//g_Config.Set(settings_name_color, c);
+		color = c;
+	}
+	ImGui::SameLine();
+	//bool b = g_Config.GetBool(settings_name_bool);
+	bool b = name;
+	bool org = b;
+	ImGui::Checkbox(text.c_str(), &b);
+	if (b != org)
+	{
+		//g_Config.Set(settings_name_bool, b);
+		name = b;
+	}
+	CurrentItem++;
+}
+
 void MenuHelper::components::ColorCheckbox2(std::string text, std::string settings_name, std::string settings_name_color, std::string settings_name_color2)
 {
     Color c = g_Config.GetColor(settings_name_color);
@@ -422,6 +450,41 @@ void MenuHelper::components::ColorCheckbox2(std::string text, std::string settin
         g_Config.Set(settings_name, b);
     }
     CurrentItem++;
+}
+
+void MenuHelper::components::ColorCheckbox2(std::string text, bool & name, Color & color1, Color & color2)
+{
+	Color c = color1;
+	Color c2 = color2;
+	Color orgc = c;
+	Color orgc2 = c2;
+	std::string color_name = " ";
+	for (int i = 0; i < CurrentItem; i++)
+	{
+		color_name += " ";
+	}
+	std::string color_name2 = color_name + " ";
+	ImGuiEx::ColorEdit4(color_name.c_str(), &c, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
+	if (c != orgc)
+	{
+		color1 = c;
+	}
+	ImGui::SameLine();
+	ImGuiEx::ColorEdit4(color_name2.c_str(), &c2, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel);
+	if (c2 != orgc2)
+	{
+		color2 = c2;
+	}
+	ImGui::SameLine();
+	//bool b = g_Config.GetBool(settings_name);
+	bool b = name;
+	bool org = b;
+	ImGui::Checkbox(text.c_str(), &b);
+	if (b != org)
+	{
+		name = b;
+	}
+	CurrentItem++;
 }
 
 void MenuHelper::components::Label(std::string text)
@@ -457,6 +520,36 @@ void MenuHelper::components::ComboBox(std::string text, const char* items[], int
         g_Config.Set(settings_name, selected);
     }
     CurrentItem++;
+}
+
+void MenuHelper::components::ComboBox(std::string text, const char* items[], int size, int* value)
+{
+	int selected = *value;
+	int orgs = selected;
+	const char* itemSelected = items[selected];
+	if (ImGui::BeginCombo(text.c_str(), itemSelected))
+	{
+		for (int n = 0; n < size; n++)
+		{
+			bool is_selected = (itemSelected == items[n]);
+			if (ImGui::Selectable(items[n], is_selected))
+			{
+				itemSelected = items[n];
+				selected = n;
+			}
+			if (is_selected)
+			{
+				ImGui::SetItemDefaultFocus();
+			}
+		}
+		ImGui::EndCombo();
+	}
+	if (selected != orgs)
+	{
+		//g_Config.Set(settings_name, selected);
+		*value = selected;
+	}
+	CurrentItem++;
 }
 
 void MenuHelper::components::ComboCheckBox(std::string text, std::string items[], std::string setting_names[], int size)

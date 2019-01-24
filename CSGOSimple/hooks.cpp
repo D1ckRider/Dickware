@@ -192,7 +192,8 @@ namespace Hooks
         phys_pushscale_cvar->SetValue ( phys_pushscale_org + ( 250 * g_Config.GetInt ( "vis_misc_addforce" ) ) );
         #endif // _DEBUG
         viewmodel_fov->m_fnChangeCallbacks.m_Size = 0;
-        viewmodel_fov->SetValue ( g_Config.GetInt ( "viewmodel_fov" ) ); //phys_pushscale
+        //viewmodel_fov->SetValue ( g_Config.GetInt ( "viewmodel_fov" ) ); //phys_pushscale
+		viewmodel_fov->SetValue(Settings::Visual::ViewModelFOV); //phys_pushscale
         mat_ambient_light_r->SetValue ( g_Config.GetFloat ( "mat_ambient_light_r" ) );
         mat_ambient_light_g->SetValue ( g_Config.GetFloat ( "mat_ambient_light_g" ) );
         mat_ambient_light_b->SetValue ( g_Config.GetFloat ( "mat_ambient_light_b" ) );
@@ -286,7 +287,8 @@ namespace Hooks
         //Backtrack::Get().OnCreateMove();
         #endif // _DEBUG
 
-        bool rbot = g_Config.GetBool ( "rbot" );
+        //bool rbot = g_Config.GetBool ( "rbot" );
+		bool rbot = Settings::RageBot::Enabled;
 
         Misc::Get().OnCreateMove ( cmd );
 
@@ -298,7 +300,8 @@ namespace Hooks
         if ( rbot )
             Fakelag::Get().OnCreateMove ( cmd, bSendPacket );
 
-        if ( g_Config.GetBool ( "rbot_aa" ) )
+        //if ( g_Config.GetBool ( "rbot_aa" ) )
+		if ( Settings::RageBot::EnabledAA )
             AntiAim::Get().OnCreateMove ( cmd, bSendPacket );
 
         if ( rbot )
@@ -317,7 +320,8 @@ namespace Hooks
                 Backtrack::Get().FinishLegitBacktrack ( cmd );
         }
 
-        if ( rbot && g_Config.GetBool ( "rbot_resolver" ) )
+        //if ( rbot && g_Config.GetBool ( "rbot_resolver" ) )
+		if ( rbot && Settings::RageBot::Resolver )
             Resolver::Get().OnCreateMove ( OldViewangles );
 
         if ( g_Config.GetBool ( "misc_buybot" ) )
@@ -356,7 +360,8 @@ namespace Hooks
                 MovementFix::Get().Correct ( OldViewangles, cmd, OldForwardmove, OldSidemove );
         }
 
-        if ( g_Config.GetBool ( "rbot_slidewalk" ) )
+        //if ( g_Config.GetBool ( "rbot_slidewalk" ) )
+		if ( Settings::RageBot::SlideWalk )
             AntiAim::Get().SlideWalk ( cmd );
 
         Math::ClampAngles ( cmd->viewangles );
@@ -389,7 +394,8 @@ namespace Hooks
         static auto panelId = vgui::VPANEL{ 0 };
         static auto oPaintTraverse = vguipanel_hook.get_original<PaintTraverse> ( index::PaintTraverse );
 
-        if ( g_Config.GetBool ( "vis_misc_noscope" ) && !strcmp ( "HudZoom", g_VGuiPanel->GetName ( panel ) ) )
+		if( Settings::Visual::NoScopeOverlay && !strcmp("HudZoom", g_VGuiPanel->GetName(panel)) )
+        //if ( g_Config.GetBool ( "vis_misc_noscope" ) && !strcmp ( "HudZoom", g_VGuiPanel->GetName ( panel ) ) )
             return;
 
         oPaintTraverse ( g_VGuiPanel, panel, forceRepaint, allowForce );
@@ -495,9 +501,11 @@ namespace Hooks
                 if ( g_Unload )
                     return;
 
-                bool rbot = g_Config.GetBool ( "rbot" );
+                //bool rbot = g_Config.GetBool ( "rbot" );
+				bool rbot = Settings::RageBot::Enabled;
 
-                if ( rbot && g_Config.GetBool ( "rbot_resolver" ) )
+                //if ( rbot && g_Config.GetBool ( "rbot_resolver" ) )
+				if ( rbot && Settings::RageBot::Resolver )
                     Resolver::Get().OnFramestageNotify();
 
                 NoSmoke::Get().OnFrameStageNotify();
@@ -529,9 +537,11 @@ namespace Hooks
             {
                 if ( !g_Unload )
                 {
-                    bool rbot = g_Config.GetBool ( "rbot" );
+                    //bool rbot = g_Config.GetBool ( "rbot" );
+					bool rbot = Settings::RageBot::Enabled;
 
-                    if ( rbot && g_Config.GetBool ( "rbot_aa" ) && g_Config.GetBool ( "vis_misc_thirdperson" ) )
+                    //if ( rbot && g_Config.GetBool ( "rbot_aa" ) && g_Config.GetBool ( "vis_misc_thirdperson" ) )
+					if ( rbot && Settings::RageBot::EnabledAA && Settings::Visual::ThirdPersonEnabled )
                     {
                         ThirdpersonAngleHelper::Get().SetThirdpersonAngle();
                         ThirdpersonAngleHelper::Get().AnimFix();
@@ -600,10 +610,12 @@ namespace Hooks
         if ( g_EngineClient->IsInGame() && vsView )
             Visuals::Get().ThirdPerson();
 
-        if ( g_LocalPlayer && g_LocalPlayer->m_bIsScoped() && !g_Config.GetBool ( "vis_misc_disable_scope_zoom" ) )
+        //if ( g_LocalPlayer && g_LocalPlayer->m_bIsScoped() && !g_Config.GetBool ( "vis_misc_disable_scope_zoom" ) )
+		if ( g_LocalPlayer && g_LocalPlayer->m_bIsScoped() && !Settings::Visual::DisableScopeZoom )
             return ofunc ( g_ClientMode, vsView );
 
-        vsView->fov = g_Config.GetInt ( "fov" );
+        //vsView->fov = g_Config.GetInt ( "fov" );
+		vsView->fov = Settings::Visual::FOV;
 
         ofunc ( g_ClientMode, vsView );
     }

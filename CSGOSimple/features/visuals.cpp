@@ -4,6 +4,7 @@
 #include "visuals.hpp"
 
 //#include "../options.hpp"
+#include "../Settings.h"
 #include "../ConfigSystem.h"
 #include "../helpers/math.hpp"
 #include "../helpers/utils.hpp"
@@ -529,7 +530,7 @@ void Visuals::RenderPlantedC4 ( C_BaseEntity* ent )
     if ( bbox.right == 0 || bbox.bottom == 0 )
         return;
 
-    Color clr = g_Config.GetColor ( "color_esp_c4" );
+	Color clr = Settings::Visual::GlobalESP.BombColor; //g_Config.GetColor ( "color_esp_c4" );
     int bombTimer = std::ceil ( ent->m_flC4Blow() - g_GlobalVars->curtime );
 
     if ( bombTimer < 0.f )
@@ -683,7 +684,8 @@ void Visuals::ThirdPerson()
         return;
 
 
-    if ( g_Config.GetBool ( "vis_misc_thirdperson" ) && g_LocalPlayer->IsAlive() )
+    //if ( g_Config.GetBool ( "vis_misc_thirdperson" ) && g_LocalPlayer->IsAlive() )
+	if (Settings::Visual::ThirdPersonEnabled && g_LocalPlayer->IsAlive())
     {
         if ( !g_Input->m_fCameraInThirdPerson )
             g_Input->m_fCameraInThirdPerson = true;
@@ -894,7 +896,8 @@ void Visuals::SpreadCircle()
     g_EngineClient->GetScreenSize ( x, y );
     float cx = x / 2.f;
     float cy = y / 2.f;
-    VGSHelper::Get().DrawCircle ( cx, cy, spread, 35, g_Config.GetColor ( "vis_misc_draw_circle_clr" ) );
+    //VGSHelper::Get().DrawCircle ( cx, cy, spread, 35, g_Config.GetColor ( "vis_misc_draw_circle_clr" ) );
+	VGSHelper::Get().DrawCircle(cx, cy, spread, 35, Settings::Visual::SpreadCircleColor);
     //Render::Get().RenderCircle(x, y, spread, 200, Color::Green, 1.f);
 }
 
@@ -959,13 +962,13 @@ void Visuals::AddToDrawList()
     if ( !g_EngineClient->IsConnected() || !g_LocalPlayer || !g_EngineClient->IsInGame() )
         return;
 
-    bool GrenadeEsp = g_Config.GetBool ( "esp_misc_grenade" );
+	bool GrenadeEsp = Settings::Visual::GlobalESP.GrenadeEnabled; //g_Config.GetBool ( "esp_misc_grenade" );
     DrawSideModes health_pos = ( DrawSideModes ) g_Config.GetInt ( "esp_health_pos" );
     DrawSideModes armour_pos = ( DrawSideModes ) g_Config.GetInt ( "esp_armour_pos" );
 
-    bool esp_local_enabled = g_Config.GetBool ( "esp_local_enabled" );
-    bool esp_team_enabled = g_Config.GetBool ( "esp_team_enabled" );
-    bool esp_enemy_enabled = g_Config.GetBool ( "esp_enemy_enabled" );
+	bool esp_local_enabled = Settings::Visual::LocalESP.Enabled; //g_Config.GetBool ( "esp_local_enabled" );
+	bool esp_team_enabled = Settings::Visual::TeamESP.Enabled;//g_Config.GetBool ( "esp_team_enabled" );
+	bool esp_enemy_enabled = Settings::Visual::EnemyESP.Enabled;//g_Config.GetBool ( "esp_enemy_enabled" );
 
     bool esp_local_boxes = false;
     bool esp_local_weapons = false;
@@ -978,18 +981,19 @@ void Visuals::AddToDrawList()
     Color color_esp_local_armour = Color ( 0, 0, 0 );
     Color color_esp_local_weapons = Color ( 0, 0, 0 );
 
-    if ( esp_local_enabled && g_Config.GetBool ( "vis_misc_thirdperson" ) )
+    //if ( esp_local_enabled && g_Config.GetBool ( "vis_misc_thirdperson" ) )
+	if (esp_local_enabled && Settings::Visual::ThirdPersonEnabled)
     {
-        esp_local_boxes = g_Config.GetBool ( "esp_local_boxes" );
-        esp_local_weapons = g_Config.GetBool ( "esp_local_weapons" );
-        esp_local_names = g_Config.GetBool ( "esp_local_names" );
-        esp_local_health = g_Config.GetBool ( "esp_local_health" );
-        esp_local_armour = g_Config.GetBool ( "esp_local_armour" );
-        esp_local_boxes_type = g_Config.GetInt ( "esp_local_boxes_type" );
-        color_esp_local_boxes = g_Config.GetColor ( "color_esp_local_boxes" );
-        color_esp_local_names = g_Config.GetColor ( "color_esp_local_names" );
-        color_esp_local_armour = g_Config.GetColor ( "color_esp_local_armour" );
-        color_esp_local_weapons = g_Config.GetColor ( "color_esp_local_weapons" );
+		esp_local_boxes = Settings::Visual::LocalESP.BoxEnabled;//g_Config.GetBool ( "esp_local_boxes" );
+		esp_local_weapons = Settings::Visual::LocalESP.WeaponEnabled;//g_Config.GetBool ( "esp_local_weapons" );
+		esp_local_names = Settings::Visual::LocalESP.NameEnabled;//g_Config.GetBool ( "esp_local_names" );
+		esp_local_health = Settings::Visual::LocalESP.HealthEnabled;//g_Config.GetBool ( "esp_local_health" );
+		esp_local_armour = Settings::Visual::LocalESP.ArmorEnabled;//g_Config.GetBool ( "esp_local_armour" );
+		esp_local_boxes_type = Settings::Visual::LocalESP.BoxType;//g_Config.GetInt ( "esp_local_boxes_type" );
+		color_esp_local_boxes = Settings::Visual::LocalESP.BoxColor;//g_Config.GetColor ( "color_esp_local_boxes" );
+		color_esp_local_names = Settings::Visual::LocalESP.NameColor;//g_Config.GetColor ( "color_esp_local_names" );
+		color_esp_local_armour = Settings::Visual::LocalESP.ArmorColor;//g_Config.GetColor ( "color_esp_local_armour" );
+		color_esp_local_weapons = Settings::Visual::LocalESP.WeaponColor;//g_Config.GetColor ( "color_esp_local_weapons" );
     }
 
     bool esp_team_boxes = false;
@@ -1007,18 +1011,18 @@ void Visuals::AddToDrawList()
 
     if ( esp_team_enabled )
     {
-        esp_team_boxes = g_Config.GetBool ( "esp_team_boxes" );
-        esp_team_snaplines = g_Config.GetBool ( "esp_team_snaplines" );
-        esp_team_weapons = g_Config.GetBool ( "esp_team_weapons" );
-        esp_team_names = g_Config.GetBool ( "esp_team_names" );
-        esp_team_health = g_Config.GetBool ( "esp_team_health" );
-        esp_team_armour = g_Config.GetBool ( "esp_team_armour" );
-        esp_team_boxes_type = g_Config.GetInt ( "esp_team_boxes_type" );
-        color_esp_team_boxes = g_Config.GetColor ( "color_esp_team_boxes" );
-        color_esp_team_names = g_Config.GetColor ( "color_esp_team_names" );
-        color_esp_team_armour = g_Config.GetColor ( "color_esp_team_armour" );
-        color_esp_team_weapons = g_Config.GetColor ( "color_esp_team_weapons" );
-        color_esp_team_snaplines = g_Config.GetColor ( "color_esp_team_snaplines" );
+		esp_team_boxes = Settings::Visual::TeamESP.BoxEnabled;//g_Config.GetBool ( "esp_team_boxes" );
+		esp_team_snaplines = Settings::Visual::TeamESP.SnaplineEnabled;//g_Config.GetBool ( "esp_team_snaplines" );
+		esp_team_weapons = Settings::Visual::TeamESP.WeaponEnabled;//g_Config.GetBool ( "esp_team_weapons" );
+		esp_team_names = Settings::Visual::TeamESP.NameEnabled;//g_Config.GetBool ( "esp_team_names" );
+		esp_team_health = Settings::Visual::TeamESP.HealthEnabled;//g_Config.GetBool ( "esp_team_health" );
+		esp_team_armour = Settings::Visual::TeamESP.ArmorEnabled;//g_Config.GetBool ( "esp_team_armour" );
+		esp_team_boxes_type = Settings::Visual::TeamESP.BoxType;//g_Config.GetInt ( "esp_team_boxes_type" );
+		color_esp_team_boxes = Settings::Visual::TeamESP.BoxColor;//g_Config.GetColor ( "color_esp_team_boxes" );
+		color_esp_team_names = Settings::Visual::TeamESP.NameColor;//g_Config.GetColor ( "color_esp_team_names" );
+		color_esp_team_armour = Settings::Visual::TeamESP.ArmorColor;//g_Config.GetColor ( "color_esp_team_armour" );
+		color_esp_team_weapons = Settings::Visual::TeamESP.WeaponColor;//g_Config.GetColor ( "color_esp_team_weapons" );
+		color_esp_team_snaplines = Settings::Visual::TeamESP.SnaplineColor;//g_Config.GetColor ( "color_esp_team_snaplines" );
     }
 
     bool esp_enemy_boxes = false;
@@ -1040,22 +1044,22 @@ void Visuals::AddToDrawList()
 
     if ( esp_enemy_enabled )
     {
-        esp_enemy_boxes = g_Config.GetBool ( "esp_enemy_boxes" );
-        esp_enemy_snaplines = g_Config.GetBool ( "esp_enemy_snaplines" );
-        esp_enemy_weapons = g_Config.GetBool ( "esp_enemy_weapons" );
-        esp_enemy_names = g_Config.GetBool ( "esp_enemy_names" );
-        esp_enemy_health = g_Config.GetBool ( "esp_enemy_health" );
-        esp_enemy_armour = g_Config.GetBool ( "esp_enemy_armour" );
-        esp_enemy_boxes_type = g_Config.GetInt ( "esp_enemy_boxes_type" );
-        esp_enemy_info = g_Config.GetBool ( "esp_enemy_info" );
-        esp_enemy_lby_timer = g_Config.GetBool ( "esp_enemy_lby_timer" );
-        color_esp_enemy_boxes = g_Config.GetColor ( "color_esp_enemy_boxes" );
-        color_esp_enemy_names = g_Config.GetColor ( "color_esp_enemy_names" );
-        color_esp_enemy_armour = g_Config.GetColor ( "color_esp_enemy_armour" );
-        color_esp_enemy_weapons = g_Config.GetColor ( "color_esp_enemy_weapons" );
-        color_esp_enemy_snaplines = g_Config.GetColor ( "color_esp_enemy_snaplines" );
-        color_esp_enemy_info = g_Config.GetColor ( "color_esp_enemy_info" );
-        color_esp_enemy_lby_timer = g_Config.GetColor ( "color_esp_enemy_lby_timer" );
+		esp_enemy_boxes = Settings::Visual::EnemyESP.BoxEnabled;//g_Config.GetBool ( "esp_enemy_boxes" );
+		esp_enemy_snaplines = Settings::Visual::EnemyESP.SnaplineEnabled;//g_Config.GetBool ( "esp_enemy_snaplines" );
+		esp_enemy_weapons = Settings::Visual::EnemyESP.WeaponEnabled;//g_Config.GetBool ( "esp_enemy_weapons" );
+		esp_enemy_names = Settings::Visual::EnemyESP.NameEnabled;//g_Config.GetBool ( "esp_enemy_names" );
+		esp_enemy_health = Settings::Visual::EnemyESP.HealthEnabled;//g_Config.GetBool ( "esp_enemy_health" );
+		esp_enemy_armour = Settings::Visual::EnemyESP.ArmorEnabled;//g_Config.GetBool ( "esp_enemy_armour" );
+		esp_enemy_boxes_type = Settings::Visual::EnemyESP.BoxType;//g_Config.GetInt ( "esp_enemy_boxes_type" );
+		esp_enemy_info = false;//g_Config.GetBool ( "esp_enemy_info" );
+		esp_enemy_lby_timer = false;//g_Config.GetBool ( "esp_enemy_lby_timer" );
+		color_esp_enemy_boxes = Settings::Visual::EnemyESP.BoxColor;//g_Config.GetColor ( "color_esp_enemy_boxes" );
+		color_esp_enemy_names = Settings::Visual::EnemyESP.NameColor;//g_Config.GetColor ( "color_esp_enemy_names" );
+		color_esp_enemy_armour = Settings::Visual::EnemyESP.ArmorColor;//g_Config.GetColor ( "color_esp_enemy_armour" );
+		color_esp_enemy_weapons = Settings::Visual::EnemyESP.WeaponColor;//g_Config.GetColor ( "color_esp_enemy_weapons" );
+		color_esp_enemy_snaplines = Settings::Visual::EnemyESP.SnaplineColor;//g_Config.GetColor ( "color_esp_enemy_snaplines" );
+		color_esp_enemy_info = Color::White;//g_Config.GetColor ( "color_esp_enemy_info" );
+		color_esp_enemy_lby_timer = Color::White; //g_Config.GetColor ( "color_esp_enemy_lby_timer" );
     }
 
     bool esp_misc_dangerzone_item_esp = false;
@@ -1067,12 +1071,12 @@ void Visuals::AddToDrawList()
 
     if ( IsDangerzone )
     {
-        esp_misc_dangerzone_item_esp = g_Config.GetBool ( "esp_misc_dangerzone_item_esp" );
-        esp_misc_dangerzone_item_esp_dist = g_Config.GetFloat ( "esp_misc_dangerzone_item_esp_dist" );
+		esp_misc_dangerzone_item_esp = Settings::Visual::GlobalESP.DZEnabled;//g_Config.GetBool ( "esp_misc_dangerzone_item_esp" );
+		esp_misc_dangerzone_item_esp_dist = Settings::Visual::GlobalESP.DZRange;//g_Config.GetFloat ( "esp_misc_dangerzone_item_esp_dist" );
     }
 
     //bool esp_outline = g_Config.GetBool("esp_misc_outline");
-    bool rbot_resolver = g_Config.GetBool ( "rbot_resolver" );
+	bool rbot_resolver = Settings::RageBot::Resolver; //g_Config.GetBool ( "rbot_resolver" );
 
     bool esp_dropped_weapons = g_Config.GetBool ( "esp_dropped_weapons" );
     bool esp_planted_c4 = g_Config.GetBool ( "esp_planted_c4" );
@@ -1178,7 +1182,8 @@ void Visuals::AddToDrawList()
             DrawGrenade ( entity );
     }
 
-    if ( g_Config.GetBool ( "rbot" ) )
+    //if ( g_Config.GetBool ( "rbot" ) )
+	if ( Settings::RageBot::Enabled )
     {
         LbyIndicator();
         PingIndicator();
@@ -1195,16 +1200,19 @@ void Visuals::AddToDrawList()
     ManualAAIndicator();
     #endif // _DEBUG
 
-    if ( g_Config.GetBool ( "vis_misc_draw_circle" ) )
+    //if ( g_Config.GetBool ( "vis_misc_draw_circle" ) )
+	if ( Settings::Visual::SpreadCircleEnabled )
         SpreadCircle();
 
     //if (g_Config.GetBool("esp_misc_bullettracer")) RenderBullettracers();
     //if (g_Config.GetBool("vis_misc_noflash")) NoFlash();
 
-    if ( g_Config.GetBool ( "vis_misc_noscope" ) )
+    //if ( g_Config.GetBool ( "vis_misc_noscope" ) )
+	if ( Settings::Visual::NoScopeOverlay )
         RenderNoScoopeOverlay();
 
-    if ( g_Config.GetBool ( "vis_misc_hitmarker" ) )
+    //if ( g_Config.GetBool ( "vis_misc_hitmarker" ) )
+	if ( Settings::Visual::Hitmarker )
         RenderHitmarker();
 
     CurrentIndicatorHeight = 0.f;
