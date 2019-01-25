@@ -14,12 +14,24 @@ using AAState = Settings::RageBot::AntiAimType;
 
 void AntiAim::OnCreateMove ( CUserCmd* cmd, bool& bSendPacket )
 {
-    if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive() || g_LocalPlayer->m_nMoveType() == MOVETYPE_LADDER)
+    if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive())
     {
         return;
     }
 
     int movetype = g_LocalPlayer->m_nMoveType();
+	static int onLadder;
+
+	if (movetype == MOVETYPE_LADDER)
+	{
+		onLadder = 2;
+		return;
+	}
+	if (onLadder > 0)
+	{
+		onLadder--;
+		return;
+	}
 
     if (
         movetype == MOVETYPE_FLY
@@ -1134,21 +1146,21 @@ void AntiAim::YawAdd ( CUserCmd* cmd, bool fake )
         {
             //mode = ( YawAddAntiAims ) g_Config.GetInt ( "rbot_aa_stand_real_add_yaw_add" );
 			mode = (YawAddAntiAims)Settings::RageBot::AntiAimSettings[AAState::STANDING].YawAdd;
-			YawAddRange = Settings::RageBot::AntiAimSettings[AAState::STANDING].YawAddCustom;
+			YawAddRange = Settings::RageBot::AntiAimSettings[AAState::STANDING].Range;
             //YawAddRange = g_Config.GetFloat ( "rbot_aa_stand_real_add_yaw_add_range" );
         }
         else if ( Moving && !InAir )
         {
             //mode = ( YawAddAntiAims ) g_Config.GetInt ( "rbot_aa_move_real_add_yaw_add" );
 			mode = (YawAddAntiAims)Settings::RageBot::AntiAimSettings[AAState::STANDING].YawAdd;
-			YawAddRange = Settings::RageBot::AntiAimSettings[AAState::STANDING].YawAddCustom;
+			YawAddRange = Settings::RageBot::AntiAimSettings[AAState::STANDING].Range;
             //YawAddRange = g_Config.GetFloat ( "rbot_aa_move_real_add_yaw_add_range" );
         }
         else
         {
             //mode = ( YawAddAntiAims ) g_Config.GetInt ( "rbot_aa_air_real_add_yaw_add" );
 			mode = (YawAddAntiAims)Settings::RageBot::AntiAimSettings[AAState::STANDING].YawAdd;
-			YawAddRange = Settings::RageBot::AntiAimSettings[AAState::STANDING].YawAddCustom;
+			YawAddRange = Settings::RageBot::AntiAimSettings[AAState::STANDING].Range;
             //YawAddRange = g_Config.GetFloat ( "rbot_aa_air_real_add_yaw_add_range" );
         }
     }

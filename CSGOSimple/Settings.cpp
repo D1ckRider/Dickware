@@ -509,10 +509,6 @@ void Settings::LoadColorValue(json & j, std::string name, Color & value)
 		(int)j[name]["B"],
 		(int)j[name]["A"]
 	);
-	/*value.r() = j[name]["R"];
-	value.g() = j[name]["G"];
-	value.b() = j[name]["B"];
-	value.a() = j[name]["A"];*/
 }
 
 std::string Settings::LoadGameCfg()
@@ -570,6 +566,8 @@ namespace Settings::RageBot
 			return WeaponType::WEAPON_DEAGLE;
 		else if (weapon->GetItemDefinitionIndex() == WEAPON_REVOLVER)
 			return WeaponType::WEAPON_REVOLVER;
+		else if (weapon->IsRifle())
+			return WeaponType::WEAPON_RIFLE;
 		else if (weapon->GetItemDefinitionIndex() == WEAPON_SSG08)
 			return WeaponType::WEAPON_SSG08;
 		else if (weapon->GetItemDefinitionIndex() == WEAPON_AWP)
@@ -578,8 +576,6 @@ namespace Settings::RageBot
 			return WeaponType::WEAPON_AUTO;
 		else if (weapon->IsPistol())
 			return WeaponType::WEAPON_PISTOL;
-		else if (weapon->IsRifle())
-			return WeaponType::WEAPON_RIFLE;
 		else
 			return WeaponType::WEAPON_SHOTGUN;
 	}
@@ -600,18 +596,20 @@ namespace Settings::Aimbot
 			return WeaponType::WEAPON_DEAGLE;
 		else if ( weapon->GetItemDefinitionIndex() == WEAPON_SSG08 )
 			return WeaponType::WEAPON_SSG08;
+		else if (weapon->IsSubmachinegun())
+			return WeaponType::WEAPON_SMG;
+		else if (weapon->IsMachinegun())
+			return WeaponType::WEAPON_MACHINEGUN;
+		else if ( weapon->IsRifle() )
+			return WeaponType::WEAPON_RIFLE;
 		else if ( weapon->IsPistol() )
 			return WeaponType::WEAPON_PISTOL;
-		else if ( weapon->IsSubmachinegun() )
-			return WeaponType::WEAPON_SMG;
-		else if ( weapon->IsMachinegun() )
-			return WeaponType::WEAPON_MACHINEGUN;
 		else if ( weapon->IsShotgun() )
 			return WeaponType::WEAPON_SHOTGUN;
 		else if ( weapon->IsSniper() )
 			return WeaponType::WEAPON_SNIPER;
 		else
-			return WeaponType::WEAPON_RIFLE;
+			return WeaponType::WEAPON_SHOTGUN;
 	}
 }
 

@@ -647,7 +647,6 @@ void MenuHelper::components::SliderFloat(std::string text, std::string settings_
     {
         g_Config.Set(settings_name, v);
     }
-    //ImGui::Hotkey()
 }
 
 void MenuHelper::components::Hotkey(std::string text, std::string settings_name)

@@ -287,12 +287,10 @@ namespace Hooks
         //Backtrack::Get().OnCreateMove();
         #endif // _DEBUG
 
-        //bool rbot = g_Config.GetBool ( "rbot" );
 		bool rbot = Settings::RageBot::Enabled;
 
         Misc::Get().OnCreateMove ( cmd );
 
-        //if ( g_Config.GetBool ( "misc_bhop" ) )
 		if(Settings::Misc::BHop)
             BunnyHop::Get().OnCreateMove ( cmd );
 
@@ -300,7 +298,6 @@ namespace Hooks
         if ( rbot )
             Fakelag::Get().OnCreateMove ( cmd, bSendPacket );
 
-        //if ( g_Config.GetBool ( "rbot_aa" ) )
 		if ( Settings::RageBot::EnabledAA )
             AntiAim::Get().OnCreateMove ( cmd, bSendPacket );
 
@@ -310,24 +307,20 @@ namespace Hooks
             Rbot::Get().CreateMove ( cmd, bSendPacket );
         }
 
-        //if ( !rbot && g_Config.GetBool ( "lbot" ) )
 		if(!rbot && Settings::Aimbot::Enabled)
         {
             Lbot::Get().OnCreateMove ( cmd );
 
-            //if ( g_Config.GetBool ( "lbot_backtrack" ) )
 			if(Settings::Aimbot::Backtrack)
                 Backtrack::Get().FinishLegitBacktrack ( cmd );
         }
 
-        //if ( rbot && g_Config.GetBool ( "rbot_resolver" ) )
 		if ( rbot && Settings::RageBot::Resolver )
             Resolver::Get().OnCreateMove ( OldViewangles );
 
         if ( g_Config.GetBool ( "misc_buybot" ) )
             BuyBot::Get().OnCreateMove();
 
-        //if ( g_Config.GetBool ( "misc_clantagchanger" ) )
 		if ( Settings::Misc::Clantag )
             ClantagChanger::Get().OnCreateMove();
 
@@ -353,7 +346,6 @@ namespace Hooks
 
         if ( g_LocalPlayer && g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER && g_LocalPlayer->m_nMoveType() != MOVETYPE_NOCLIP )
         {
-            //if ( g_Config.GetBool ( "misc_autostrafe" ) )
 			if ( Settings::Misc::AutoStrafe )
                 BunnyHop::Get().AutoStrafe ( cmd, OldViewangles );
             else
@@ -395,7 +387,6 @@ namespace Hooks
         static auto oPaintTraverse = vguipanel_hook.get_original<PaintTraverse> ( index::PaintTraverse );
 
 		if( Settings::Visual::NoScopeOverlay && !strcmp("HudZoom", g_VGuiPanel->GetName(panel)) )
-        //if ( g_Config.GetBool ( "vis_misc_noscope" ) && !strcmp ( "HudZoom", g_VGuiPanel->GetName ( panel ) ) )
             return;
 
         oPaintTraverse ( g_VGuiPanel, panel, forceRepaint, allowForce );
@@ -501,7 +492,6 @@ namespace Hooks
                 if ( g_Unload )
                     return;
 
-                //bool rbot = g_Config.GetBool ( "rbot" );
 				bool rbot = Settings::RageBot::Enabled;
 
                 //if ( rbot && g_Config.GetBool ( "rbot_resolver" ) )
@@ -537,10 +527,8 @@ namespace Hooks
             {
                 if ( !g_Unload )
                 {
-                    //bool rbot = g_Config.GetBool ( "rbot" );
 					bool rbot = Settings::RageBot::Enabled;
 
-                    //if ( rbot && g_Config.GetBool ( "rbot_aa" ) && g_Config.GetBool ( "vis_misc_thirdperson" ) )
 					if ( rbot && Settings::RageBot::EnabledAA && Settings::Visual::ThirdPersonEnabled )
                     {
                         ThirdpersonAngleHelper::Get().SetThirdpersonAngle();
@@ -610,7 +598,6 @@ namespace Hooks
         if ( g_EngineClient->IsInGame() && vsView )
             Visuals::Get().ThirdPerson();
 
-        //if ( g_LocalPlayer && g_LocalPlayer->m_bIsScoped() && !g_Config.GetBool ( "vis_misc_disable_scope_zoom" ) )
 		if ( g_LocalPlayer && g_LocalPlayer->m_bIsScoped() && !Settings::Visual::DisableScopeZoom )
             return ofunc ( g_ClientMode, vsView );
 

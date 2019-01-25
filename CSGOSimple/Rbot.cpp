@@ -34,8 +34,7 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
 	// Get debug config info
 	if (GetAsyncKeyState(VK_DELETE))
 	{
-		std::string name = weapon->GetCSWeaponData()->szWeaponName;
-		g_Logger.Info("WEAPON", "Weapon name is " + name);
+		g_Logger.Info("INFO", "WeaponID is " + std::to_string(Settings::RageBot::GetWeaponType(weapon)));
 		g_Logger.Info("INFO", "Min Damage is " + std::to_string(MinDmg));
 	}
 
@@ -48,7 +47,7 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
         return;
     }
 
-	// SlowWalk usage
+	/* Calling SlowWalk */
 	if ( weapon->GetItemDefinitionIndex() == WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == WEAPON_G3SG1 )
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 40);

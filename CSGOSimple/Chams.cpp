@@ -111,12 +111,12 @@ void Chams::OnSceneEnd()
         }
 
         MaterialManager::Get().OverrideMaterial(xqz || metallic_xqz || flat_xqz, flat, wireframe, glass, metallic);
-        g_RenderView->SetColorModulation(clr.r() / 255.f, clr.g() / 255.f, clr.b() / 255.f);
+        g_RenderView->SetColorModulation(clr2.r() / 255.f, clr2.g() / 255.f, clr2.b() / 255.f);
         entity->GetClientRenderable()->DrawModel(0x1, 255);
         if (xqz || metallic_xqz || flat_xqz)
         {
             MaterialManager::Get().OverrideMaterial(false, flat, wireframe, glass, metallic);
-            g_RenderView->SetColorModulation(clr2.r() / 255.f, clr2.g() / 255.f, clr2.b() / 255.f);
+            g_RenderView->SetColorModulation(clr.r() / 255.f, clr.g() / 255.f, clr.b() / 255.f);
             entity->GetClientRenderable()->DrawModel(0x1, 255);
         }
         g_MdlRender->ForcedMaterialOverride(nullptr);

@@ -26,6 +26,7 @@ void Lbot::OnCreateMove(CUserCmd* cmd)
 	if (GetAsyncKeyState(VK_DELETE))
 	{
 		g_Logger.Info("WEAPON", "FOV is " + std::to_string(WeaponFov));
+		g_Logger.Info("WEAPON", "WeaponID is " + std::to_string(Settings::Aimbot::GetWeaponType(weapon)));
 	}
 
     std::deque<int> hb_enabled;

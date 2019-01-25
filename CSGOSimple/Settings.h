@@ -25,17 +25,17 @@ namespace Settings
 
 	enum WeaponType
 	{
-		WEAPON_PISTOL,
-		WEAPON_DEAGLE,
-		WEAPON_REVOLVER,
-		WEAPON_SMG,
-		WEAPON_SHOTGUN,
-		WEAPON_MACHINEGUN,
-		WEAPON_RIFLE,
-		WEAPON_SSG08,
-		WEAPON_AWP,
-		WEAPON_AUTO,
-		WEAPON_SNIPER
+		WEAPON_PISTOL = 0,
+		WEAPON_DEAGLE = 1,
+		WEAPON_REVOLVER = 2,
+		WEAPON_SMG = 3,
+		WEAPON_SHOTGUN = 4,
+		WEAPON_MACHINEGUN = 5,
+		WEAPON_RIFLE = 6,
+		WEAPON_SSG08 = 7,
+		WEAPON_AWP = 8,
+		WEAPON_AUTO = 9,
+		WEAPON_SNIPER = 10
 	};
 
 	enum HitboxType
@@ -54,9 +54,9 @@ namespace Settings
 	{
 		enum AntiAimType
 		{
-			STANDING,
-			MOVING,
-			AIR
+			STANDING = 0,
+			MOVING = 1,
+			AIR = 3
 		};
 
 		struct RBotWeaponSetting
