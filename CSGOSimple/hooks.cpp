@@ -494,7 +494,6 @@ namespace Hooks
 
 				bool rbot = Settings::RageBot::Enabled;
 
-                //if ( rbot && g_Config.GetBool ( "rbot_resolver" ) )
 				if ( rbot && Settings::RageBot::Resolver )
                     Resolver::Get().OnFramestageNotify();
 
@@ -601,7 +600,6 @@ namespace Hooks
 		if ( g_LocalPlayer && g_LocalPlayer->m_bIsScoped() && !Settings::Visual::DisableScopeZoom )
             return ofunc ( g_ClientMode, vsView );
 
-        //vsView->fov = g_Config.GetInt ( "fov" );
 		vsView->fov = Settings::Visual::FOV;
 
         ofunc ( g_ClientMode, vsView );

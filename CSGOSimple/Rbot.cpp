@@ -1112,45 +1112,45 @@ std::vector<PointScanStruct> Rbot::GetPointsForScan ( C_BasePlayer* entity, int 
 
 void Rbot::UpdateConfigData()
 {
-	HitboxHead = Settings::RageBot::Hitboxes[Settings::HitboxType::HEAD].Enabled; //g_Config.GetBool ( "rbot_hitbox_head" );
+	HitboxHead = Settings::RageBot::Hitboxes[Settings::HitboxType::HEAD].Enabled;
 
 	if (HitboxHead)
-		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::HEAD].Scale; //g_Config.GetFloat ( "rbot_hitbox_head_scale" );
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::HEAD].Scale;
 
-	HitboxNeck = Settings::RageBot::Hitboxes[Settings::HitboxType::NECK].Enabled; //g_Config.GetBool ( "rbot_hitbox_neck" );
+	HitboxNeck = Settings::RageBot::Hitboxes[Settings::HitboxType::NECK].Enabled;
 
 	if (HitboxNeck)
-		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::NECK].Scale;//g_Config.GetFloat ( "rbot_hitbox_neck_scale" );
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::NECK].Scale;
 
-	HitboxChest = Settings::RageBot::Hitboxes[Settings::HitboxType::CHEST].Enabled; //g_Config.GetBool ( "rbot_hitbox_chest" );
+	HitboxChest = Settings::RageBot::Hitboxes[Settings::HitboxType::CHEST].Enabled;
 
 	if (HitboxChest)
-		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::CHEST].Scale; //g_Config.GetFloat ( "rbot_hitbox_chest_scale" );
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::CHEST].Scale;
 
-	HitboxPelvis = Settings::RageBot::Hitboxes[Settings::HitboxType::PELVIS].Enabled;//g_Config.GetBool ( "rbot_hitbox_pelvis" );
+	HitboxPelvis = Settings::RageBot::Hitboxes[Settings::HitboxType::PELVIS].Enabled;
 
 	if (HitboxPelvis)
-		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::PELVIS].Scale;//g_Config.GetFloat ( "rbot_hitbox_pelvis_scale" );
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::PELVIS].Scale;
 
-	HitboxStomach = Settings::RageBot::Hitboxes[Settings::HitboxType::STOMACH].Enabled; //g_Config.GetBool ( "rbot_hitbox_stomach" );
+	HitboxStomach = Settings::RageBot::Hitboxes[Settings::HitboxType::STOMACH].Enabled;
 
 	if (HitboxStomach)
-		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::STOMACH].Scale; //g_Config.GetFloat ( "rbot_hitbox_stomach_scale" );
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::STOMACH].Scale;
 
-	HitboxArm = Settings::RageBot::Hitboxes[Settings::HitboxType::ARM].Enabled; //g_Config.GetBool ( "rbot_hitbox_arm" );
+	HitboxArm = Settings::RageBot::Hitboxes[Settings::HitboxType::ARM].Enabled;
 
 	if (HitboxArm)
-		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::ARM].Scale; //g_Config.GetFloat ( "rbot_hitbox_arm_scale" );
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::ARM].Scale; 
 
-	HitboxLeg = Settings::RageBot::Hitboxes[Settings::HitboxType::LEG].Enabled; //g_Config.GetBool ( "rbot_hitbox_leg" );
+	HitboxLeg = Settings::RageBot::Hitboxes[Settings::HitboxType::LEG].Enabled; 
 
 	if (HitboxLeg)
-		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::LEG].Scale; //g_Config.GetFloat ( "rbot_hitbox_leg_scale" );
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::LEG].Scale;
 
-	HitboxFoot = Settings::RageBot::Hitboxes[Settings::HitboxType::FOOT].Enabled;//g_Config.GetBool ( "rbot_hitbox_foot" );
+	HitboxFoot = Settings::RageBot::Hitboxes[Settings::HitboxType::FOOT].Enabled;
 
 	if (HitboxFoot)
-		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::FOOT].Scale;//g_Config.GetFloat ( "rbot_hitbox_foot_scale" );
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::FOOT].Scale;
 
     //MinDmg = g_Config.GetFloat ( "rbot_mindamage" );
 }

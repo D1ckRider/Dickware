@@ -562,17 +562,18 @@ namespace Settings::RageBot
 
 	int GetWeaponType(C_BaseCombatWeapon * weapon)
 	{
-		if (weapon->GetItemDefinitionIndex() == WEAPON_DEAGLE)
+		if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_DEAGLE)//WEAPON_DEAGLE)
 			return WeaponType::WEAPON_DEAGLE;
-		else if (weapon->GetItemDefinitionIndex() == WEAPON_REVOLVER)
+		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_REVOLVER)//WEAPON_REVOLVER)
 			return WeaponType::WEAPON_REVOLVER;
 		else if (weapon->IsRifle())
 			return WeaponType::WEAPON_RIFLE;
-		else if (weapon->GetItemDefinitionIndex() == WEAPON_SSG08)
+		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_SSG08) //WEAPON_SSG08)
 			return WeaponType::WEAPON_SSG08;
-		else if (weapon->GetItemDefinitionIndex() == WEAPON_AWP)
+		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_AWP)//WEAPON_AWP)
 			return WeaponType::WEAPON_AWP;
-		else if (weapon->GetItemDefinitionIndex() == WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == WEAPON_G3SG1)
+		//else if (weapon->GetItemDefinitionIndex() == WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == WEAPON_G3SG1)
+		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_G3SG1)//WEAPON_G3SG1)
 			return WeaponType::WEAPON_AUTO;
 		else if (weapon->IsPistol())
 			return WeaponType::WEAPON_PISTOL;
@@ -590,15 +591,15 @@ namespace Settings::Aimbot
 	bool BacktrackAtAim = false;
 	float BacktrackTick = false;
 
-	int GetWeaponType(C_BaseCombatWeapon * weapon)
+	int GetWeaponType(C_BaseCombatWeapon* weapon)
 	{
-		if ( weapon->GetItemDefinitionIndex() == WEAPON_DEAGLE )
+		if ( weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_DEAGLE )
 			return WeaponType::WEAPON_DEAGLE;
-		else if ( weapon->GetItemDefinitionIndex() == WEAPON_SSG08 )
+		else if ( weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_SSG08 )
 			return WeaponType::WEAPON_SSG08;
-		else if (weapon->IsSubmachinegun())
+		else if ( weapon->IsSubmachinegun() )
 			return WeaponType::WEAPON_SMG;
-		else if (weapon->IsMachinegun())
+		else if ( weapon->IsMachinegun() )
 			return WeaponType::WEAPON_MACHINEGUN;
 		else if ( weapon->IsRifle() )
 			return WeaponType::WEAPON_RIFLE;
