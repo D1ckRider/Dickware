@@ -175,167 +175,167 @@ void Settings::SaveSettings(std::string fileName)
 	json j;
 
 	/* Write ragebot settings */
-	j["rbot_enabled"] = RageBot::Enabled;
+	SaveValue(j, "rbot_enabled", RageBot::Enabled);
 	for (size_t i = 0; i < 11; i++)
 	{
-		j["rbot_weapon" + std::to_string(i)]["Hitchance"] = RageBot::WeaponSettings[i].Hitchance;
-		j["rbot_weapon" + std::to_string(i)]["MinDamage"] = RageBot::WeaponSettings[i].MinDamage;
-		j["rbot_weapon" + std::to_string(i)]["BAimAfterShots"] = RageBot::WeaponSettings[i].BAimAfterShots;
-		j["rbot_weapon" + std::to_string(i)]["ForceBAimAfterShots"] = RageBot::WeaponSettings[i].ForceBAimAfterShots;
-		j["rbot_weapon" + std::to_string(i)]["MovingBAim"] = RageBot::WeaponSettings[i].BAimWhileMoving;
+		SaveNestedValue(j, "rbot_weapon" + std::to_string(i), "Hitchance", RageBot::WeaponSettings[i].Hitchance);
+		SaveNestedValue(j, "rbot_weapon" + std::to_string(i), "MinDamage", RageBot::WeaponSettings[i].MinDamage);
+		SaveNestedValue(j, "rbot_weapon" + std::to_string(i), "BAimAfterShots", RageBot::WeaponSettings[i].BAimAfterShots);
+		SaveNestedValue(j, "rbot_weapon" + std::to_string(i), "ForceBAimAfterShots", RageBot::WeaponSettings[i].ForceBAimAfterShots);
+		SaveNestedValue(j, "rbot_weapon" + std::to_string(i), "MovingBAim", RageBot::WeaponSettings[i].BAimWhileMoving);
 	}
-	j["rbot_baim_mode"] = RageBot::BAimMode;
-	j["rbot_air_baim"] = RageBot::AirBAim;
-	j["rbot_baim_hotkey"] = RageBot::BAimHotkey;
+	SaveValue(j, "rbot_baim_mode", RageBot::BAimMode);
+	SaveValue(j, "rbot_air_baim", RageBot::AirBAim);
+	SaveValue(j, "rbot_baim_hotkey", RageBot::BAimHotkey);
 
 	for (size_t i = 0; i < 7; i++)
 	{
-		j["rbot_hitbox" + std::to_string(i)]["Enabled"] = RageBot::Hitboxes[i].Enabled;
-		j["rbot_hitbox" + std::to_string(i)]["Scale"] = RageBot::Hitboxes[i].Scale;
+		SaveNestedValue(j, "rbot_hitbox" + std::to_string(i), "Enabled", RageBot::Hitboxes[i].Enabled);
+		SaveNestedValue(j, "rbot_hitbox" + std::to_string(i), "Scale", RageBot::Hitboxes[i].Scale);
 	}
 
-	j["rbot_aa_enabled"] = RageBot::EnabledAA;
+	SaveValue(j, "rbot_aa_enabled", RageBot::EnabledAA);
 	for (size_t i = 0; i < 3; i++)
 	{
-		j["rbot_aa" + std::to_string(i)]["Pitch"] = RageBot::AntiAimSettings[i].Pitch;
-		j["rbot_aa" + std::to_string(i)]["Yaw"] = RageBot::AntiAimSettings[i].Yaw;
-		j["rbot_aa" + std::to_string(i)]["YawAdd"] = RageBot::AntiAimSettings[i].YawAdd;
-		j["rbot_aa" + std::to_string(i)]["Range"] = RageBot::AntiAimSettings[i].Range;
-		j["rbot_aa" + std::to_string(i)]["FakelagMode"] = RageBot::AntiAimSettings[i].FakelagMode;
-		j["rbot_aa" + std::to_string(i)]["FakelagTicks"] = RageBot::AntiAimSettings[i].FakelagTicks;
+		SaveNestedValue(j, "rbot_aa" + std::to_string(i), "Pitch", RageBot::AntiAimSettings[i].Pitch);
+		SaveNestedValue(j, "rbot_aa" + std::to_string(i), "Yaw", RageBot::AntiAimSettings[i].Yaw);
+		SaveNestedValue(j, "rbot_aa" + std::to_string(i), "YawAdd", RageBot::AntiAimSettings[i].YawAdd);
+		SaveNestedValue(j, "rbot_aa" + std::to_string(i), "Range", RageBot::AntiAimSettings[i].Range);
+		SaveNestedValue(j, "rbot_aa" + std::to_string(i), "FakelagMode", RageBot::AntiAimSettings[i].FakelagMode);
+		SaveNestedValue(j, "rbot_aa" + std::to_string(i), "FakelagTicks", RageBot::AntiAimSettings[i].FakelagTicks);
 	}
-	j["rbot_spinbot_speed"] = RageBot::SpinBotSpeed;
-	j["rbot_slidewalk"] = RageBot::SlideWalk;
-	j["rbot_desync"] = RageBot::Desync;
-	j["rbot_manual_leftkey"] = RageBot::ManualAALeftKey;
-	j["rbot_manual_rightkey"] = RageBot::ManualAARightKey;
-	j["rbot_manual_backkey"] = RageBot::ManualAABackKey;
+	SaveValue(j, "rbot_spinbot_speed", RageBot::SpinBotSpeed);
+	SaveValue(j, "rbot_slidewalk", RageBot::SlideWalk);
+	SaveValue(j, "rbot_desync", RageBot::Desync);
+	SaveValue(j, "rbot_manual_leftkey", RageBot::ManualAALeftKey);
+	SaveValue(j, "rbot_manual_rightkey", RageBot::ManualAARightKey);
+	SaveValue(j, "rbot_manual_backkey", RageBot::ManualAABackKey);
 
-	j["rbot_autostop"] = RageBot::AutoStop;
-	j["rbot_autoscope"] = RageBot::AutoScope;
-	j["rbot_autocrouch"] = RageBot::AutoCrouch;
-	j["rbot_slowwalk"] = RageBot::SlowWalk;
-	j["rbot_slowwalk_hotkey"] = RageBot::SlowWalkHotkey;
+	SaveValue(j, "rbot_autostop", RageBot::AutoStop);
+	SaveValue(j, "rbot_autoscope", RageBot::AutoScope);
+	SaveValue(j, "rbot_autocrouch", RageBot::AutoCrouch);
+	SaveValue(j, "rbot_slowwalk", RageBot::SlowWalk);
+	SaveValue(j, "rbot_slowwalk_hotkey", RageBot::SlowWalkHotkey);
 
-	j["rbot_fakelag_prediction"] = RageBot::FakelagPrediction;
-	j["rbot_shooting_mode"] = RageBot::ShootingMode;
-	j["rbot_force_unlag"] = RageBot::ForceUnlag;
-	j["rbot_resolver"] = RageBot::Resolver;
+	SaveValue(j, "rbot_fakelag_prediction", RageBot::FakelagPrediction);
+	SaveValue(j, "rbot_shooting_mode", RageBot::ShootingMode);
+	SaveValue(j, "rbot_force_unlag", RageBot::ForceUnlag);
+	SaveValue(j, "rbot_resolver", RageBot::Resolver);
 
 	/* Write legitbot settings */
-	j["lbot_enabled"] = Aimbot::Enabled;
-	j["lbot_key"] = Aimbot::Hotkey;
+	SaveValue(j, "lbot_enabled", Aimbot::Enabled);
+	SaveValue(j, "lbot_key", Aimbot::Hotkey);
 	for ( int i = 0; i < 11; i++ )
 	{
 		/* Base Settings */
-		j["lbot_weapon" + std::to_string(i)]["FOV"] = Aimbot::WeaponAimSetting[i].FOV;
-		j["lbot_weapon" + std::to_string(i)]["Smooth"] = Aimbot::WeaponAimSetting[i].Smooth;
-		j["lbot_weapon" + std::to_string(i)]["Randomize"] = Aimbot::WeaponAimSetting[i].Randomize;
-		j["lbot_weapon" + std::to_string(i)]["Delay"] = Aimbot::WeaponAimSetting[i].Delay;
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "FOV", Aimbot::WeaponAimSetting[i].FOV);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Smooth", Aimbot::WeaponAimSetting[i].Smooth);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Randomize", Aimbot::WeaponAimSetting[i].Randomize);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Delay", Aimbot::WeaponAimSetting[i].Delay);
 		/* RCS */
-		j["lbot_weapon" + std::to_string(i)]["RCS"] = Aimbot::WeaponAimSetting[i].RCS;
-		j["lbot_weapon" + std::to_string(i)]["RCS_X"] = Aimbot::WeaponAimSetting[i].RCS_X;
-		j["lbot_weapon" + std::to_string(i)]["RCS_Y"] = Aimbot::WeaponAimSetting[i].RCS_Y;
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS", Aimbot::WeaponAimSetting[i].RCS);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_X", Aimbot::WeaponAimSetting[i].RCS_X);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_Y", Aimbot::WeaponAimSetting[i].RCS_Y);
 		/* Hitboxes */
-		j["lbot_weapon" + std::to_string(i)]["Head"] = Aimbot::WeaponAimSetting[i].HitboxHead;
-		j["lbot_weapon" + std::to_string(i)]["Neck"] = Aimbot::WeaponAimSetting[i].HitboxNeck;
-		j["lbot_weapon" + std::to_string(i)]["Chest"] = Aimbot::WeaponAimSetting[i].HitboxChest;
-		j["lbot_weapon" + std::to_string(i)]["Pelvis"] = Aimbot::WeaponAimSetting[i].HitboxPelvis;
-		j["lbot_weapon" + std::to_string(i)]["Stomach"] = Aimbot::WeaponAimSetting[i].HitboxStomach;
-		j["lbot_weapon" + std::to_string(i)]["Arm"] = Aimbot::WeaponAimSetting[i].HitboxArm;
-		j["lbot_weapon" + std::to_string(i)]["Leg"] = Aimbot::WeaponAimSetting[i].HitboxLeg;
-		j["lbot_weapon" + std::to_string(i)]["Foot"] = Aimbot::WeaponAimSetting[i].HitboxFoot;
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Head", Aimbot::WeaponAimSetting[i].HitboxHead);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Neck", Aimbot::WeaponAimSetting[i].HitboxNeck);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Chest", Aimbot::WeaponAimSetting[i].HitboxChest);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Pelvis", Aimbot::WeaponAimSetting[i].HitboxPelvis);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Stomach", Aimbot::WeaponAimSetting[i].HitboxStomach);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Arm", Aimbot::WeaponAimSetting[i].HitboxArm);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Leg", Aimbot::WeaponAimSetting[i].HitboxLeg);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Foot", Aimbot::WeaponAimSetting[i].HitboxFoot);
 	}
-	j["lbot_backtrack"] = Aimbot::Backtrack;
-	j["lbot_backtrack_aim"] = Aimbot::BacktrackAtAim;
-	j["lbot_backtrack_tick"] = Aimbot::BacktrackTick;
+	SaveValue(j, "lbot_backtrack", Aimbot::Backtrack);
+	SaveValue(j, "lbot_backtrack_aim", Aimbot::BacktrackAtAim);
+	SaveValue(j, "lbot_backtrack_tick", Aimbot::BacktrackTick);
 	/* Visuals */
 	// Chams
-	j["vis_chams_local_enabled"] = Visual::LocalChams.Enabled;
-	j["vis_chams_local_mode"] = Visual::LocalChams.Mode;
+	SaveValue(j, "vis_chams_local_enabled", Visual::LocalChams.Enabled);
+	SaveValue(j, "vis_chams_local_mode", Visual::LocalChams.Mode);
 	SaveColorValue(j, "vis_chams_local_invisible", Visual::LocalChams.Invisible);
 	SaveColorValue(j, "vis_chams_local_visible", Visual::LocalChams.Visible);
-	j["vis_chams_enemy_enabled"] = Visual::EnemyChams.Enabled;
-	j["vis_chams_enemy_mode"] = Visual::EnemyChams.Mode;
+	SaveValue(j, "vis_chams_enemy_enabled", Visual::EnemyChams.Enabled);
+	SaveValue(j, "vis_chams_enemy_mode", Visual::EnemyChams.Mode);
 	SaveColorValue(j, "vis_chams_enemy_invisible", Visual::EnemyChams.Invisible);
 	SaveColorValue(j, "vis_chams_enemy_visible", Visual::EnemyChams.Visible);
-	j["vis_chams_team_enabled"] = Visual::TeamChams.Enabled;
-	j["vis_chams_team_mode"] = Visual::TeamChams.Mode;
+	SaveValue(j, "vis_chams_team_enabled", Visual::TeamChams.Enabled);
+	SaveValue(j, "vis_chams_team_mode", Visual::TeamChams.Mode);
 	SaveColorValue(j, "vis_chams_team_invisible", Visual::TeamChams.Invisible);
 	SaveColorValue(j, "vis_chams_team_visible", Visual::TeamChams.Visible);
 	// Player ESP
-	j["vis_esp_local_enabled"] = Visual::LocalESP.Enabled;
-	j["vis_esp_local_box_enabled"] = Visual::LocalESP.BoxEnabled;
-	j["vis_esp_local_box_type"] = Visual::LocalESP.BoxType;
+	SaveValue(j, "vis_esp_local_enabled", Visual::LocalESP.Enabled);
+	SaveValue(j, "vis_esp_local_box_enabled", Visual::LocalESP.BoxEnabled);
+	SaveValue(j, "vis_esp_local_box_type", Visual::LocalESP.BoxType);
 	SaveColorValue(j, "vis_esp_local_box_color", Visual::LocalESP.BoxColor);
-	j["vis_esp_local_name_enabled"] = Visual::LocalESP.NameEnabled;
+	SaveValue(j, "vis_esp_local_name_enabled", Visual::LocalESP.NameEnabled);
 	SaveColorValue(j, "vis_esp_local_name_color", Visual::LocalESP.NameColor);
-	j["vis_esp_local_health_enabled"] = Visual::LocalESP.HealthEnabled;
-	j["vis_esp_local_armor_enabled"] = Visual::LocalESP.ArmorEnabled;
+	SaveValue(j, "vis_esp_local_health_enabled", Visual::LocalESP.HealthEnabled);
+	SaveValue(j, "vis_esp_local_armor_enabled", Visual::LocalESP.ArmorEnabled);
 	SaveColorValue(j, "vis_esp_local_armor_color", Visual::LocalESP.ArmorColor);
-	j["vis_esp_local_weapon_enabled"] = Visual::LocalESP.WeaponEnabled;
+	SaveValue(j, "vis_esp_local_weapon_enabled", Visual::LocalESP.WeaponEnabled);
 	SaveColorValue(j, "vis_esp_local_weapon_color", Visual::LocalESP.WeaponColor);
 	// Enemy ESP
-	j["vis_esp_enemy_enabled"] = Visual::EnemyESP.Enabled;
-	j["vis_esp_enemy_box_enabled"] = Visual::EnemyESP.BoxEnabled;
-	j["vis_esp_enemy_box_type"] = Visual::EnemyESP.BoxType;
+	SaveValue(j, "vis_esp_enemy_enabled", Visual::EnemyESP.Enabled);
+	SaveValue(j, "vis_esp_enemy_box_enabled", Visual::EnemyESP.BoxEnabled);
+	SaveValue(j, "vis_esp_enemy_box_type", Visual::EnemyESP.BoxType);
 	SaveColorValue(j, "vis_esp_enemy_box_color", Visual::EnemyESP.BoxColor);
-	j["vis_esp_enemy_name_enabled"] = Visual::EnemyESP.NameEnabled;
+	SaveValue(j, "vis_esp_enemy_name_enabled", Visual::EnemyESP.NameEnabled);
 	SaveColorValue(j, "vis_esp_enemy_name_color", Visual::EnemyESP.NameColor);
-	j["vis_esp_enemy_health_enabled"] = Visual::EnemyESP.HealthEnabled;
-	j["vis_esp_enemy_armor_enabled"] = Visual::EnemyESP.ArmorEnabled;
+	SaveValue(j, "vis_esp_enemy_health_enabled", Visual::EnemyESP.HealthEnabled);
+	SaveValue(j, "vis_esp_enemy_armor_enabled", Visual::EnemyESP.ArmorEnabled);
 	SaveColorValue(j, "vis_esp_enemy_armor_color", Visual::EnemyESP.ArmorColor);
-	j["vis_esp_enemy_weapon_enabled"] = Visual::EnemyESP.WeaponEnabled;
+	SaveValue(j, "vis_esp_enemy_weapon_enabled", Visual::EnemyESP.WeaponEnabled);
 	SaveColorValue(j, "vis_esp_enemy_weapon_color", Visual::EnemyESP.WeaponColor);
-	j["vis_esp_enemy_snapline_enabled"] = Visual::EnemyESP.SnaplineEnabled;
+	SaveValue(j, "vis_esp_enemy_snapline_enabled", Visual::EnemyESP.SnaplineEnabled);
 	SaveColorValue(j, "vis_esp_enemy_snapline_color", Visual::EnemyESP.SnaplineColor);
 	// Team ESP
-	j["vis_esp_team_enabled"] = Visual::TeamESP.Enabled;
-	j["vis_esp_team_box_enabled"] = Visual::TeamESP.BoxEnabled;
-	j["vis_esp_team_box_type"] = Visual::TeamESP.BoxType;
+	SaveValue(j, "vis_esp_team_enabled", Visual::TeamESP.Enabled);
+	SaveValue(j, "vis_esp_team_box_enabled", Visual::TeamESP.BoxEnabled);
+	SaveValue(j, "vis_esp_team_box_type", Visual::TeamESP.BoxType);
 	SaveColorValue(j, "vis_esp_team_box_color", Visual::TeamESP.BoxColor);
-	j["vis_esp_team_name_enabled"] = Visual::TeamESP.NameEnabled;
+	SaveValue(j, "vis_esp_team_name_enabled", Visual::TeamESP.NameEnabled);
 	SaveColorValue(j, "vis_esp_team_name_color", Visual::TeamESP.NameColor);
-	j["vis_esp_team_health_enabled"] = Visual::TeamESP.HealthEnabled;
-	j["vis_esp_team_armor_enabled"] = Visual::TeamESP.ArmorEnabled;
+	SaveValue(j, "vis_esp_team_health_enabled", Visual::TeamESP.HealthEnabled);
+	SaveValue(j, "vis_esp_team_armor_enabled", Visual::TeamESP.ArmorEnabled);
 	SaveColorValue(j, "vis_esp_team_armor_color", Visual::TeamESP.ArmorColor);
-	j["vis_esp_team_weapon_enabled"] = Visual::TeamESP.WeaponEnabled;
+	SaveValue(j, "vis_esp_team_weapon_enabled", Visual::TeamESP.WeaponEnabled);
 	SaveColorValue(j, "vis_esp_team_weapon_color", Visual::TeamESP.WeaponColor);
-	j["vis_esp_team_snapline_enabled"] = Visual::TeamESP.SnaplineEnabled;
+	SaveValue(j, "vis_esp_team_snapline_enabled", Visual::TeamESP.SnaplineEnabled);
 	SaveColorValue(j, "vis_esp_team_snapline_color", Visual::TeamESP.SnaplineColor);
 	// Other
-	j["vis_thirdperson"] = Visual::ThirdPersonEnabled;
-	j["vis_thirdperson_hotkey"] = Visual::ThirdPersonHotkey;
-	j["vis_esp_other_enabled"] = Visual::GlobalESP.Enabled;
-	j["vis_esp_other_grenade_enable"] = Visual::GlobalESP.GrenadeEnabled;
-	j["vis_esp_other_bomb_enabled"] = Visual::GlobalESP.BombEnabled;
+	SaveValue(j, "vis_thirdperson", Visual::ThirdPersonEnabled);
+	SaveValue(j, "vis_thirdperson_hotkey", Visual::ThirdPersonHotkey);
+	SaveValue(j, "vis_esp_other_enabled", Visual::GlobalESP.Enabled);
+	SaveValue(j, "vis_esp_other_grenade_enable", Visual::GlobalESP.GrenadeEnabled);
+	SaveValue(j, "vis_esp_other_bomb_enabled", Visual::GlobalESP.BombEnabled);
 	SaveColorValue(j, "vis_esp_other_bomb_color", Visual::GlobalESP.BombColor);
-	j["vis_esp_other_dz_item"] = Visual::GlobalESP.DZEnabled;
-	j["vis_esp_other_dz_range"] = Visual::GlobalESP.DZRange;
-	j["vis_noscope_overlay"] = Visual::NoScopeOverlay;
-	j["vis_bullet_tracers"] = Visual::BulletTracers;
-	j["vis_noflash"] = Visual::NoFlash;
-	j["vis_spread_cirlce_enabled"] = Visual::SpreadCircleEnabled;
+	SaveValue(j, "vis_esp_other_dz_item", Visual::GlobalESP.DZEnabled);
+	SaveValue(j, "vis_esp_other_dz_range", Visual::GlobalESP.DZRange);
+	SaveValue(j, "vis_noscope_overlay", Visual::NoScopeOverlay);
+	SaveValue(j, "vis_bullet_tracers", Visual::BulletTracers);
+	SaveValue(j, "vis_noflash", Visual::NoFlash);
+	SaveValue(j, "vis_spread_cirlce_enabled", Visual::SpreadCircleEnabled);
 	SaveColorValue(j, "vis_spread_circle_color", Visual::SpreadCircleColor);
-	j["vis_disable_scoop_zoom"] = Visual::DisableScopeZoom;
-	j["vis_fov"] = Visual::FOV;
-	j["vis_viewmodel_fov"] = Visual::ViewModelFOV;
-	j["vis_nosmoke"] = Visual::NoSmoke;
-	j["vis_hitmarker"] = Visual::Hitmarker;
-	j["vis_ragdoll_force"] = Visual::RagdollForce;
+	SaveValue(j, "vis_disable_scoop_zoom", Visual::DisableScopeZoom);
+	SaveValue(j, "vis_fov", Visual::FOV);
+	SaveValue(j, "vis_viewmodel_fov", Visual::ViewModelFOV);
+	SaveValue(j, "vis_nosmoke", Visual::NoSmoke);
+	SaveValue(j, "vis_hitmarker", Visual::Hitmarker);
+	SaveValue(j, "vis_ragdoll_force", Visual::RagdollForce);
 	/* Misc */
-	j["misc_bhop"] = Misc::BHop;
-	j["misc_autostrafe"] = Misc::AutoStrafe;
-	j["misc_rank_reveal"] = Misc::RankReveal;
-	j["misc_autoaccept"] = Misc::AutoAccept;
-	j["misc_no_crouch_cooldown"] = Misc::NoCrouchCooldown;
-	j["misc_clantag"] = Misc::Clantag;
-	j["misc_buybot_enabled"] = Misc::BuyBot;
-	j["misc_buybot_pistol"] = Misc::BuyBotPistol;
-	j["misc_buybot_weapon"] = Misc::BuyBotWeapon;
-	j["misc_buybot_armor"] = Misc::BuyBotArmor;
-	j["misc_buybot_zeus"] = Misc::BuyBotZeus;
-	j["misc_buybot_defuser"] = Misc::BuyBotDefuser;
+	SaveValue(j, "misc_bhop", Misc::BHop);
+	SaveValue(j, "misc_autostrafe", Misc::AutoStrafe);
+	SaveValue(j, "misc_rank_reveal", Misc::RankReveal);
+	SaveValue(j, "misc_autoaccept", Misc::AutoAccept);
+	SaveValue(j, "misc_no_crouch_cooldown", Misc::NoCrouchCooldown);
+	SaveValue(j, "misc_clantag", Misc::Clantag);
+	SaveValue(j, "misc_buybot_enabled", Misc::BuyBot);
+	SaveValue(j, "misc_buybot_pistol", Misc::BuyBotPistol);
+	SaveValue(j, "misc_buybot_weapon", Misc::BuyBotWeapon);
+	SaveValue(j, "misc_buybot_armor", Misc::BuyBotArmor);
+	SaveValue(j, "misc_buybot_zeus", Misc::BuyBotZeus);
+	SaveValue(j, "misc_buybot_defuser", Misc::BuyBotDefuser);
 	/* Write file */
 	o << std::setw(4) << j << std::endl;
 }
@@ -350,167 +350,167 @@ void Settings::LoadSettings(std::string fileName)
 	i >> j;
 	
 	/* Read RageBot Settings */
-	RageBot::Enabled = j["rbot_enabled"];
+	LoadValue(j, "rbot_enabled", 	RageBot::Enabled);
 	for (size_t i = 0; i < 11; i++)
 	{
-		RageBot::WeaponSettings[i].Hitchance = j["rbot_weapon" + std::to_string(i)]["Hitchance"];
-		RageBot::WeaponSettings[i].MinDamage = j["rbot_weapon" + std::to_string(i)]["MinDamage"];
-		RageBot::WeaponSettings[i].BAimAfterShots = j["rbot_weapon" + std::to_string(i)]["BAimAfterShots"];
-		RageBot::WeaponSettings[i].ForceBAimAfterShots = j["rbot_weapon" + std::to_string(i)]["ForceBAimAfterShots"];
-		RageBot::WeaponSettings[i].BAimWhileMoving = j["rbot_weapon" + std::to_string(i)]["MovingBAim"];
+		LoadNestedValue(j, "rbot_weapon" + std::to_string(i), "Hitchance", 		RageBot::WeaponSettings[i].Hitchance);
+		LoadNestedValue(j, "rbot_weapon" + std::to_string(i), "MinDamage", 		RageBot::WeaponSettings[i].MinDamage);
+		LoadNestedValue(j, "rbot_weapon" + std::to_string(i), "BAimAfterShots", 		RageBot::WeaponSettings[i].BAimAfterShots);
+		LoadNestedValue(j, "rbot_weapon" + std::to_string(i), "ForceBAimAfterShots", 		RageBot::WeaponSettings[i].ForceBAimAfterShots);
+		LoadNestedValue(j, "rbot_weapon" + std::to_string(i), "MovingBAim", 		RageBot::WeaponSettings[i].BAimWhileMoving);
 	}
-	RageBot::BAimMode = j["rbot_baim_mode"];
-	RageBot::AirBAim = j["rbot_air_baim"];
-	RageBot::BAimHotkey = j["rbot_baim_hotkey"];
+	LoadValue(j, "rbot_baim_mode", 	RageBot::BAimMode);
+	LoadValue(j, "rbot_air_baim", 	RageBot::AirBAim);
+	LoadValue(j, "rbot_baim_hotkey", 	RageBot::BAimHotkey);
 
 	for (size_t i = 0; i < 7; i++)
 	{
-		RageBot::Hitboxes[i].Enabled = j["rbot_hitbox" + std::to_string(i)]["Enabled"];
-		RageBot::Hitboxes[i].Scale = j["rbot_hitbox" + std::to_string(i)]["Scale"];
+		LoadNestedValue(j, "rbot_hitbox" + std::to_string(i), "Enabled", 		RageBot::Hitboxes[i].Enabled);
+		LoadNestedValue(j, "rbot_hitbox" + std::to_string(i), "Scale", 		RageBot::Hitboxes[i].Scale);
 	}
 
-	RageBot::EnabledAA = j["rbot_aa_enabled"];
+	LoadValue(j, "rbot_aa_enabled", 	RageBot::EnabledAA);
 	for (size_t i = 0; i < 3; i++)
 	{
-		RageBot::AntiAimSettings[i].Pitch = j["rbot_aa" + std::to_string(i)]["Pitch"];
-		RageBot::AntiAimSettings[i].Yaw = j["rbot_aa" + std::to_string(i)]["Yaw"];
-		RageBot::AntiAimSettings[i].YawAdd = j["rbot_aa" + std::to_string(i)]["YawAdd"];
-		RageBot::AntiAimSettings[i].Range =  j["rbot_aa" + std::to_string(i)]["Range"];
-		RageBot::AntiAimSettings[i].FakelagMode = j["rbot_aa" + std::to_string(i)]["FakelagMode"];
-		RageBot::AntiAimSettings[i].FakelagTicks = j["rbot_aa" + std::to_string(i)]["FakelagTicks"];
+		LoadNestedValue(j, "rbot_aa" + std::to_string(i), "Pitch", 		RageBot::AntiAimSettings[i].Pitch);
+		LoadNestedValue(j, "rbot_aa" + std::to_string(i), "Yaw", 		RageBot::AntiAimSettings[i].Yaw);
+		LoadNestedValue(j, "rbot_aa" + std::to_string(i), "YawAdd", 		RageBot::AntiAimSettings[i].YawAdd);
+		LoadNestedValue(j, "rbot_aa" + std::to_string(i), "Range", 		RageBot::AntiAimSettings[i].Range);
+		LoadNestedValue(j, "rbot_aa" + std::to_string(i), "FakelagMode", 		RageBot::AntiAimSettings[i].FakelagMode);
+		LoadNestedValue(j, "rbot_aa" + std::to_string(i), "FakelagTicks", 		RageBot::AntiAimSettings[i].FakelagTicks);
 	}
-	RageBot::SpinBotSpeed = j["rbot_spinbot_speed"];
-	RageBot::SlideWalk = j["rbot_slidewalk"];
-	RageBot::Desync = j["rbot_desync"];
-	RageBot::ManualAALeftKey = j["rbot_manual_leftkey"];
-	RageBot::ManualAARightKey = j["rbot_manual_rightkey"];
-	RageBot::ManualAABackKey = j["rbot_manual_backkey"];
+	LoadValue(j, "rbot_spinbot_speed", 	RageBot::SpinBotSpeed);
+	LoadValue(j, "rbot_slidewalk", 	RageBot::SlideWalk);
+	LoadValue(j, "rbot_desync", RageBot::Desync);
+	LoadValue(j, "rbot_manual_leftkey", 	RageBot::ManualAALeftKey);
+	LoadValue(j, "rbot_manual_rightkey", 	RageBot::ManualAARightKey);
+	LoadValue(j, "rbot_manual_backkey", 	RageBot::ManualAABackKey);
 
-	RageBot::AutoStop = j["rbot_autostop"];
-	RageBot::AutoScope = j["rbot_autoscope"];
-	RageBot::AutoCrouch = j["rbot_autocrouch"];
-	RageBot::SlowWalk = j["rbot_slowwalk"];
-	RageBot::SlowWalkHotkey = j["rbot_slowwalk_hotkey"];
+	LoadValue(j, "rbot_autostop", 	RageBot::AutoStop);
+	LoadValue(j, "rbot_autoscope", 	RageBot::AutoScope);
+	LoadValue(j, "rbot_autocrouch", 	RageBot::AutoCrouch);
+	LoadValue(j, "rbot_slowwalk", 	RageBot::SlowWalk);
+	LoadValue(j, "rbot_slowwalk_hotkey", 	RageBot::SlowWalkHotkey);
 
-	RageBot::FakelagPrediction = j["rbot_fakelag_prediction"];
-	RageBot::ShootingMode = j["rbot_shooting_mode"];
-	RageBot::ForceUnlag = j["rbot_force_unlag"];
-	RageBot::Resolver = j["rbot_resolver"];
+	LoadValue(j, "rbot_fakelag_prediction", 	RageBot::FakelagPrediction);
+	LoadValue(j, "rbot_shooting_mode", 	RageBot::ShootingMode);
+	LoadValue(j, "rbot_force_unlag", 	RageBot::ForceUnlag);
+	LoadValue(j, "rbot_resolver", 	RageBot::Resolver);
 
 	/* Read LBot Settings */
-	Aimbot::Enabled = j["lbot_enabled"];
-	Aimbot::Hotkey = j["lbot_key"];
+	LoadValue(j, "lbot_enabled", 	Aimbot::Enabled);
+	LoadValue(j, "lbot_key", 	Aimbot::Hotkey);
 	for (int i = 0; i < 11; i++)
 	{
 		/* Base Weapon Settings */
-		Aimbot::WeaponAimSetting[i].FOV = j["lbot_weapon" + std::to_string(i)]["FOV"];
-		Aimbot::WeaponAimSetting[i].Smooth = j["lbot_weapon" + std::to_string(i)]["Smooth"];
-		Aimbot::WeaponAimSetting[i].Randomize = j["lbot_weapon" + std::to_string(i)]["Randomize"];
-		Aimbot::WeaponAimSetting[i].Delay = j["lbot_weapon" + std::to_string(i)]["Delay"];
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "FOV", 		Aimbot::WeaponAimSetting[i].FOV);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Smooth", 		Aimbot::WeaponAimSetting[i].Smooth);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Randomize", 		Aimbot::WeaponAimSetting[i].Randomize);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Delay", 		Aimbot::WeaponAimSetting[i].Delay);
 		/* RCS */
-		Aimbot::WeaponAimSetting[i].RCS = j["lbot_weapon" + std::to_string(i)]["RCS"];
-		Aimbot::WeaponAimSetting[i].RCS_X = j["lbot_weapon" + std::to_string(i)]["RCS_X"];
-		Aimbot::WeaponAimSetting[i].RCS_Y = j["lbot_weapon" + std::to_string(i)]["RCS_Y"];
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS", 		Aimbot::WeaponAimSetting[i].RCS);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_X", 		Aimbot::WeaponAimSetting[i].RCS_X);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_Y", 		Aimbot::WeaponAimSetting[i].RCS_Y);
 		/* Hitboxes */
-		Aimbot::WeaponAimSetting[i].HitboxHead = j["lbot_weapon" + std::to_string(i)]["Head"];
-		Aimbot::WeaponAimSetting[i].HitboxNeck = j["lbot_weapon" + std::to_string(i)]["Neck"];
-		Aimbot::WeaponAimSetting[i].HitboxChest = j["lbot_weapon" + std::to_string(i)]["Chest"];
-		Aimbot::WeaponAimSetting[i].HitboxPelvis = j["lbot_weapon" + std::to_string(i)]["Pelvis"];
-		Aimbot::WeaponAimSetting[i].HitboxStomach = j["lbot_weapon" + std::to_string(i)]["Stomach"];
-		Aimbot::WeaponAimSetting[i].HitboxArm = j["lbot_weapon" + std::to_string(i)]["Arm"];
-		Aimbot::WeaponAimSetting[i].HitboxLeg = j["lbot_weapon" + std::to_string(i)]["Leg"];
-		Aimbot::WeaponAimSetting[i].HitboxFoot = j["lbot_weapon" + std::to_string(i)]["Foot"];
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Head", 		Aimbot::WeaponAimSetting[i].HitboxHead);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Neck", 		Aimbot::WeaponAimSetting[i].HitboxNeck);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Chest", 		Aimbot::WeaponAimSetting[i].HitboxChest);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Pelvis", 		Aimbot::WeaponAimSetting[i].HitboxPelvis);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Stomach", 		Aimbot::WeaponAimSetting[i].HitboxStomach);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Arm", 		Aimbot::WeaponAimSetting[i].HitboxArm);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Leg", 		Aimbot::WeaponAimSetting[i].HitboxLeg);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Foot", 		Aimbot::WeaponAimSetting[i].HitboxFoot);
 	}
-	Aimbot::Backtrack = j["lbot_backtrack"];
-	Aimbot::BacktrackAtAim = j["lbot_backtrack_aim"];
-	Aimbot::BacktrackTick  = j["lbot_backtrack_tick"];
+	LoadValue(j, "lbot_backtrack", 	Aimbot::Backtrack);
+	LoadValue(j, "lbot_backtrack_aim", 	Aimbot::BacktrackAtAim);
+	LoadValue(j, "lbot_backtrack_tick", 	Aimbot::BacktrackTick );
 	/* Visuals */
 	// Chams
-	Visual::LocalChams.Enabled = j["vis_chams_local_enabled"];
-	Visual::LocalChams.Mode = j["vis_chams_local_mode"];
+	LoadValue(j, "vis_chams_local_enabled", 	Visual::LocalChams.Enabled);
+	LoadValue(j, "vis_chams_local_mode", 	Visual::LocalChams.Mode);
 	LoadColorValue(j, "vis_chams_local_invisible", Visual::LocalChams.Invisible);
 	LoadColorValue(j, "vis_chams_local_visible", Visual::LocalChams.Visible);
-	Visual::EnemyChams.Enabled = j["vis_chams_enemy_enabled"];
-	j["vis_chams_enemy_mode"] = Visual::EnemyChams.Mode;
+	LoadValue(j, "vis_chams_enemy_enabled", 	Visual::EnemyChams.Enabled);
+	LoadValue(j, "vis_chams_enemy_mode", Visual::EnemyChams.Mode);
 	LoadColorValue(j, "vis_chams_enemy_invisible", Visual::EnemyChams.Invisible);
 	LoadColorValue(j, "vis_chams_enemy_visible", Visual::EnemyChams.Visible);
-	Visual::TeamChams.Enabled = j["vis_chams_team_enabled"];
-	Visual::TeamChams.Mode = j["vis_chams_team_mode"];
+	LoadValue(j, "vis_chams_team_enabled", 	Visual::TeamChams.Enabled);
+	LoadValue(j, "vis_chams_team_mode", 	Visual::TeamChams.Mode);
 	LoadColorValue(j, "vis_chams_team_invisible", Visual::TeamChams.Invisible);
 	LoadColorValue(j, "vis_chams_team_visible", Visual::TeamChams.Visible);
 	// Player ESP
-	Visual::LocalESP.Enabled = j["vis_esp_local_enabled"];
-	Visual::LocalESP.BoxEnabled = j["vis_esp_local_box_enabled"];
-	Visual::LocalESP.BoxType = j["vis_esp_local_box_type"];
+	LoadValue(j, "vis_esp_local_enabled", 	Visual::LocalESP.Enabled);
+	LoadValue(j, "vis_esp_local_box_enabled", 	Visual::LocalESP.BoxEnabled);
+	LoadValue(j, "vis_esp_local_box_type", 	Visual::LocalESP.BoxType);
 	LoadColorValue(j, "vis_esp_local_box_color", Visual::LocalESP.BoxColor);
-	Visual::LocalESP.NameEnabled = j["vis_esp_local_name_enabled"];
+	LoadValue(j, "vis_esp_local_name_enabled", 	Visual::LocalESP.NameEnabled);
 	LoadColorValue(j, "vis_esp_local_name_color", Visual::LocalESP.NameColor);
-	Visual::LocalESP.HealthEnabled = j["vis_esp_local_health_enabled"];
-	Visual::LocalESP.ArmorEnabled = j["vis_esp_local_armor_enabled"];
+	LoadValue(j, "vis_esp_local_health_enabled", 	Visual::LocalESP.HealthEnabled);
+	LoadValue(j, "vis_esp_local_armor_enabled", 	Visual::LocalESP.ArmorEnabled);
 	LoadColorValue(j, "vis_esp_local_armor_color", Visual::LocalESP.ArmorColor);
-	Visual::LocalESP.WeaponEnabled = j["vis_esp_local_weapon_enabled"];
+	LoadValue(j, "vis_esp_local_weapon_enabled", 	Visual::LocalESP.WeaponEnabled);
 	LoadColorValue(j, "vis_esp_local_weapon_color", Visual::LocalESP.WeaponColor);
 	// Enemy ESP
-	Visual::EnemyESP.Enabled = j["vis_esp_enemy_enabled"];
-	Visual::EnemyESP.BoxEnabled = j["vis_esp_enemy_box_enabled"];
-	Visual::EnemyESP.BoxType = 	j["vis_esp_enemy_box_type"];
+	LoadValue(j, "vis_esp_enemy_enabled", 	Visual::EnemyESP.Enabled);
+	LoadValue(j, "vis_esp_enemy_box_enabled", 	Visual::EnemyESP.BoxEnabled);
+	LoadValue(j, "vis_esp_enemy_box_type", 	Visual::EnemyESP.BoxType);
 	LoadColorValue(j, "vis_esp_enemy_box_color", Visual::EnemyESP.BoxColor);
-	Visual::EnemyESP.NameEnabled = 	j["vis_esp_enemy_name_enabled"];
+	LoadValue(j, "vis_esp_enemy_name_enabled", 	Visual::EnemyESP.NameEnabled);
 	LoadColorValue(j, "vis_esp_enemy_name_color", Visual::EnemyESP.NameColor);
-	Visual::EnemyESP.HealthEnabled = 	j["vis_esp_enemy_health_enabled"];
-	Visual::EnemyESP.ArmorEnabled = 	j["vis_esp_enemy_armor_enabled"];
+	LoadValue(j, "vis_esp_enemy_health_enabled", 	Visual::EnemyESP.HealthEnabled);
+	LoadValue(j, "vis_esp_enemy_armor_enabled", 	Visual::EnemyESP.ArmorEnabled);
 	LoadColorValue(j, "vis_esp_enemy_armor_color", Visual::EnemyESP.ArmorColor);
-	Visual::EnemyESP.WeaponEnabled = 	j["vis_esp_enemy_weapon_enabled"];
+	LoadValue(j, "vis_esp_enemy_weapon_enabled", 	Visual::EnemyESP.WeaponEnabled);
 	LoadColorValue(j, "vis_esp_enemy_weapon_color", Visual::EnemyESP.WeaponColor);
-	Visual::EnemyESP.SnaplineEnabled = 	j["vis_esp_enemy_snapline_enabled"];
+	LoadValue(j, "vis_esp_enemy_snapline_enabled", 	Visual::EnemyESP.SnaplineEnabled);
 	LoadColorValue(j, "vis_esp_enemy_snapline_color", Visual::EnemyESP.SnaplineColor);
 	// Team ESP
-	Visual::TeamESP.Enabled = j["vis_esp_team_enabled"];
-	Visual::TeamESP.BoxEnabled = j["vis_esp_team_box_enabled"];
-	Visual::TeamESP.BoxType = j["vis_esp_team_box_type"];
+	LoadValue(j, "vis_esp_team_enabled", 	Visual::TeamESP.Enabled);
+	LoadValue(j, "vis_esp_team_box_enabled", 	Visual::TeamESP.BoxEnabled);
+	LoadValue(j, "vis_esp_team_box_type", 	Visual::TeamESP.BoxType);
 	LoadColorValue(j, "vis_esp_team_box_color", Visual::TeamESP.BoxColor);
-	Visual::TeamESP.NameEnabled = 	j["vis_esp_team_name_enabled"];
+	LoadValue(j, "vis_esp_team_name_enabled", 	Visual::TeamESP.NameEnabled);
 	LoadColorValue(j, "vis_esp_team_name_color", Visual::TeamESP.NameColor);
-	Visual::TeamESP.HealthEnabled = 	j["vis_esp_team_health_enabled"];
-	Visual::TeamESP.ArmorEnabled = 	j["vis_esp_team_armor_enabled"];
+	LoadValue(j, "vis_esp_team_health_enabled", 	Visual::TeamESP.HealthEnabled);
+	LoadValue(j, "vis_esp_team_armor_enabled", 	Visual::TeamESP.ArmorEnabled);
 	LoadColorValue(j, "vis_esp_team_armor_color", Visual::TeamESP.ArmorColor);
-	Visual::TeamESP.WeaponEnabled = 	j["vis_esp_team_weapon_enabled"];
+	LoadValue(j, "vis_esp_team_weapon_enabled", 	Visual::TeamESP.WeaponEnabled);
 	LoadColorValue(j, "vis_esp_team_weapon_color", Visual::TeamESP.WeaponColor);
-	Visual::TeamESP.SnaplineEnabled = 	j["vis_esp_team_snapline_enabled"];
+	LoadValue(j, "vis_esp_team_snapline_enabled", 	Visual::TeamESP.SnaplineEnabled);
 	LoadColorValue(j, "vis_esp_team_snapline_color", Visual::TeamESP.SnaplineColor);
 	// Other
-	Visual::ThirdPersonEnabled = 	j["vis_thirdperson"];
-	Visual::ThirdPersonHotkey = 	j["vis_thirdperson_hotkey"];
-	Visual::GlobalESP.Enabled = 	j["vis_esp_other_enabled"];
-	Visual::GlobalESP.GrenadeEnabled = 	j["vis_esp_other_grenade_enable"];
-	Visual::GlobalESP.BombEnabled = 	j["vis_esp_other_bomb_enabled"];
+	LoadValue(j, "vis_thirdperson", 	Visual::ThirdPersonEnabled);
+	LoadValue(j, "vis_thirdperson_hotkey", 	Visual::ThirdPersonHotkey);
+	LoadValue(j, "vis_esp_other_enabled", 	Visual::GlobalESP.Enabled);
+	LoadValue(j, "vis_esp_other_grenade_enable", 	Visual::GlobalESP.GrenadeEnabled);
+	LoadValue(j, "vis_esp_other_bomb_enabled", 	Visual::GlobalESP.BombEnabled);
 	LoadColorValue(j, "vis_esp_other_bomb_color", Visual::GlobalESP.BombColor);
-	Visual::GlobalESP.DZEnabled = 	j["vis_esp_other_dz_item"];
-	Visual::GlobalESP.DZRange = 	j["vis_esp_other_dz_range"];
-	Visual::NoScopeOverlay = 	j["vis_noscope_overlay"];
-	Visual::BulletTracers = 	j["vis_bullet_tracers"];
-	Visual::NoFlash = 	j["vis_noflash"];
-	Visual::SpreadCircleEnabled = 	j["vis_spread_cirlce_enabled"];
+	LoadValue(j, "vis_esp_other_dz_item", 	Visual::GlobalESP.DZEnabled);
+	LoadValue(j, "vis_esp_other_dz_range", 	Visual::GlobalESP.DZRange);
+	LoadValue(j, "vis_noscope_overlay", 	Visual::NoScopeOverlay);
+	LoadValue(j, "vis_bullet_tracers", 	Visual::BulletTracers);
+	LoadValue(j, "vis_noflash", 	Visual::NoFlash);
+	LoadValue(j, "vis_spread_cirlce_enabled", 	Visual::SpreadCircleEnabled);
 	LoadColorValue(j, "vis_spread_circle_color", Visual::SpreadCircleColor);
-	Visual::DisableScopeZoom = 	j["vis_disable_scoop_zoom"];
-	Visual::FOV = 	j["vis_fov"];
-	Visual::ViewModelFOV = 	j["vis_viewmodel_fov"];
-	Visual::NoSmoke = 	j["vis_nosmoke"];
-	Visual::Hitmarker = 	j["vis_hitmarker"];
-	Visual::RagdollForce = 	j["vis_ragdoll_force"];
+	LoadValue(j, "vis_disable_scoop_zoom", 	Visual::DisableScopeZoom);
+	LoadValue(j, "vis_fov", 	Visual::FOV);
+	LoadValue(j, "vis_viewmodel_fov", 	Visual::ViewModelFOV);
+	LoadValue(j, "vis_nosmoke", 	Visual::NoSmoke);
+	LoadValue(j, "vis_hitmarker", 	Visual::Hitmarker);
+	LoadValue(j, "vis_ragdoll_force", 	Visual::RagdollForce);
 	/* Misc */
-	Misc::BHop = j["misc_bhop"];
-	Misc::AutoStrafe = j["misc_autostrafe"];
-	Misc::RankReveal = j["misc_rank_reveal"];
-	Misc::NoCrouchCooldown = j["misc_no_crouch_cooldown"];
-	Misc::AutoAccept = j["misc_autoaccept"];
-	Misc::Clantag = j["misc_clantag"];
-	Misc::BuyBot = j["misc_buybot_enabled"];
-	Misc::BuyBotPistol = j["misc_buybot_pistol"];
-	Misc::BuyBotWeapon = j["misc_buybot_weapon"];
-	Misc::BuyBotArmor = j["misc_buybot_armor"];
-	Misc::BuyBotZeus = j["misc_buybot_zeus"];
-	Misc::BuyBotDefuser = j["misc_buybot_defuser"];
+	LoadValue(j, "misc_bhop", 	Misc::BHop);
+	LoadValue(j, "misc_autostrafe", 	Misc::AutoStrafe);
+	LoadValue(j, "misc_rank_reveal", 	Misc::RankReveal);
+	LoadValue(j, "misc_no_crouch_cooldown", 	Misc::NoCrouchCooldown);
+	LoadValue(j, "misc_autoaccept", 	Misc::AutoAccept);
+	LoadValue(j, "misc_clantag", 	Misc::Clantag);
+	LoadValue(j, "misc_buybot_enabled", 	Misc::BuyBot);
+	LoadValue(j, "misc_buybot_pistol", 	Misc::BuyBotPistol);
+	LoadValue(j, "misc_buybot_weapon", 	Misc::BuyBotWeapon);
+	LoadValue(j, "misc_buybot_armor", 	Misc::BuyBotArmor);
+	LoadValue(j, "misc_buybot_zeus", 	Misc::BuyBotZeus);
+	LoadValue(j, "misc_buybot_defuser", 	Misc::BuyBotDefuser);
 }
 
 void Settings::SaveColorValue(json & j, std::string name, const Color & value)
@@ -582,18 +582,17 @@ namespace Settings::RageBot
 
 	int GetWeaponType(C_BaseCombatWeapon * weapon)
 	{
-		if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_DEAGLE)//WEAPON_DEAGLE)
+		if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_DEAGLE)
 			return WeaponType::WEAPON_DEAGLE;
-		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_REVOLVER)//WEAPON_REVOLVER)
+		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_REVOLVER)
 			return WeaponType::WEAPON_REVOLVER;
 		else if (weapon->IsRifle())
 			return WeaponType::WEAPON_RIFLE;
-		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_SSG08) //WEAPON_SSG08)
+		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_SSG08) 
 			return WeaponType::WEAPON_SSG08;
-		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_AWP)//WEAPON_AWP)
+		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_AWP)
 			return WeaponType::WEAPON_AWP;
-		//else if (weapon->GetItemDefinitionIndex() == WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == WEAPON_G3SG1)
-		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_G3SG1)//WEAPON_G3SG1)
+		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_G3SG1)
 			return WeaponType::WEAPON_AUTO;
 		else if (weapon->IsPistol())
 			return WeaponType::WEAPON_PISTOL;

@@ -20,6 +20,14 @@ namespace Settings
 	void ResetConfig();
 	void SaveSettings(std::string fileName);
 	void LoadSettings(std::string fileName);
+	template <typename T>
+	void SaveValue(json &j, std::string name, const T& value);
+	template <typename T>
+	void SaveNestedValue(json &j, std::string name1, std::string name2, const T& value);
+	template <typename T>
+	void LoadValue(json &j, std::string name, T& value);
+	template <typename T>
+	void LoadNestedValue(json &j, std::string name1, std::string name2, T& value);
 	void SaveColorValue(json &j, std::string name, const Color& value);
 	void LoadColorValue(json &j, std::string name, Color& value);
 	std::string LoadGameCfg();
@@ -234,5 +242,52 @@ namespace Settings
 		extern bool BuyBotArmor;
 		extern bool BuyBotZeus;
 		extern bool BuyBotDefuser;
+	}
+
+	template<typename T>
+	void SaveValue(json & j, std::string name, const T & value)
+	{
+		if (!value)
+			return;
+		j[name] = value;
+	}
+	template<typename T>
+	void SaveNestedValue(json & j, std::string name1, std::string name2, const T & value)
+	{
+		if (!value)
+			return;
+		j[name1][name2] = value;
+	}
+	template<typename T>
+	void LoadValue(json & j, std::string name, T & value)
+	{
+		/*if (!j[name])
+			return;
+		value = j[name];*/
+		try
+		{
+			value = j[name];
+		}
+		catch (json::exception& ex)
+		{
+			//g_Logger.Warning("CONFIG", "Loading error: " + std::to_string(ex.what()));
+			g_Logger.Warning("CONFIG", ex.what());
+		}
+	}
+	template<typename T>
+	void LoadNestedValue(json & j, std::string name1, std::string name2, T & value)
+	{
+		/*if (j[name1][name2] != nullptr)
+			return;
+		value = j[name1][name2];*/
+		try
+		{
+			value = j[name1][name2];
+		}
+		catch (json::exception& ex)
+		{
+			g_Logger.Warning("CONFIG", ex.what());
+			//g_Logger.Warning( "CONFIG", "Loading error: " + std::to_string(ex.what()) );
+		}
 	}
 }

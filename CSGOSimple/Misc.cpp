@@ -44,28 +44,24 @@ void Misc::ExecuteGameConfig(const std::string & config)
 
 void Misc::SetLocalPlayerReady()
 {
-	static auto SetLocalPlayerReadyFn = reinterpret_cast<bool(__stdcall*)(const char*)>(Utils::PatternScan(L"client_panorama.dll", "55 8B EC 83 E4 F8 8B 4D 08 BA ? ? ? ? E8 ? ? ? ? 85 C0 75 12"));
-	if (SetLocalPlayerReadyFn)
-		SetLocalPlayerReadyFn("deferred");
+	static auto SetLocalPlayerReadyFn = reinterpret_cast<bool(__stdcall*)(const char*)>(Utils::PatternScan(GetModuleHandleA("client_panorama.dll"), "55 8B EC 83 E4 F8 8B 4D 08 BA ? ? ? ? E8 ? ? ? ? 85 C0 75 12"));
+	if (SetLocalPlayerReadyFn && Settings::Misc::AutoAccept)
+		SetLocalPlayerReadyFn("");
 }
 
 void Misc::NoCrouchCooldown(CUserCmd* cmd)
 {
-    //if (!g_Config.GetBool("misc_no_crouch_cooldown"))
 	if(!Settings::Misc::NoCrouchCooldown)
-    {
         return;
-    }
 
     cmd->buttons |= IN_BULLRUSH;
 }
 
 void Misc::NoFlash()
 {
-    if (!g_LocalPlayer || !g_LocalPlayer->IsAlive() || !g_Config.GetBool("vis_misc_noflash"))
-    {
+    //if (!g_LocalPlayer || !g_LocalPlayer->IsAlive() || !g_Config.GetBool("vis_misc_noflash"))
+	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive() || !Settings::Visual::NoFlash)
         return;
-    }
 
     //g_LocalPlayer->m_flFlashMaxAlpha() = 0.f;
     g_LocalPlayer->m_flFlashDuration() = 0.f;
