@@ -3,6 +3,7 @@
 #include "ConfigSystem.h"
 #include "RuntimeSaver.h"
 #include "ConsoleHelper.h"
+#include "Settings.h"
 
 void Fakelag::OnCreateMove(CUserCmd* cmd, bool& bSendPacket)
 {
@@ -21,17 +22,22 @@ void Fakelag::OnCreateMove(CUserCmd* cmd, bool& bSendPacket)
     int mode = 0;
     if (Standing)
     {
-        ticks = g_Config.GetInt("misc_fakelag_ticks_standing");
+        //ticks = g_Config.GetInt("misc_fakelag_ticks_standing");
+		ticks = Settings::RageBot::AntiAimSettings[Settings::RageBot::AntiAimType::STANDING].FakelagTicks;
     }
     else if (InAir)
     {
-        ticks = g_Config.GetInt("misc_fakelag_ticks_air");
-        mode = g_Config.GetInt("misc_fakelag_mode_air");
+        //ticks = g_Config.GetInt("misc_fakelag_ticks_air");
+		ticks = Settings::RageBot::AntiAimSettings[Settings::RageBot::AntiAimType::AIR].FakelagTicks;
+		mode = Settings::RageBot::AntiAimSettings[Settings::RageBot::AntiAimType::AIR].FakelagMode;
+       // mode = g_Config.GetInt("misc_fakelag_mode_air");
     }
     else
     {
-        ticks = g_Config.GetInt("misc_fakelag_ticks_moving");
-        mode = g_Config.GetInt("misc_fakelag_mode_moving");
+        //ticks = g_Config.GetInt("misc_fakelag_ticks_moving");
+        //mode = g_Config.GetInt("misc_fakelag_mode_moving");
+		ticks = Settings::RageBot::AntiAimSettings[Settings::RageBot::AntiAimType::MOVING].FakelagTicks;
+		mode = Settings::RageBot::AntiAimSettings[Settings::RageBot::AntiAimType::MOVING].FakelagMode;
     }
 
     if (ticks == 0)

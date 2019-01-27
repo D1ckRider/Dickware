@@ -19,38 +19,44 @@
     <Filter Include="Header Files\imgui">
       <UniqueIdentifier>{be04c48c-66c1-4221-ac11-38f6bab82130}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\features">
-      <UniqueIdentifier>{2bc982e4-598c-49fb-ad20-458d3b3bc2a8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\SDK">
       <UniqueIdentifier>{edb96b28-881c-4810-bf58-6ef7ed18cd5d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\imgui">
       <UniqueIdentifier>{162aa2f8-15b9-4b39-a283-b120ebdf8013}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\features">
-      <UniqueIdentifier>{69bb20b4-f120-4f70-8694-cf3aaa9c085c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Font">
       <UniqueIdentifier>{d75481cc-0f76-42d0-b778-a5c1429168c2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\config">
+    <Filter Include="Source Files\Settings">
+      <UniqueIdentifier>{34edcfa2-acb6-46ca-bbb9-f624e609c827}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Features">
+      <UniqueIdentifier>{69bb20b4-f120-4f70-8694-cf3aaa9c085c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Config">
       <UniqueIdentifier>{08d8f5ee-a7a1-46eb-8b78-71de7d40bf8f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\config">
-      <UniqueIdentifier>{479add40-542d-45a5-bd2b-0c9d37a8f4f3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\menu">
+    <Filter Include="Source Files\Menu">
       <UniqueIdentifier>{afd7024b-b833-4c64-81e1-6fde6d875763}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\helpers">
-      <UniqueIdentifier>{997d789f-6baa-4219-970d-12ff3904b14b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\helpers">
+    <Filter Include="Source Files\Helpers">
       <UniqueIdentifier>{678fa1f7-2e90-43f4-813b-945b6136799a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\menu">
+    <Filter Include="Header Files\Menu">
       <UniqueIdentifier>{fefee228-b98f-4e2a-b2e7-4e3aa5c45e07}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Helpers">
+      <UniqueIdentifier>{997d789f-6baa-4219-970d-12ff3904b14b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Features">
+      <UniqueIdentifier>{2bc982e4-598c-49fb-ad20-458d3b3bc2a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Config">
+      <UniqueIdentifier>{479add40-542d-45a5-bd2b-0c9d37a8f4f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Settings">
+      <UniqueIdentifier>{03b5114f-e1af-4a5c-a44d-da3aebe83473}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -112,10 +118,10 @@
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
     <ClCompile Include="features\bhop.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="features\glow.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="valve_sdk\misc\Convar.cpp">
       <Filter>Source Files\SDK</Filter>
@@ -136,25 +142,25 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ConfigSystem.cpp">
-      <Filter>Source Files\config</Filter>
+      <Filter>Source Files\Config</Filter>
     </ClCompile>
     <ClCompile Include="menu_helpers.cpp">
-      <Filter>Source Files\menu</Filter>
+      <Filter>Source Files\Menu</Filter>
     </ClCompile>
     <ClCompile Include="Menu.cpp">
-      <Filter>Source Files\menu</Filter>
+      <Filter>Source Files\Menu</Filter>
     </ClCompile>
     <ClCompile Include="FontManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="features\MaterialManager.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="features\visuals.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="MovementFix.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="Logger.cpp">
       <Filter>Source Files</Filter>
@@ -169,52 +175,55 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Rbot.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="EventHelper.cpp">
-      <Filter>Source Files\helpers</Filter>
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="ConsoleHelper.cpp">
-      <Filter>Source Files\helpers</Filter>
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="AntiAim.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="Autowall.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="Backtrack.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="BuyBot.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="Chams.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="ClantagChanger.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="Fakelag.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="Resolver.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="ThirdpersonAngleHelper.cpp">
-      <Filter>Source Files\helpers</Filter>
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="HitPossitionHelper.cpp">
-      <Filter>Source Files\helpers</Filter>
+      <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="Misc.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="NoSmoke.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
     <ClCompile Include="Lbot.cpp">
-      <Filter>Source Files\features</Filter>
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="Settings.cpp">
+      <Filter>Source Files\Settings</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -429,13 +438,13 @@
       <Filter>Header Files\imgui</Filter>
     </ClInclude>
     <ClInclude Include="features\bhop.hpp">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="features\glow.hpp">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="features\visuals.hpp">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="valve_sdk\csgostructs.hpp">
       <Filter>Header Files\SDK</Filter>
@@ -462,22 +471,22 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ConfigSystem.h">
-      <Filter>Header Files\config</Filter>
+      <Filter>Header Files\Config</Filter>
     </ClInclude>
     <ClInclude Include="Menu.h">
-      <Filter>Header Files\menu</Filter>
+      <Filter>Header Files\Menu</Filter>
     </ClInclude>
     <ClInclude Include="menu_helpers.hpp">
-      <Filter>Header Files\menu</Filter>
+      <Filter>Header Files\Menu</Filter>
     </ClInclude>
     <ClInclude Include="FontManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="features\MaterialManager.hpp">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="MovementFix.h">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="Logger.h">
       <Filter>Header Files</Filter>
@@ -492,55 +501,61 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ConsoleHelper.h">
-      <Filter>Header Files\helpers</Filter>
+      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="EventHelper.h">
-      <Filter>Header Files\helpers</Filter>
+      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="AntiAim.h">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="Autowall.h">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="Backtrack.h">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="BuyBot.h">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="Chams.h">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="ClantagChanger.h">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="Rbot.h">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="Resolver.h">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="HitPossitionHelper.h">
-      <Filter>Header Files\helpers</Filter>
+      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="ThirdpersonAngleHelper.h">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="Lbot.h">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="Fakelag.h">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="Misc.h">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="NoSmoke.h">
-      <Filter>Header Files\features</Filter>
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
     <ClInclude Include="definitions.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="json.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Settings.h">
+      <Filter>Header Files\Settings</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

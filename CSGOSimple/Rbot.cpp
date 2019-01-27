@@ -9,6 +9,7 @@
 #include "Resolver.h"
 #include "helpers/utils.hpp"
 #include "RuntimeSaver.h"
+#include "Settings.h"
 #include "ConsoleHelper.h"
 
 RbotMatrixData matrixData[128];
@@ -33,8 +34,7 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
 	// Get debug config info
 	if (GetAsyncKeyState(VK_DELETE))
 	{
-		std::string name = weapon->GetCSWeaponData()->szWeaponName;
-		g_Logger.Info("WEAPON", "Weapon name is " + name);
+		g_Logger.Info("INFO", "WeaponID is " + std::to_string(Settings::RageBot::GetWeaponType(weapon)));
 		g_Logger.Info("INFO", "Min Damage is " + std::to_string(MinDmg));
 	}
 
@@ -47,7 +47,7 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
         return;
     }
 
-	// SlowWalk usage
+	/* Calling SlowWalk */
 	if ( weapon->GetItemDefinitionIndex() == WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == WEAPON_G3SG1 )
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 40);
@@ -106,10 +106,12 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
         if ( ! ( cmd->buttons & IN_ZOOM ) )
             cmd->buttons |= IN_ZOOM;
 
-        if ( g_Config.GetBool ( "rbot_autostop" ) )
+        //if ( g_Config.GetBool ( "rbot_autostop" ) )
+		if ( Settings::RageBot::AutoStop )
             AutoStop ( cmd );
 
-        if ( ! ( cmd->buttons & IN_DUCK ) && g_Config.GetBool ( "rbot_autocrouch" ) )
+        //if ( ! ( cmd->buttons & IN_DUCK ) && g_Config.GetBool ( "rbot_autocrouch" ) )
+		if ( !(cmd->buttons & IN_DUCK) && Settings::RageBot::AutoCrouch )
             AutoCrouch ( cmd );
 
         return;
@@ -118,10 +120,12 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
     //if ( !HitChance ( newAng, entity, g_Config.GetFloat ( "rbot_min_hitchance" ) ) )
 	if ( !HitChance ( newAng, entity, Hitchance ) )
     {
-        if ( g_Config.GetBool ( "rbot_autostop" ) )
+        //if ( g_Config.GetBool ( "rbot_autostop" ) )
+		if ( Settings::RageBot::AutoStop )
             AutoStop ( cmd );
 
-        if ( ! ( cmd->buttons & IN_DUCK ) && g_Config.GetBool ( "rbot_autocrouch" ) )
+        //if ( ! ( cmd->buttons & IN_DUCK ) && g_Config.GetBool ( "rbot_autocrouch" ) )
+		if ( !(cmd->buttons & IN_DUCK) && Settings::RageBot::AutoCrouch )
             AutoCrouch ( cmd );
 
         return;
@@ -136,7 +140,8 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
         return;
     }
 
-    int rbot_shooting_mode = g_Config.GetInt ( "rbot_shooting_mode" );
+    //int rbot_shooting_mode = g_Config.GetInt ( "rbot_shooting_mode" );
+	int rbot_shooting_mode = Settings::RageBot::ShootingMode;
 
     if ( rbot_shooting_mode == 2 ) g_Saver.RbotDidLastShot = true;
 
@@ -272,7 +277,15 @@ void Rbot::OnFireEvent ( IGameEvent* event )
 
 void Rbot::UpdateWeaponConfig(C_BaseCombatWeapon * weapon)
 {
-	if ( weapon->GetItemDefinitionIndex() == WEAPON_DEAGLE )
+	int WeaponID = Settings::RageBot::GetWeaponType(weapon);
+
+	Hitchance = Settings::RageBot::WeaponSettings[WeaponID].Hitchance;
+	MinDmg = Settings::RageBot::WeaponSettings[WeaponID].MinDamage;
+
+	BAimAfter = Settings::RageBot::WeaponSettings[WeaponID].BAimAfterShots;
+	ForceBAimAfter = Settings::RageBot::WeaponSettings[WeaponID].ForceBAimAfterShots;
+	MovingBAim = Settings::RageBot::WeaponSettings[WeaponID].BAimWhileMoving;
+	/*if ( weapon->GetItemDefinitionIndex() == WEAPON_DEAGLE )
 	{
 		Hitchance = g_Config.GetFloat("rbot_deagle_min_hitchance");
 		Hitchance = g_Config.GetFloat("rbot_deagle_min_hitchance");
@@ -344,7 +357,7 @@ void Rbot::UpdateWeaponConfig(C_BaseCombatWeapon * weapon)
 		BAimAfter = g_Config.GetInt("rbot_shotgun_baim_after_shots");
 		ForceBAimAfter = g_Config.GetInt("rbot_shotgun_force_baim_after_shots");
 		MovingBAim = g_Config.GetBool("rbot_shotgun_baim_while_moving");
-	}
+	}*/
 }
 
 bool Rbot::InFakeLag ( C_BasePlayer* player )
@@ -374,7 +387,8 @@ void Rbot::AutoCrouch ( CUserCmd* cmd )
 
 void Rbot::SlowWalk( CUserCmd * cmd, float speed )
 {
-	if (g_Config.GetBool("rbot_slowwalk") || !InputSys::Get().IsKeyDown(g_Config.GetInt("rbot_slowwalk_hotkey")) ) //|| !GetAsyncKeyState(VK_SHIFT))
+	//if (g_Config.GetBool("rbot_slowwalk") || !InputSys::Get().IsKeyDown(g_Config.GetInt("rbot_slowwalk_hotkey")) )
+	if( !Settings::RageBot::SlowWalk || !InputSys::Get().IsKeyDown(Settings::RageBot::SlowWalkHotkey) )
 		return;
 
 	if (speed <= 0.f)
@@ -561,10 +575,10 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
     /*int baim_after_shots = g_Config.GetInt ( "rbot_baim_after_shots" );
     int force_baim_after_shots = g_Config.GetInt ( "rbot_force_baim_after_shots" );*/
     bool rbot_lagcompensation = g_Config.GetBool ( "rbot_lagcompensation" );
-    bool rbot_force_unlage = g_Config.GetBool ( "rbot_force_unlage" );
+	bool rbot_force_unlage = Settings::RageBot::ForceUnlag; //g_Config.GetBool ( "rbot_force_unlage" );
     // bool rbot_baim_while_moving = g_Config.GetBool ( "rbot_baim_while_moving" );
-    bool rbot_resolver = g_Config.GetBool ( "rbot_resolver" );
-    int rbot_baimmode = g_Config.GetInt ( "rbot_baimmode" );
+	bool rbot_resolver = Settings::RageBot::Resolver; //g_Config.GetBool ( "rbot_resolver" );
+	int rbot_baimmode = Settings::RageBot::BAimMode; //g_Config.GetInt ( "rbot_baimmode" );
 
     bool FoundGoodEntity = false;
 
@@ -1098,45 +1112,45 @@ std::vector<PointScanStruct> Rbot::GetPointsForScan ( C_BasePlayer* entity, int 
 
 void Rbot::UpdateConfigData()
 {
-    HitboxHead = g_Config.GetBool ( "rbot_hitbox_head" );
+	HitboxHead = Settings::RageBot::Hitboxes[Settings::HitboxType::HEAD].Enabled;
 
-    if ( HitboxHead )
-        HitboxHeadScale = g_Config.GetFloat ( "rbot_hitbox_head_scale" );
+	if (HitboxHead)
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::HEAD].Scale;
 
-    HitboxNeck = g_Config.GetBool ( "rbot_hitbox_neck" );
+	HitboxNeck = Settings::RageBot::Hitboxes[Settings::HitboxType::NECK].Enabled;
 
-    if ( HitboxNeck )
-        HitboxHeadScale = g_Config.GetFloat ( "rbot_hitbox_neck_scale" );
+	if (HitboxNeck)
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::NECK].Scale;
 
-    HitboxChest = g_Config.GetBool ( "rbot_hitbox_chest" );
+	HitboxChest = Settings::RageBot::Hitboxes[Settings::HitboxType::CHEST].Enabled;
 
-    if ( HitboxChest )
-        HitboxHeadScale = g_Config.GetFloat ( "rbot_hitbox_chest_scale" );
+	if (HitboxChest)
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::CHEST].Scale;
 
-    HitboxPelvis = g_Config.GetBool ( "rbot_hitbox_pelvis" );
+	HitboxPelvis = Settings::RageBot::Hitboxes[Settings::HitboxType::PELVIS].Enabled;
 
-    if ( HitboxPelvis )
-        HitboxHeadScale = g_Config.GetFloat ( "rbot_hitbox_pelvis_scale" );
+	if (HitboxPelvis)
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::PELVIS].Scale;
 
-    HitboxStomach = g_Config.GetBool ( "rbot_hitbox_stomach" );
+	HitboxStomach = Settings::RageBot::Hitboxes[Settings::HitboxType::STOMACH].Enabled;
 
-    if ( HitboxStomach )
-        HitboxHeadScale = g_Config.GetFloat ( "rbot_hitbox_stomach_scale" );
+	if (HitboxStomach)
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::STOMACH].Scale;
 
-    HitboxArm = g_Config.GetBool ( "rbot_hitbox_arm" );
+	HitboxArm = Settings::RageBot::Hitboxes[Settings::HitboxType::ARM].Enabled;
 
-    if ( HitboxArm )
-        HitboxHeadScale = g_Config.GetFloat ( "rbot_hitbox_arm_scale" );
+	if (HitboxArm)
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::ARM].Scale; 
 
-    HitboxLeg = g_Config.GetBool ( "rbot_hitbox_leg" );
+	HitboxLeg = Settings::RageBot::Hitboxes[Settings::HitboxType::LEG].Enabled; 
 
-    if ( HitboxLeg )
-        HitboxHeadScale = g_Config.GetFloat ( "rbot_hitbox_leg_scale" );
+	if (HitboxLeg)
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::LEG].Scale;
 
-    HitboxFoot = g_Config.GetBool ( "rbot_hitbox_foot" );
+	HitboxFoot = Settings::RageBot::Hitboxes[Settings::HitboxType::FOOT].Enabled;
 
-    if ( HitboxFoot )
-        HitboxHeadScale = g_Config.GetFloat ( "rbot_hitbox_foot_scale" );
+	if (HitboxFoot)
+		HitboxHeadScale = Settings::RageBot::Hitboxes[Settings::HitboxType::FOOT].Scale;
 
     //MinDmg = g_Config.GetFloat ( "rbot_mindamage" );
 }

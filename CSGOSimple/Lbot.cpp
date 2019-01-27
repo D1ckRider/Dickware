@@ -7,6 +7,7 @@
 #include "helpers\input.hpp"
 #include "RuntimeSaver.h"
 #include "Backtrack.h"
+#include "Settings.h"
 
 void Lbot::OnCreateMove(CUserCmd* cmd)
 {
@@ -25,6 +26,7 @@ void Lbot::OnCreateMove(CUserCmd* cmd)
 	if (GetAsyncKeyState(VK_DELETE))
 	{
 		g_Logger.Info("WEAPON", "FOV is " + std::to_string(WeaponFov));
+		g_Logger.Info("WEAPON", "WeaponID is " + std::to_string(Settings::Aimbot::GetWeaponType(weapon)));
 	}
 
     std::deque<int> hb_enabled;
@@ -50,7 +52,7 @@ void Lbot::OnCreateMove(CUserCmd* cmd)
         hb_enabled.push_back(HITBOX_STOMACH);
     }
 
-    if (g_Config.GetBool("lbot_backtrack"))
+	if(Settings::Aimbot::Backtrack)
     {
         Backtrack::Get().LegitOnCreateMove(hb_enabled);
     }
@@ -80,174 +82,25 @@ void Lbot::OnCreateMove(CUserCmd* cmd)
 
 void Lbot::UpdateWeaponConfig(C_BaseCombatWeapon* weapon)
 {
-	if ( weapon->GetItemDefinitionIndex() == WEAPON_DEAGLE )
-	{
-		WeaponFov = g_Config.GetFloat("lbot_deagle_fov");
-		WeaponSmooth = g_Config.GetFloat("lbot_deagle_smooth");
-		WeaponRandomness = g_Config.GetFloat("lbot_deagle_randomize");
-		WeaponDelay = g_Config.GetFloat("lbot_deagle_delay");
-		WeaponFlickbot = g_Config.GetBool("lbot_deagle_flickbot");
+	int WeaponID = Settings::Aimbot::GetWeaponType(weapon);
 
-		WeaponRcs = g_Config.GetBool("lbot_deagle_rcs");
-		WeaponRecoilX = g_Config.GetFloat("lbot_deagle_rcs_x");
-		WeaponRecoilY = g_Config.GetFloat("lbot_deagle_rcs_y");
+	WeaponFov = Settings::Aimbot::WeaponAimSetting[WeaponID].FOV;
+	WeaponSmooth = Settings::Aimbot::WeaponAimSetting[WeaponID].Smooth;
+	WeaponRandomness = Settings::Aimbot::WeaponAimSetting[WeaponID].Randomize;
+	WeaponDelay = Settings::Aimbot::WeaponAimSetting[WeaponID].Delay;
 
-		WeaponHitboxHead = g_Config.GetBool("lbot_deagle_hitbox_head");
-		WeaponHitboxNeck = g_Config.GetBool("lbot_deagle_hitbox_neck");
-		WeaponHitboxChest = g_Config.GetBool("lbot_deagle_hitbox_chest");
-		WeaponHitboxPelvis = g_Config.GetBool("lbot_deagle_hitbox_pelvis");
-		WeaponHitboxStomach = g_Config.GetBool("lbot_deagle_hitbox_stomach");
-		WeaponHitboxArm = g_Config.GetBool("lbot_deagle_hitbox_arm");
-		WeaponHitboxLeg = g_Config.GetBool("lbot_deagle_hitbox_leg");
-		WeaponHitboxFoot = g_Config.GetBool("lbot_deagle_hitbox_foot");
-	}
-	else if ( weapon->GetItemDefinitionIndex() == WEAPON_SSG08 )
-	{
-		WeaponFov = g_Config.GetFloat("lbot_scout_fov");
-		WeaponSmooth = g_Config.GetFloat("lbot_scout_smooth");
-		WeaponRandomness = g_Config.GetFloat("lbot_scout_randomize");
-		WeaponDelay = g_Config.GetFloat("lbot_scout_delay");
-		WeaponFlickbot = g_Config.GetBool("lbot_scout_flickbot");
+	WeaponRcs = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS;
+	WeaponRecoilX = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_X;
+	WeaponRecoilY = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_Y;
 
-		WeaponRcs = g_Config.GetBool("lbot_scout_rcs");
-		WeaponRecoilX = g_Config.GetFloat("lbot_scoute_rcs_x");
-		WeaponRecoilY = g_Config.GetFloat("lbot_scout_rcs_y");
-
-		WeaponHitboxHead = g_Config.GetBool("lbot_scout_hitbox_head");
-		WeaponHitboxNeck = g_Config.GetBool("lbot_scout_hitbox_neck");
-		WeaponHitboxChest = g_Config.GetBool("lbot_scout_hitbox_chest");
-		WeaponHitboxPelvis = g_Config.GetBool("lbot_scout_hitbox_pelvis");
-		WeaponHitboxStomach = g_Config.GetBool("lbot_scout_hitbox_stomach");
-		WeaponHitboxArm = g_Config.GetBool("lbot_scout_hitbox_arm");
-		WeaponHitboxLeg = g_Config.GetBool("lbot_scout_hitbox_leg");
-		WeaponHitboxFoot = g_Config.GetBool("lbot_scout_hitbox_foot");
-	}
-    else if (weapon->IsPistol())
-    {
-        WeaponFov = g_Config.GetFloat("lbot_pistol_fov");
-        WeaponSmooth = g_Config.GetFloat("lbot_pistol_smooth");
-        WeaponRandomness = g_Config.GetFloat("lbot_pistol_randomize");
-        WeaponDelay = g_Config.GetFloat("lbot_pistol_delay");
-        WeaponFlickbot = g_Config.GetBool("lbot_pistol_flickbot");
-
-        WeaponRcs = g_Config.GetBool("lbot_pistol_rcs");
-        WeaponRecoilX = g_Config.GetFloat("lbot_pistol_rcs_x");
-        WeaponRecoilY = g_Config.GetFloat("lbot_pistol_rcs_y");
-
-        WeaponHitboxHead = g_Config.GetBool("lbot_pistol_hitbox_head");
-        WeaponHitboxNeck = g_Config.GetBool("lbot_pistol_hitbox_neck");
-        WeaponHitboxChest = g_Config.GetBool("lbot_pistol_hitbox_chest");
-        WeaponHitboxPelvis = g_Config.GetBool("lbot_pistol_hitbox_pelvis");
-        WeaponHitboxStomach = g_Config.GetBool("lbot_pistol_hitbox_stomach");
-        WeaponHitboxArm = g_Config.GetBool("lbot_pistol_hitbox_arm");
-        WeaponHitboxLeg = g_Config.GetBool("lbot_pistol_hitbox_leg");
-        WeaponHitboxFoot = g_Config.GetBool("lbot_pistol_hitbox_foot");
-    }
-    else if (weapon->IsSniper())
-    {
-        WeaponFov = g_Config.GetFloat("lbot_sniper_fov");
-        WeaponSmooth = g_Config.GetFloat("lbot_sniper_smooth");
-        WeaponRandomness = g_Config.GetFloat("lbot_sniper_randomize");
-        WeaponDelay = g_Config.GetFloat("lbot_sniper_delay");
-        WeaponFlickbot = g_Config.GetBool("lbot_sniper_flickbot");
-
-        WeaponRcs = g_Config.GetBool("lbot_sniper_rcs");
-        WeaponRecoilX = g_Config.GetFloat("lbot_sniper_rcs_x");
-        WeaponRecoilY = g_Config.GetFloat("lbot_sniper_rcs_y");
-
-        WeaponHitboxHead = g_Config.GetBool("lbot_sniper_hitbox_head");
-        WeaponHitboxNeck = g_Config.GetBool("lbot_sniper_hitbox_neck");
-        WeaponHitboxChest = g_Config.GetBool("lbot_sniper_hitbox_chest");
-        WeaponHitboxPelvis = g_Config.GetBool("lbot_sniper_hitbox_pelvis");
-        WeaponHitboxStomach = g_Config.GetBool("lbot_sniper_hitbox_stomach");
-        WeaponHitboxArm = g_Config.GetBool("lbot_sniper_hitbox_arm");
-        WeaponHitboxLeg = g_Config.GetBool("lbot_sniper_hitbox_leg");
-        WeaponHitboxFoot = g_Config.GetBool("lbot_sniper_hitbox_foot");
-    }
-    else if ( weapon->IsSubmachinegun() )
-    {
-        WeaponFov = g_Config.GetFloat("lbot_smg_fov");
-        WeaponSmooth = g_Config.GetFloat("lbot_smg_smooth");
-        WeaponRandomness = g_Config.GetFloat("lbot_smg_randomize");
-        WeaponDelay = g_Config.GetFloat("lbot_smg_delay");
-        WeaponFlickbot = g_Config.GetBool("lbot_smg_flickbot");
-
-        WeaponRcs = g_Config.GetBool("lbot_smg_rcs");
-        WeaponRecoilX = g_Config.GetFloat("lbot_smg_rcs_x");
-        WeaponRecoilY = g_Config.GetFloat("lbot_smg_rcs_y");
-
-        WeaponHitboxHead = g_Config.GetBool("lbot_smg_hitbox_head");
-        WeaponHitboxNeck = g_Config.GetBool("lbot_smg_hitbox_neck");
-        WeaponHitboxChest = g_Config.GetBool("lbot_smg_hitbox_chest");
-        WeaponHitboxPelvis = g_Config.GetBool("lbot_smg_hitbox_pelvis");
-        WeaponHitboxStomach = g_Config.GetBool("lbot_smg_hitbox_stomach");
-        WeaponHitboxArm = g_Config.GetBool("lbot_smg_hitbox_arm");
-        WeaponHitboxLeg = g_Config.GetBool("lbot_smg_hitbox_leg");
-        WeaponHitboxFoot = g_Config.GetBool("lbot_smg_hitbox_foot");
-    }
-    else if ( weapon->IsMachinegun() )
-    {
-        WeaponFov = g_Config.GetFloat("lbot_mg_fov");
-        WeaponSmooth = g_Config.GetFloat("lbot_mg_smooth");
-        WeaponRandomness = g_Config.GetFloat("lbot_mg_randomize");
-        WeaponDelay = g_Config.GetFloat("lbot_mg_delay");
-        WeaponFlickbot = g_Config.GetBool("lbot_mg_flickbot");
-
-        WeaponRcs = g_Config.GetBool("lbot_mg_rcs");
-        WeaponRecoilX = g_Config.GetFloat("lbot_mg_rcs_x");
-        WeaponRecoilY = g_Config.GetFloat("lbot_mg_rcs_y");
-
-        WeaponHitboxHead = g_Config.GetBool("lbot_mg_hitbox_head");
-        WeaponHitboxNeck = g_Config.GetBool("lbot_mg_hitbox_neck");
-        WeaponHitboxChest = g_Config.GetBool("lbot_mg_hitbox_chest");
-        WeaponHitboxPelvis = g_Config.GetBool("lbot_mg_hitbox_pelvis");
-        WeaponHitboxStomach = g_Config.GetBool("lbot_mg_hitbox_stomach");
-        WeaponHitboxArm = g_Config.GetBool("lbot_mg_hitbox_arm");
-        WeaponHitboxLeg = g_Config.GetBool("lbot_mg_hitbox_leg");
-        WeaponHitboxFoot = g_Config.GetBool("lbot_mg_hitbox_foot");
-    }
-    else if ( weapon->IsShotgun() )
-    {
-        WeaponFov = g_Config.GetFloat("lbot_shotgun_fov");
-        WeaponSmooth = g_Config.GetFloat("lbot_shotgun_smooth");
-        WeaponRandomness = g_Config.GetFloat("lbot_shotgun_randomize");
-        WeaponDelay = g_Config.GetFloat("lbot_shotgun_delay");
-        WeaponFlickbot = g_Config.GetBool("lbot_shotgun_flickbot");
-
-        WeaponRcs = g_Config.GetBool("lbot_shotgun_rcs");
-        WeaponRecoilX = g_Config.GetFloat("lbot_shotgun_rcs_x");
-        WeaponRecoilY = g_Config.GetFloat("lbot_shotgun_rcs_y");
-
-        WeaponHitboxHead = g_Config.GetBool("lbot_shotgun_hitbox_head");
-        WeaponHitboxNeck = g_Config.GetBool("lbot_shotgun_hitbox_neck");
-        WeaponHitboxChest = g_Config.GetBool("lbot_shotgun_hitbox_chest");
-        WeaponHitboxPelvis = g_Config.GetBool("lbot_shotgun_hitbox_pelvis");
-        WeaponHitboxStomach = g_Config.GetBool("lbot_shotgun_hitbox_stomach");
-        WeaponHitboxArm = g_Config.GetBool("lbot_shotgun_hitbox_arm");
-        WeaponHitboxLeg = g_Config.GetBool("lbot_shotgun_hitbox_leg");
-        WeaponHitboxFoot = g_Config.GetBool("lbot_shotgun_hitbox_foot");
-    }
-    else
-    {
-        WeaponFov = g_Config.GetFloat("lbot_rifle_fov");
-        WeaponSmooth = g_Config.GetFloat("lbot_rifle_smooth");
-        WeaponRandomness = g_Config.GetFloat("lbot_rifle_randomize");
-        WeaponDelay = g_Config.GetFloat("lbot_rifle_delay");
-        WeaponFlickbot = g_Config.GetBool("lbot_rifle_flickbot");
-
-        WeaponRcs = g_Config.GetBool("lbot_rifle_rcs");
-        WeaponRecoilX = g_Config.GetFloat("lbot_rifle_rcs_x");
-        WeaponRecoilY = g_Config.GetFloat("lbot_rifle_rcs_y");
-
-        WeaponHitboxHead = g_Config.GetBool("lbot_rifle_hitbox_head");
-        WeaponHitboxNeck = g_Config.GetBool("lbot_rifle_hitbox_neck");
-        WeaponHitboxChest = g_Config.GetBool("lbot_rifle_hitbox_chest");
-        WeaponHitboxPelvis = g_Config.GetBool("lbot_rifle_hitbox_pelvis");
-        WeaponHitboxStomach = g_Config.GetBool("lbot_rifle_hitbox_stomach");
-        WeaponHitboxArm = g_Config.GetBool("lbot_rifle_hitbox_arm");
-        WeaponHitboxLeg = g_Config.GetBool("lbot_rifle_hitbox_leg");
-        WeaponHitboxFoot = g_Config.GetBool("lbot_rifle_hitbox_foot");
-    }
+	WeaponHitboxHead = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxHead;
+	WeaponHitboxNeck = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxNeck;
+	WeaponHitboxChest = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxChest;
+	WeaponHitboxPelvis = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxPelvis;
+	WeaponHitboxStomach = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxStomach;
+	WeaponHitboxArm = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxArm;
+	WeaponHitboxLeg = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxLeg;
+	WeaponHitboxFoot = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxFoot;
 }
 
 int Lbot::GetBestTarget(C_BasePlayer* local, C_BaseCombatWeapon* weapon, CUserCmd* cmd, Vector& hitpos)
@@ -259,9 +112,9 @@ int Lbot::GetBestTarget(C_BasePlayer* local, C_BaseCombatWeapon* weapon, CUserCm
     int BestIndex = -1;
     //bool UsingBacktrack = false;
     //LegitTickRecord BestBacktrackTick;
-    bool lbot_backtrack = g_Config.GetBool("lbot_backtrack");
-    bool lbot_backtrack_aim = g_Config.GetBool("lbot_backtrack_aim");
-    float lbot_backtrack_ms = g_Config.GetFloat("lbot_backtrack_ms");
+	bool lbot_backtrack = Settings::Aimbot::Backtrack; //g_Config.GetBool("lbot_backtrack");
+	bool lbot_backtrack_aim = Settings::Aimbot::BacktrackAtAim; //g_Config.GetBool("lbot_backtrack_aim");
+	float lbot_backtrack_ms = Settings::Aimbot::BacktrackTick; //g_Config.GetFloat("lbot_backtrack_ms");
 
     //float flRange = weapon->GetCSWeaponData()->flRange;
 
@@ -473,7 +326,7 @@ void Lbot::DoAimbot(CUserCmd* cmd, C_BasePlayer* local, C_BaseCombatWeapon* weap
     static float EntityFoundTime = 0.f;
     static bool DidLastShot = false;
 
-    if (WeaponFlickbot && !weapon->CanFire())
+    if (!weapon->CanFire())
     {
         return;
     }
@@ -483,10 +336,9 @@ void Lbot::DoAimbot(CUserCmd* cmd, C_BasePlayer* local, C_BaseCombatWeapon* weap
         return;
     }
 
-    if (!InputSys::Get().IsKeyDown(g_Config.GetInt("lbot_aimkey")))
-    {
+    //if (!InputSys::Get().IsKeyDown(g_Config.GetInt("lbot_aimkey")))
+	if ( !InputSys::Get().IsKeyDown(Settings::Aimbot::Hotkey) )
         return;
-    }
 
     Vector Outpos = Vector(0, 0, 0);
     int Target = GetBestTarget(local, weapon, cmd, Outpos);

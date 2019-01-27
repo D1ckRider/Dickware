@@ -3,14 +3,14 @@
 #include "ConfigSystem.h"
 #include "Logger.h"
 #include "ConsoleHelper.h"
+#include "Settings.h"
 
 void BuyBot::OnRoundStart()
 {
     //static float LastBuy = 0.f;
-    if (!g_LocalPlayer || !g_EngineClient->IsConnected() || !g_EngineClient->IsInGame() || !g_Config.GetBool("misc_buybot"))
-    {
+    //if (!g_LocalPlayer || !g_EngineClient->IsConnected() || !g_EngineClient->IsInGame() || !g_Config.GetBool("misc_buybot"))
+	if (!g_LocalPlayer || !g_EngineClient->IsConnected() || !g_EngineClient->IsInGame() || !Settings::Misc::BuyBot)
         return;
-    }
 
     LastRoundStartTime = g_GlobalVars->curtime;
     ShouldBuy = true;
@@ -25,7 +25,8 @@ void BuyBot::OnCreateMove()
     ShouldBuy = false;
 
     std::string buycommand = "";
-    BuyBotHvHWeapons weapon = (BuyBotHvHWeapons)g_Config.GetInt("misc_buybot_weapon");
+    //BuyBotHvHWeapons weapon = (BuyBotHvHWeapons)g_Config.GetInt("misc_buybot_weapon");
+	BuyBotHvHWeapons weapon = (BuyBotHvHWeapons)Settings::Misc::BuyBotWeapon;
     switch (weapon)
     {
         case BuyBotHvHWeapons::SG_AUG:
@@ -55,7 +56,8 @@ void BuyBot::OnCreateMove()
     }
 
 
-    BuyBotPistols pistol = (BuyBotPistols)g_Config.GetInt("misc_buybot_pistol");
+    //BuyBotPistols pistol = (BuyBotPistols)g_Config.GetInt("misc_buybot_pistol");
+	BuyBotPistols pistol = (BuyBotPistols)Settings::Misc::BuyBotPistol;
     switch (pistol)
     {
         case BuyBotPistols::GLOCK_18__USP_S__P2000:
@@ -74,7 +76,7 @@ void BuyBot::OnCreateMove()
             buycommand += "buy deagle; buy revolver; ";
             break;
     }
-
+	/* Nades */
     if (g_Config.GetBool("misc_buybot_grenade_molotov"))
     {
         buycommand += "buy molotov; ";
@@ -96,19 +98,18 @@ void BuyBot::OnCreateMove()
         buycommand += "buy decoy; ";
     }
 
-    if (g_Config.GetBool("misc_buybot_armor"))
-    {
+	/* Etc */
+   // if (g_Config.GetBool("misc_buybot_armor"))
+	if ( Settings::Misc::BuyBotArmor )
         buycommand += "buy vest; buy vesthelm; ";
-    }
 
-    if (g_Config.GetBool("misc_buybot_zeus"))
-    {
+    //if (g_Config.GetBool("misc_buybot_zeus"))
+	if ( Settings::Misc::BuyBotZeus )
         buycommand += "buy taser; ";
-    }
-    if (g_Config.GetBool("misc_buybot_defuser"))
-    {
+
+    //if (g_Config.GetBool("misc_buybot_defuser"))
+	if ( Settings::Misc::BuyBotDefuser )
         buycommand += "buy defuser; ";
-    }
 
     g_Logger.Info("BUYBOT", buycommand.c_str());
 

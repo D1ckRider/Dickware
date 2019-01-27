@@ -136,6 +136,7 @@
     <ClCompile Include="render.cpp" />
     <ClCompile Include="Resolver.cpp" />
     <ClCompile Include="RuntimeSaver.cpp" />
+    <ClCompile Include="Settings.cpp" />
     <ClCompile Include="ThirdpersonAngleHelper.cpp" />
     <ClCompile Include="ui.cpp" />
     <ClCompile Include="valve_sdk\csgostructs.cpp" />
@@ -186,6 +187,7 @@
     <ClInclude Include="imgui\stb_textedit.h" />
     <ClInclude Include="imgui\stb_truetype.h" />
     <ClInclude Include="IRefCounted.h" />
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="KeyLoop.h" />
     <ClInclude Include="Lbot.h" />
     <ClInclude Include="Logger.h" />
@@ -199,6 +201,7 @@
     <ClInclude Include="render.hpp" />
     <ClInclude Include="Resolver.h" />
     <ClInclude Include="RuntimeSaver.h" />
+    <ClInclude Include="Settings.h" />
     <ClInclude Include="singleton.hpp" />
     <ClInclude Include="ThirdpersonAngleHelper.h" />
     <ClInclude Include="ui.hpp" />

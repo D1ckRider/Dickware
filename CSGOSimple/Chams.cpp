@@ -1,5 +1,6 @@
 
 #include "Chams.h"
+#include "Settings.h"
 #include "ConfigSystem.h"
 
 void Chams::OnSceneEnd()
@@ -9,7 +10,7 @@ void Chams::OnSceneEnd()
         return;
     }
 
-    ChamsModes LocalChamsMode = (ChamsModes)g_Config.GetInt("chams_mode_local");
+    /*ChamsModes LocalChamsMode = (ChamsModes)g_Config.GetInt("chams_mode_local");
     ChamsModes TeamChamsMode = (ChamsModes)g_Config.GetInt("chams_mode_team");
     ChamsModes EnemyChamsMode = (ChamsModes)g_Config.GetInt("chams_mode_enemy");
 
@@ -23,7 +24,22 @@ void Chams::OnSceneEnd()
 
     Color LocalColorXqz = g_Config.GetColor("color_chams_local_xqz");
     Color TeamColorXqz = g_Config.GetColor("color_chams_team_xqz");
-    Color EnemyColorXqz = g_Config.GetColor("color_chams_enemy_xqz");
+    Color EnemyColorXqz = g_Config.GetColor("color_chams_enemy_xqz");*/
+	ChamsModes LocalChamsMode = (ChamsModes)Settings::Visual::LocalChams.Mode;
+	ChamsModes TeamChamsMode = (ChamsModes)Settings::Visual::TeamChams.Mode;
+	ChamsModes EnemyChamsMode = (ChamsModes)Settings::Visual::EnemyChams.Mode;
+
+	bool LocalChams = Settings::Visual::LocalChams.Enabled;
+	bool TeamChams = Settings::Visual::TeamChams.Enabled;
+	bool EnemyChams = Settings::Visual::EnemyChams.Enabled;
+
+	Color LocalColor = Settings::Visual::LocalChams.Visible;
+	Color TeamColor = Settings::Visual::TeamChams.Visible;
+	Color EnemyColor = Settings::Visual::EnemyChams.Visible;
+
+	Color LocalColorXqz = Settings::Visual::LocalChams.Invisible;
+	Color TeamColorXqz = Settings::Visual::TeamChams.Invisible;
+	Color EnemyColorXqz = Settings::Visual::EnemyChams.Invisible;
 
     for (int i = 1; i < g_EngineClient->GetMaxClients(); i++)
     {
@@ -95,12 +111,12 @@ void Chams::OnSceneEnd()
         }
 
         MaterialManager::Get().OverrideMaterial(xqz || metallic_xqz || flat_xqz, flat, wireframe, glass, metallic);
-        g_RenderView->SetColorModulation(clr.r() / 255.f, clr.g() / 255.f, clr.b() / 255.f);
+        g_RenderView->SetColorModulation(clr2.r() / 255.f, clr2.g() / 255.f, clr2.b() / 255.f);
         entity->GetClientRenderable()->DrawModel(0x1, 255);
         if (xqz || metallic_xqz || flat_xqz)
         {
             MaterialManager::Get().OverrideMaterial(false, flat, wireframe, glass, metallic);
-            g_RenderView->SetColorModulation(clr2.r() / 255.f, clr2.g() / 255.f, clr2.b() / 255.f);
+            g_RenderView->SetColorModulation(clr.r() / 255.f, clr.g() / 255.f, clr.b() / 255.f);
             entity->GetClientRenderable()->DrawModel(0x1, 255);
         }
         g_MdlRender->ForcedMaterialOverride(nullptr);

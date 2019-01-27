@@ -5,7 +5,7 @@
 #include "valve_sdk/sdk.hpp"
 #include "helpers/utils.hpp"
 #include "helpers/input.hpp"
-
+#include "Settings.h"
 #include "hooks.hpp"
 #include "menu_helpers.hpp"
 #include "options.hpp"
@@ -44,6 +44,7 @@ DWORD WINAPI OnDllAttach ( LPVOID base )
         Render::Get().Initialize();
         MenuHelper::Get().Initialize();
 
+		Settings::Initialize();
         Hooks::Initialize();
 
         // Register some hotkeys.

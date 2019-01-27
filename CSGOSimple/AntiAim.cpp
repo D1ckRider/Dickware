@@ -5,16 +5,17 @@
 #include "RuntimeSaver.h"
 #include <chrono>
 #include "Autowall.h"
+#include "Settings.h"
 #include "ConsoleHelper.h"
 #include "helpers\input.hpp"
 #include "Logger.h"
 
+using AAState = Settings::RageBot::AntiAimType;
+
 void AntiAim::OnCreateMove ( CUserCmd* cmd, bool& bSendPacket )
 {
-    if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive() )
-    {
+    if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive())
         return;
-    }
 
     int movetype = g_LocalPlayer->m_nMoveType();
 
@@ -450,8 +451,9 @@ void AntiAim::LbyBreakerPrediction ( CUserCmd* cmd, bool& bSendPacket )
 {
     return;
 
-    if ( !g_Config.GetBool ( "rbot_aa_desync" ) || !g_Config.GetBool ( "rbot" ) || !g_LocalPlayer || !g_LocalPlayer->IsAlive() )
-    {
+    //if ( !g_Config.GetBool ( "rbot_aa_desync" ) || !g_Config.GetBool ( "rbot" ) || !g_LocalPlayer || !g_LocalPlayer->IsAlive() )
+	if (!Settings::RageBot::Desync || !Settings::RageBot::Enabled || !g_LocalPlayer || !g_LocalPlayer->IsAlive())
+	{
         return;
     }
 
@@ -652,7 +654,8 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
     YawAdd ( cmd, false );
     Pitch ( cmd );
 
-    if ( g_Config.GetBool ( "rbot_aa_desync" ) )
+    //if ( g_Config.GetBool ( "rbot_aa_desync" ) )
+	if ( Settings::RageBot::Desync )
     {
         bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1f || ( cmd->sidemove != 0.f || cmd->forwardmove != 0.f );
         bool InAir = ! ( g_LocalPlayer->m_fFlags() & FL_ONGROUND );
@@ -661,17 +664,11 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
         int FakeLagTicks = 0;
 
         if ( Standing )
-        {
-            FakeLagTicks = g_Config.GetInt ( "misc_fakelag_ticks_standing" );
-        }
+			FakeLagTicks = Settings::RageBot::AntiAimSettings[AAState::STANDING].FakelagTicks;
         else if ( InAir )
-        {
-            FakeLagTicks = g_Config.GetInt ( "misc_fakelag_ticks_air" );
-        }
+			FakeLagTicks = Settings::RageBot::AntiAimSettings[AAState::AIR].FakelagTicks;
         else
-        {
-            FakeLagTicks = g_Config.GetInt ( "misc_fakelag_ticks_moving" );
-        }
+			FakeLagTicks = Settings::RageBot::AntiAimSettings[AAState::MOVING].FakelagTicks;
 
         if ( FakeLagTicks == 0 )
         {
@@ -743,18 +740,18 @@ void AntiAim::Pitch ( CUserCmd* cmd )
 
     if ( Standing )
     {
-        mode = ( PitchAntiAims ) g_Config.GetInt ( "rbot_aa_stand_pitch" );
-        CustomPitch = g_Config.GetFloat ( "rbot_aa_stand_pitch_custom" );
+		mode = (PitchAntiAims)Settings::RageBot::AntiAimSettings[AAState::STANDING].Pitch; //( PitchAntiAims ) g_Config.GetInt ( "rbot_aa_stand_pitch" );
+        //CustomPitch = g_Config.GetFloat ( "rbot_aa_stand_pitch_custom" );
     }
     else if ( Moving && !InAir )
     {
-        mode = ( PitchAntiAims ) g_Config.GetInt ( "rbot_aa_move_pitch" );
-        CustomPitch = g_Config.GetFloat ( "rbot_aa_move_pitch_custom" );
+		mode = (PitchAntiAims)Settings::RageBot::AntiAimSettings[AAState::MOVING].Pitch;
+        //CustomPitch = g_Config.GetFloat ( "rbot_aa_move_pitch_custom" );
     }
     else
     {
-        mode = ( PitchAntiAims ) g_Config.GetInt ( "rbot_aa_air_pitch" );
-        CustomPitch = g_Config.GetFloat ( "rbot_aa_air_pitch_custom" );
+		mode = (PitchAntiAims)Settings::RageBot::AntiAimSettings[AAState::AIR].Pitch;
+        //CustomPitch = g_Config.GetFloat ( "rbot_aa_air_pitch_custom" );
     }
 
     switch ( mode )
@@ -898,15 +895,17 @@ void AntiAim::Pitch ( CUserCmd* cmd )
 
         case PitchAntiAims::SPIN:
         {
-            float pitch = fmodf ( g_GlobalVars->tickcount * g_Config.GetFloat ( "rbot_aa_spinbot_speed" ), 180.f );
-            Math::NormalizePitch ( pitch );
+            //float pitch = fmodf ( g_GlobalVars->tickcount * g_Config.GetFloat ( "rbot_aa_spinbot_speed" ), 180.f );
+			float pitch = fmodf(g_GlobalVars->tickcount * Settings::RageBot::SpinBotSpeed, 180.f);
+			Math::NormalizePitch ( pitch );
             cmd->viewangles.pitch = pitch;
             break;
         }
 
         case PitchAntiAims::SPIN_UP:
         {
-            float pitch = -fmodf ( g_GlobalVars->tickcount * g_Config.GetFloat ( "rbot_aa_spinbot_speed" ), 90.f );
+            //float pitch = -fmodf ( g_GlobalVars->tickcount * g_Config.GetFloat ( "rbot_aa_spinbot_speed" ), 90.f );
+			float pitch = -fmodf(g_GlobalVars->tickcount * Settings::RageBot::SpinBotSpeed, 90.f);
             Math::NormalizePitch ( pitch );
             cmd->viewangles.pitch = pitch;
             break;
@@ -914,7 +913,8 @@ void AntiAim::Pitch ( CUserCmd* cmd )
 
         case PitchAntiAims::SPIN_DOWN:
         {
-            float pitch = fmodf ( g_GlobalVars->tickcount * g_Config.GetFloat ( "rbot_aa_spinbot_speed" ), 90.f );
+            //float pitch = fmodf ( g_GlobalVars->tickcount * g_Config.GetFloat ( "rbot_aa_spinbot_speed" ), 90.f );
+			float pitch = fmodf(g_GlobalVars->tickcount * Settings::RageBot::SpinBotSpeed, 90.f);
             Math::NormalizePitch ( pitch );
             cmd->viewangles.pitch = pitch;
             break;
@@ -1001,9 +1001,9 @@ void AntiAim::Yaw ( CUserCmd* cmd, bool fake )
 
     if ( !fake )
     {
-        if ( g_Config.GetInt ( "rbot_manual_aa_state" ) != 0 )
+		if ( Settings::RageBot::ManualAAState )
         {
-            switch ( g_Config.GetInt ( "rbot_manual_aa_state" ) )
+			switch ( Settings::RageBot::ManualAAState )
             {
                 case 1: //left
                     cmd->viewangles.yaw -= 90.f;
@@ -1023,18 +1023,24 @@ void AntiAim::Yaw ( CUserCmd* cmd, bool fake )
 
         if ( Standing )
         {
-            mode = ( YawAntiAims ) g_Config.GetInt ( "rbot_aa_stand_real_yaw" );
-            CustomYaw = g_Config.GetFloat ( "rbot_aa_stand_real_yaw_custom" );
+            //mode = ( YawAntiAims ) g_Config.GetInt ( "rbot_aa_stand_real_yaw" );
+			mode = (YawAntiAims)Settings::RageBot::AntiAimSettings[AAState::STANDING].Yaw;
+			CustomYaw = Settings::RageBot::AntiAimSettings[AAState::STANDING].YawCustom;
+            //CustomYaw = g_Config.GetFloat ( "rbot_aa_stand_real_yaw_custom" );
         }
         else if ( Moving && !InAir )
         {
-            mode = ( YawAntiAims ) g_Config.GetInt ( "rbot_aa_move_real_yaw" );
-            CustomYaw = g_Config.GetFloat ( "rbot_aa_move_real_yaw_custom" );
+            //mode = ( YawAntiAims ) g_Config.GetInt ( "rbot_aa_move_real_yaw" );
+			mode = (YawAntiAims)Settings::RageBot::AntiAimSettings[AAState::MOVING].Yaw;
+			CustomYaw = Settings::RageBot::AntiAimSettings[AAState::MOVING].YawCustom;
+            //CustomYaw = g_Config.GetFloat ( "rbot_aa_move_real_yaw_custom" );
         }
         else
         {
-            mode = ( YawAntiAims ) g_Config.GetInt ( "rbot_aa_air_real_yaw" );
-            CustomYaw = g_Config.GetFloat ( "rbot_aa_air_real_yaw_custom" );
+            //mode = ( YawAntiAims ) g_Config.GetInt ( "rbot_aa_air_real_yaw" );
+			mode = (YawAntiAims)Settings::RageBot::AntiAimSettings[AAState::AIR].Yaw;
+			CustomYaw = Settings::RageBot::AntiAimSettings[AAState::AIR].YawCustom;
+            //CustomYaw = g_Config.GetFloat ( "rbot_aa_air_real_yaw_custom" );
         }
     }
     else
@@ -1063,7 +1069,8 @@ void AntiAim::Yaw ( CUserCmd* cmd, bool fake )
             break;
 
         case YawAntiAims::SPINBOT:
-            cmd->viewangles.yaw = fmodf ( g_GlobalVars->tickcount * g_Config.GetFloat ( "rbot_aa_spinbot_speed" ), 360.f );
+            //cmd->viewangles.yaw = fmodf ( g_GlobalVars->tickcount * g_Config.GetFloat ( "rbot_aa_spinbot_speed" ), 360.f );
+			cmd->viewangles.yaw = fmodf(g_GlobalVars->tickcount * Settings::RageBot::SpinBotSpeed, 360.f);
             break;
 
         case YawAntiAims::LOWER_BODY:
@@ -1111,18 +1118,25 @@ void AntiAim::YawAdd ( CUserCmd* cmd, bool fake )
     {
         if ( Standing )
         {
-            mode = ( YawAddAntiAims ) g_Config.GetInt ( "rbot_aa_stand_real_add_yaw_add" );
-            YawAddRange = g_Config.GetFloat ( "rbot_aa_stand_real_add_yaw_add_range" );
+            //mode = ( YawAddAntiAims ) g_Config.GetInt ( "rbot_aa_stand_real_add_yaw_add" );
+			mode = (YawAddAntiAims)Settings::RageBot::AntiAimSettings[AAState::STANDING].YawAdd;
+			YawAddRange = Settings::RageBot::AntiAimSettings[AAState::STANDING].Range;
+            //YawAddRange = g_Config.GetFloat ( "rbot_aa_stand_real_add_yaw_add_range" );
         }
         else if ( Moving && !InAir )
         {
-            mode = ( YawAddAntiAims ) g_Config.GetInt ( "rbot_aa_move_real_add_yaw_add" );
-            YawAddRange = g_Config.GetFloat ( "rbot_aa_move_real_add_yaw_add_range" );
+            //mode = ( YawAddAntiAims ) g_Config.GetInt ( "rbot_aa_move_real_add_yaw_add" );
+			mode = (YawAddAntiAims)Settings::RageBot::AntiAimSettings[AAState::MOVING].YawAdd;
+			YawAddRange = Settings::RageBot::AntiAimSettings[AAState::MOVING].Range;
+            //YawAddRange = g_Config.GetFloat ( "rbot_aa_move_real_add_yaw_add_range" );
         }
         else
         {
-            mode = ( YawAddAntiAims ) g_Config.GetInt ( "rbot_aa_air_real_add_yaw_add" );
-            YawAddRange = g_Config.GetFloat ( "rbot_aa_air_real_add_yaw_add_range" );
+            //mode = ( YawAddAntiAims ) g_Config.GetInt ( "rbot_aa_air_real_add_yaw_add" );
+			mode = (YawAddAntiAims)Settings::RageBot::AntiAimSettings[AAState::AIR].YawAdd;
+			YawAddRange = Settings::RageBot::AntiAimSettings[AAState::AIR].Range;
+			//YawAddRange = 15.f;
+            //YawAddRange = g_Config.GetFloat ( "rbot_aa_air_real_add_yaw_add_range" );
         }
     }
     else
@@ -1189,8 +1203,9 @@ void AntiAim::YawAdd ( CUserCmd* cmd, bool fake )
 
         case YawAddAntiAims::SPIN:
         {
-            cmd->viewangles.yaw += fmodf ( g_GlobalVars->tickcount * g_Config.GetFloat ( "rbot_aa_spinbot_speed" ), YawAddRange );
-            break;
+            //cmd->viewangles.yaw += fmodf ( g_GlobalVars->tickcount * g_Config.GetFloat ( "rbot_aa_spinbot_speed" ), YawAddRange );
+			cmd->viewangles.yaw += fmodf(g_GlobalVars->tickcount * Settings::RageBot::SpinBotSpeed, YawAddRange);
+			break;
         }
 
         case YawAddAntiAims::RANDOM:

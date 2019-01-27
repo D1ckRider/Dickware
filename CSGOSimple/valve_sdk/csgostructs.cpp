@@ -105,12 +105,6 @@ bool C_BaseCombatWeapon::IsRifle()
     {
         case WEAPONTYPE_RIFLE:
             return true;
-        case WEAPONTYPE_SUBMACHINEGUN:
-            return true;
-        case WEAPONTYPE_SHOTGUN:
-            return true;
-        case WEAPONTYPE_MACHINEGUN:
-            return true;
         default:
             return false;
     }
