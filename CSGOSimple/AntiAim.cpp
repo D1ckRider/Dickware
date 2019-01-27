@@ -12,26 +12,12 @@
 
 using AAState = Settings::RageBot::AntiAimType;
 
-int onLadder = 0;
-
 void AntiAim::OnCreateMove ( CUserCmd* cmd, bool& bSendPacket )
 {
     if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive())
         return;
 
     int movetype = g_LocalPlayer->m_nMoveType();
-
-	if (movetype == MOVETYPE_LADDER)
-	{
-		onLadder = 2;
-		return;
-	}
-
-	if (onLadder > 0)
-	{
-		onLadder--;
-		return;
-	}
 
     if (
         movetype == MOVETYPE_FLY
