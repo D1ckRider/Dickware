@@ -318,7 +318,8 @@ namespace Hooks
 		if ( rbot && Settings::RageBot::Resolver )
             Resolver::Get().OnCreateMove ( OldViewangles );
 
-        if ( g_Config.GetBool ( "misc_buybot" ) )
+        //if ( g_Config.GetBool ( "misc_buybot" ) )
+		if ( Settings::Misc::BuyBot )
             BuyBot::Get().OnCreateMove();
 
 		if ( Settings::Misc::Clantag )
@@ -410,7 +411,6 @@ namespace Hooks
             if ( bSkip )
                 return;
 
-            //if ( g_LocalPlayer && InputSys::Get().IsKeyDown ( VK_TAB ) && g_Config.GetBool ( "misc_showranks" ) )
 			if ( g_LocalPlayer && InputSys::Get().IsKeyDown(VK_TAB) && Settings::Misc::RankReveal )
                 Utils::RankRevealAll();
 
@@ -425,8 +425,8 @@ namespace Hooks
 		/*if (!strcmp(pSoundEntry, "UIPanorama.popup_accept_match_beep"))
 			Misc::Get().SetLocalPlayerReady();(*/
 
-        /*
-        if (!strcmp(pSoundEntry, "UIPanorama.popup_accept_match_beep")) {
+        
+        if (Settings::Misc::AutoAccept && !strcmp(pSoundEntry, "UIPanorama.popup_accept_match_beep")) {
         	static auto fnAccept = reinterpret_cast<bool(__stdcall*)(const char*)>(Utils::PatternScan(GetModuleHandleA("client_panorama.dll"), "55 8B EC 83 E4 F8 8B 4D 08 BA ? ? ? ? E8 ? ? ? ? 85 C0 75 12"));
 
         	if (fnAccept) {
@@ -444,7 +444,7 @@ namespace Hooks
         		FlashWindowEx(&fi);
         	}
         }
-        */
+        
 
         ofunc ( g_EngineSound, filter, iEntIndex, iChannel, pSoundEntry, nSoundEntryHash, pSample, flVolume, nSeed, flAttenuation, iFlags, iPitch, pOrigin, pDirection, pUtlVecOrigins, bUpdatePositions, soundtime, speakerentity, unk );
 

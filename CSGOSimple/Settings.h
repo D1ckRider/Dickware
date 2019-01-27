@@ -16,7 +16,8 @@ namespace Settings
 	extern std::string AppDataFolder;
 	void Initialize();
 	void CreateConfig(std::string fileName);
-	void RefreshConfigList();
+	void RefreshConfigList(); 
+	void ResetConfig();
 	void SaveSettings(std::string fileName);
 	void LoadSettings(std::string fileName);
 	void SaveColorValue(json &j, std::string name, const Color& value);
@@ -212,14 +213,26 @@ namespace Settings
 
 	namespace Misc
 	{
+		struct BuyBotNades
+		{
+			bool NadeMolotov;
+			bool NadeDecoy;
+			bool NadeFlash;
+			bool NadeHE;
+			bool NadeSmoke;
+		};
 		extern bool BHop;
 		extern bool AutoStrafe;
 		extern bool RankReveal;
 		extern bool NoCrouchCooldown;
 		extern bool Clantag;
-		/*extern bool BuyBot;
+		extern bool AutoAccept;
+		extern bool BuyBot;
 		extern int BuyBotPistol;
-		extern int */
-
+		extern int BuyBotWeapon;
+		//extern BuyBotNades BuyNades;
+		extern bool BuyBotArmor;
+		extern bool BuyBotZeus;
+		extern bool BuyBotDefuser;
 	}
 }

@@ -141,6 +141,7 @@ void Settings::CreateConfig(std::string fileName)
 	std::ofstream ofs(AppDataFolder + "configs\\" + fileName);
 	ofs << "";
 	ofs.close();
+	SaveSettings(fileName);
 
 	g_Logger.Success("CONFIG", "config " + orgfile + " created");
 
@@ -158,6 +159,11 @@ void Settings::RefreshConfigList()
 	}
 
 	g_Logger.Info("CONFIG", "refreshed config list");
+}
+
+void Settings::ResetConfig()
+{
+
 }
 
 void Settings::SaveSettings(std::string fileName)
@@ -321,8 +327,15 @@ void Settings::SaveSettings(std::string fileName)
 	j["misc_bhop"] = Misc::BHop;
 	j["misc_autostrafe"] = Misc::AutoStrafe;
 	j["misc_rank_reveal"] = Misc::RankReveal;
+	j["misc_autoaccept"] = Misc::AutoAccept;
 	j["misc_no_crouch_cooldown"] = Misc::NoCrouchCooldown;
 	j["misc_clantag"] = Misc::Clantag;
+	j["misc_buybot_enabled"] = Misc::BuyBot;
+	j["misc_buybot_pistol"] = Misc::BuyBotPistol;
+	j["misc_buybot_weapon"] = Misc::BuyBotWeapon;
+	j["misc_buybot_armor"] = Misc::BuyBotArmor;
+	j["misc_buybot_zeus"] = Misc::BuyBotZeus;
+	j["misc_buybot_defuser"] = Misc::BuyBotDefuser;
 	/* Write file */
 	o << std::setw(4) << j << std::endl;
 }
@@ -490,7 +503,14 @@ void Settings::LoadSettings(std::string fileName)
 	Misc::AutoStrafe = j["misc_autostrafe"];
 	Misc::RankReveal = j["misc_rank_reveal"];
 	Misc::NoCrouchCooldown = j["misc_no_crouch_cooldown"];
+	Misc::AutoAccept = j["misc_autoaccept"];
 	Misc::Clantag = j["misc_clantag"];
+	Misc::BuyBot = j["misc_buybot_enabled"];
+	Misc::BuyBotPistol = j["misc_buybot_pistol"];
+	Misc::BuyBotWeapon = j["misc_buybot_weapon"];
+	Misc::BuyBotArmor = j["misc_buybot_armor"];
+	Misc::BuyBotZeus = j["misc_buybot_zeus"];
+	Misc::BuyBotDefuser = j["misc_buybot_defuser"];
 }
 
 void Settings::SaveColorValue(json & j, std::string name, const Color & value)
@@ -647,5 +667,12 @@ namespace Settings::Misc
 	bool AutoStrafe = false;
 	bool RankReveal = false;
 	bool NoCrouchCooldown = false;
+	bool AutoAccept = false;
 	bool Clantag = false;
+	bool BuyBot = false;
+	int BuyBotPistol = 0;
+	int BuyBotWeapon = 0;
+	bool BuyBotArmor = false;
+	bool BuyBotZeus = false;
+	bool BuyBotDefuser = false;
 }

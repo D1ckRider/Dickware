@@ -73,7 +73,7 @@ void Menu::RenderRagebot()
     Components.Columns ( 2, false );
 
     Components.Label ( "Ragebot" );
-	ImGui::Checkbox("Enable", &Settings::RageBot::Enabled);
+	Components.Checkbox("Enable",  Settings::RageBot::Enabled);
 
 	static char* WeaponConfigSelectionItems[] = { "G", "A", "J", "a", "Z", "Y", "W", "c" };
 	static char* WeaponConfigSelectionItemsText[] = { "Pistol", "Deagle", "R8", "Scout", "AWP", "Auto", "Rifle", "Shotgun" };
@@ -83,75 +83,75 @@ void Menu::RenderRagebot()
 	switch ((RbotWeaponsAvailable)WeaponSelected)
 	{
 		case RbotWeaponsAvailable::PISTOL:
-			ImGui::SliderFloat("Hitchance", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_PISTOL].Hitchance, 0.f, 100.f);
-			ImGui::SliderFloat("Min Damage", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_PISTOL].MinDamage, 0.f, 100.f);
-			ImGui::SliderInt("BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_PISTOL].BAimAfterShots, 0, 10);
-			ImGui::SliderInt("Force BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_PISTOL].ForceBAimAfterShots, 0, 10);
-			ImGui::Checkbox("BAim while moving", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_PISTOL].BAimWhileMoving);
+			Components.SliderFloat("Hitchance",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_PISTOL].Hitchance, 0.f, 100.f);
+			Components.SliderFloat("Min Damage",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_PISTOL].MinDamage, 0.f, 100.f);
+			Components.SliderInt("BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_PISTOL].BAimAfterShots, 0, 10);
+			Components.SliderInt("Force BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_PISTOL].ForceBAimAfterShots, 0, 10);
+			Components.Checkbox("BAim while moving",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_PISTOL].BAimWhileMoving);
 
 			break;
 		case RbotWeaponsAvailable::DEAGLE:
-			ImGui::SliderFloat("Hitchance", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_DEAGLE].Hitchance, 0.f, 100.f);
-			ImGui::SliderFloat("Min Damage", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_DEAGLE].MinDamage, 0.f, 100.f);
-			ImGui::SliderInt("BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_DEAGLE].BAimAfterShots, 0, 10);
-			ImGui::SliderInt("Force BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_DEAGLE].ForceBAimAfterShots, 0, 10);
-			ImGui::Checkbox("BAim while moving", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_DEAGLE].BAimWhileMoving);
+			Components.SliderFloat("Hitchance",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_DEAGLE].Hitchance, 0.f, 100.f);
+			Components.SliderFloat("Min Damage",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_DEAGLE].MinDamage, 0.f, 100.f);
+			Components.SliderInt("BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_DEAGLE].BAimAfterShots, 0, 10);
+			Components.SliderInt("Force BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_DEAGLE].ForceBAimAfterShots, 0, 10);
+			Components.Checkbox("BAim while moving",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_DEAGLE].BAimWhileMoving);
 
 			break;
 		case RbotWeaponsAvailable::REVOLVER:
-			ImGui::SliderFloat("Hitchance", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_REVOLVER].Hitchance, 0.f, 100.f);
-			ImGui::SliderFloat("Min Damage", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_REVOLVER].MinDamage, 0.f, 100.f);
-			ImGui::SliderInt("BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_REVOLVER].BAimAfterShots, 0, 10);
-			ImGui::SliderInt("Force BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_REVOLVER].ForceBAimAfterShots, 0, 10);
-			ImGui::Checkbox("BAim while moving", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_REVOLVER].BAimWhileMoving);
+			Components.SliderFloat("Hitchance",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_REVOLVER].Hitchance, 0.f, 100.f);
+			Components.SliderFloat("Min Damage",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_REVOLVER].MinDamage, 0.f, 100.f);
+			Components.SliderInt("BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_REVOLVER].BAimAfterShots, 0, 10);
+			Components.SliderInt("Force BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_REVOLVER].ForceBAimAfterShots, 0, 10);
+			Components.Checkbox("BAim while moving",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_REVOLVER].BAimWhileMoving);
 
 			break;
 		case RbotWeaponsAvailable::SCOUT:
-			ImGui::SliderFloat("Hitchance", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SSG08].Hitchance, 0.f, 100.f);
-			ImGui::SliderFloat("Min Damage", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SSG08].MinDamage, 0.f, 100.f);
-			ImGui::SliderInt("BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SSG08].BAimAfterShots, 0, 10);
-			ImGui::SliderInt("Force BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SSG08].ForceBAimAfterShots, 0, 10);
-			ImGui::Checkbox("BAim while moving", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SSG08].BAimWhileMoving);
+			Components.SliderFloat("Hitchance",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SSG08].Hitchance, 0.f, 100.f);
+			Components.SliderFloat("Min Damage",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SSG08].MinDamage, 0.f, 100.f);
+			Components.SliderInt("BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SSG08].BAimAfterShots, 0, 10);
+			Components.SliderInt("Force BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SSG08].ForceBAimAfterShots, 0, 10);
+			Components.Checkbox("BAim while moving",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SSG08].BAimWhileMoving);
 
 			break;
 		case RbotWeaponsAvailable::AWP:
-			ImGui::SliderFloat("Hitchance", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AWP].Hitchance, 0.f, 100.f);
-			ImGui::SliderFloat("Min Damage", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AWP].MinDamage, 0.f, 100.f);
-			ImGui::SliderInt("BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AWP].BAimAfterShots, 0, 10);
-			ImGui::SliderInt("Force BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AWP].ForceBAimAfterShots, 0, 10);
-			ImGui::Checkbox("BAim while moving", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AWP].BAimWhileMoving);
+			Components.SliderFloat("Hitchance",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AWP].Hitchance, 0.f, 100.f);
+			Components.SliderFloat("Min Damage",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AWP].MinDamage, 0.f, 100.f);
+			Components.SliderInt("BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AWP].BAimAfterShots, 0, 10);
+			Components.SliderInt("Force BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AWP].ForceBAimAfterShots, 0, 10);
+			Components.Checkbox("BAim while moving",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AWP].BAimWhileMoving);
 
 			break;
 		case RbotWeaponsAvailable::AUTO:
-			ImGui::SliderFloat("Hitchance", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AUTO].Hitchance, 0.f, 100.f);
-			ImGui::SliderFloat("Min Damage", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AUTO].MinDamage, 0.f, 100.f);
-			ImGui::SliderInt("BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AUTO].BAimAfterShots, 0, 10);
-			ImGui::SliderInt("Force BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AUTO].ForceBAimAfterShots, 0, 10);
-			ImGui::Checkbox("BAim while moving", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AUTO].BAimWhileMoving);
+			Components.SliderFloat("Hitchance",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AUTO].Hitchance, 0.f, 100.f);
+			Components.SliderFloat("Min Damage",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AUTO].MinDamage, 0.f, 100.f);
+			Components.SliderInt("BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AUTO].BAimAfterShots, 0, 10);
+			Components.SliderInt("Force BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AUTO].ForceBAimAfterShots, 0, 10);
+			Components.Checkbox("BAim while moving",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_AUTO].BAimWhileMoving);
 
 			break;
 		case RbotWeaponsAvailable::RIFLE:
-			ImGui::SliderFloat("Hitchance", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_RIFLE].Hitchance, 0.f, 100.f);
-			ImGui::SliderFloat("Min Damage", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_RIFLE].MinDamage, 0.f, 100.f);
-			ImGui::SliderInt("BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_RIFLE].BAimAfterShots, 0, 10);
-			ImGui::SliderInt("Force BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_RIFLE].ForceBAimAfterShots, 0, 10);
-			ImGui::Checkbox("BAim while moving", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_RIFLE].BAimWhileMoving);
+			Components.SliderFloat("Hitchance",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_RIFLE].Hitchance, 0.f, 100.f);
+			Components.SliderFloat("Min Damage",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_RIFLE].MinDamage, 0.f, 100.f);
+			Components.SliderInt("BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_RIFLE].BAimAfterShots, 0, 10);
+			Components.SliderInt("Force BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_RIFLE].ForceBAimAfterShots, 0, 10);
+			Components.Checkbox("BAim while moving",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_RIFLE].BAimWhileMoving);
 
 			break;
 		case RbotWeaponsAvailable::SHOTGUN:
-			ImGui::SliderFloat("Hitchance", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SHOTGUN].Hitchance, 0.f, 100.f);
-			ImGui::SliderFloat("Min Damage", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SHOTGUN].MinDamage, 0.f, 100.f);
-			ImGui::SliderInt("BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SHOTGUN].BAimAfterShots, 0, 10);
-			ImGui::SliderInt("Force BAim after x shots", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SHOTGUN].ForceBAimAfterShots, 0, 10);
-			ImGui::Checkbox("BAim while moving", &Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SHOTGUN].BAimWhileMoving);
+			Components.SliderFloat("Hitchance",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SHOTGUN].Hitchance, 0.f, 100.f);
+			Components.SliderFloat("Min Damage",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SHOTGUN].MinDamage, 0.f, 100.f);
+			Components.SliderInt("BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SHOTGUN].BAimAfterShots, 0, 10);
+			Components.SliderInt("Force BAim after x shots",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SHOTGUN].ForceBAimAfterShots, 0, 10);
+			Components.Checkbox("BAim while moving",  Settings::RageBot::WeaponSettings[WeaponType::WEAPON_SHOTGUN].BAimWhileMoving);
 
 			break;
 	}
 
 	const char* BaimModes[] = { "never", "auto" };
-	Components.ComboBox("BAim Mode", BaimModes, IM_ARRAYSIZE(BaimModes), &Settings::RageBot::BAimMode);
-	ImGui::Checkbox("Air BAim", &Settings::RageBot::AirBAim);
-	ImGui::Hotkey("Force BAim hotkey", &Settings::RageBot::BAimHotkey);
+	Components.ComboBox("BAim Mode", BaimModes, IM_ARRAYSIZE(BaimModes), Settings::RageBot::BAimMode);
+	Components.Checkbox("Air BAim",  Settings::RageBot::AirBAim);
+	Components.Hotkey("Force BAim hotkey",  Settings::RageBot::BAimHotkey);
 
 	//Components.SliderInt("Brut after x shots", "rbot_brutforce_after_shots", 0, 10);
 
@@ -159,53 +159,53 @@ void Menu::RenderRagebot()
 	//Components.SliderFloat("Pointscale body", "rbot_body_scale", 0.f, 1.f);
 
     Components.BeginChild ( "#hitboxes", ImVec2 ( 0.f, 204.f ) );
-	ImGui::Checkbox("Head", &Settings::RageBot::Hitboxes[HitboxType::HEAD].Enabled);
+	Components.Checkbox("Head",  Settings::RageBot::Hitboxes[HitboxType::HEAD].Enabled);
 	Components.SameLine();
 	Components.Label(" Scale:");
 	Components.SameLine();
-	ImGui::SliderFloat(" ", &Settings::RageBot::Hitboxes[HitboxType::HEAD].Scale, 0.f, 1.f);
+	Components.SliderFloat(" ",  Settings::RageBot::Hitboxes[HitboxType::HEAD].Scale, 0.f, 1.f);
 
-	ImGui::Checkbox("Neck", &Settings::RageBot::Hitboxes[HitboxType::NECK].Enabled);
+	Components.Checkbox("Neck",  Settings::RageBot::Hitboxes[HitboxType::NECK].Enabled);
 	Components.SameLine();
 	Components.Label(" Scale:");
 	Components.SameLine();
-	ImGui::SliderFloat("  ", &Settings::RageBot::Hitboxes[HitboxType::NECK].Scale, 0.f, 1.f);
+	Components.SliderFloat("  ",  Settings::RageBot::Hitboxes[HitboxType::NECK].Scale, 0.f, 1.f);
 	
-	ImGui::Checkbox("Chest", &Settings::RageBot::Hitboxes[HitboxType::CHEST].Enabled);
+	Components.Checkbox("Chest",  Settings::RageBot::Hitboxes[HitboxType::CHEST].Enabled);
 	Components.SameLine();
 	Components.Label(" Scale:");
 	Components.SameLine();
-	ImGui::SliderFloat("   ", &Settings::RageBot::Hitboxes[HitboxType::CHEST].Scale, 0.f, 1.f);
+	Components.SliderFloat("   ",  Settings::RageBot::Hitboxes[HitboxType::CHEST].Scale, 0.f, 1.f);
 
-	ImGui::Checkbox("Pelvis", &Settings::RageBot::Hitboxes[HitboxType::PELVIS].Enabled);
+	Components.Checkbox("Pelvis",  Settings::RageBot::Hitboxes[HitboxType::PELVIS].Enabled);
 	Components.SameLine();
 	Components.Label(" Scale:");
 	Components.SameLine();
-	ImGui::SliderFloat("    ", &Settings::RageBot::Hitboxes[HitboxType::PELVIS].Scale, 0.f, 1.f);
+	Components.SliderFloat("    ",  Settings::RageBot::Hitboxes[HitboxType::PELVIS].Scale, 0.f, 1.f);
 
-	ImGui::Checkbox("Stomach", &Settings::RageBot::Hitboxes[HitboxType::STOMACH].Enabled);
+	Components.Checkbox("Stomach",  Settings::RageBot::Hitboxes[HitboxType::STOMACH].Enabled);
 	Components.SameLine();
 	Components.Label(" Scale:");
 	Components.SameLine();
-	ImGui::SliderFloat("     ", &Settings::RageBot::Hitboxes[HitboxType::STOMACH].Scale, 0.f, 1.f);
+	Components.SliderFloat("     ",  Settings::RageBot::Hitboxes[HitboxType::STOMACH].Scale, 0.f, 1.f);
 
-	ImGui::Checkbox("Arm", &Settings::RageBot::Hitboxes[HitboxType::ARM].Enabled);
+	Components.Checkbox("Arm",  Settings::RageBot::Hitboxes[HitboxType::ARM].Enabled);
 	Components.SameLine();
 	Components.Label(" Scale:");
 	Components.SameLine();
-	ImGui::SliderFloat("       ", &Settings::RageBot::Hitboxes[HitboxType::ARM].Scale, 0.f, 1.f);
+	Components.SliderFloat("         ",  Settings::RageBot::Hitboxes[HitboxType::ARM].Scale, 0.f, 1.f);
 
-	ImGui::Checkbox("Leg", &Settings::RageBot::Hitboxes[HitboxType::LEG].Enabled);
+	Components.Checkbox("Leg",  Settings::RageBot::Hitboxes[HitboxType::LEG].Enabled);
 	Components.SameLine();
 	Components.Label(" Scale:");
 	Components.SameLine();
-	ImGui::SliderFloat("       ", &Settings::RageBot::Hitboxes[HitboxType::LEG].Scale, 0.f, 1.f);
+	Components.SliderFloat("       ",  Settings::RageBot::Hitboxes[HitboxType::LEG].Scale, 0.f, 1.f);
 
-	ImGui::Checkbox("Foot", &Settings::RageBot::Hitboxes[HitboxType::FOOT].Enabled);
+	Components.Checkbox("Foot",  Settings::RageBot::Hitboxes[HitboxType::FOOT].Enabled);
 	Components.SameLine();
 	Components.Label(" Scale:");
 	Components.SameLine();
-	ImGui::SliderFloat("        ", &Settings::RageBot::Hitboxes[HitboxType::FOOT].Scale, 0.f, 1.f);
+	Components.SliderFloat("        ",  Settings::RageBot::Hitboxes[HitboxType::FOOT].Scale, 0.f, 1.f);
     Components.EndChild();
 
     Components.NextColumn();
@@ -216,7 +216,7 @@ void Menu::RenderRagebot()
     static char* AntiAimMenus[]		= { "stand", "move", "air", "misc" };
     static int AAMenuSelected = 0;
     Components.Navbar ( AntiAimMenus, IM_ARRAYSIZE ( AntiAimMenus ), AAMenuSelected );
-	ImGui::Checkbox("Enable AA", &Settings::RageBot::EnabledAA);
+	Components.Checkbox("Enable AA",  Settings::RageBot::EnabledAA);
     static const char* FakelagModes[] = { "normal", "adaptive" };
 
     switch ( ( RbotMenuAvailable ) AAMenuSelected )
@@ -225,50 +225,50 @@ void Menu::RenderRagebot()
             //if(g_Config.GetInt())
             //Components.SliderFloat("real add angel", "", -180.f, 180.f);
             //Components.ComboBox("fake yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), "rbot_aa_stand_fake_yaw");
-			Components.ComboBox("Pitch AA", PitchAAs, IM_ARRAYSIZE(PitchAAs), &Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].Pitch);
-			Components.ComboBox("Real yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), &Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].Yaw);
+			Components.ComboBox("Pitch AA", PitchAAs, IM_ARRAYSIZE(PitchAAs), Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].Pitch);
+			Components.ComboBox("Real yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].Yaw);
 
             //Components.ComboBox("fake add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), "rbot_aa_stand_fake_add_yaw_add");
             //Components.SliderFloat("range ", "rbot_aa_stand_fake_add_yaw_add_range", 0.f, 360.f);
-			Components.ComboBox("Real Add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), &Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].YawAdd);
-			ImGui::SliderFloat("Range", &Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].Range, 0.f, 360.f);
+			Components.ComboBox("Real Add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].YawAdd);
+			Components.SliderFloat("Range",  Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].Range, 0.f, 360.f);
 
-			ImGui::SliderInt("Fakelag Ticks", &Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].FakelagTicks, 0, 14);            break;
-
+			Components.SliderInt("Fakelag Ticks",  Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].FakelagTicks, 0, 14);            
+			break;
         case RbotMenuAvailable::MOVING:
             //Components.ComboBox("fake yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), "rbot_aa_move_fake_yaw");
-			Components.ComboBox("Pitch AA", PitchAAs, IM_ARRAYSIZE(PitchAAs), &Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].Pitch);
-			Components.ComboBox("Real yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), &Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].Yaw);
+			Components.ComboBox("Pitch AA", PitchAAs, IM_ARRAYSIZE(PitchAAs), Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].Pitch);
+			Components.ComboBox("Real yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].Yaw);
 
             //Components.ComboBox("fake add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), "rbot_aa_move_fake_add_yaw_add");
             //Components.SliderFloat("range ", "rbot_aa_move_fake_add_yaw_add_range", 0.f, 360.f);
 
-			Components.ComboBox("Real Add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), &Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].YawAdd);
-			ImGui::SliderFloat("Range", &Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].Range, 0.f, 360.f);
+			Components.ComboBox("Real Add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].YawAdd);
+			Components.SliderFloat("Range",  Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].Range, 0.f, 360.f);
 
-			Components.ComboBox("Fakelag mode", FakelagModes, IM_ARRAYSIZE(FakelagModes), &Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].FakelagMode);
-			ImGui::SliderInt("Fakelag Ticks", &Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].FakelagTicks, 0, 14);
+			Components.ComboBox("Fakelag mode", FakelagModes, IM_ARRAYSIZE(FakelagModes), Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].FakelagMode);
+			Components.SliderInt("Fakelag Ticks",  Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].FakelagTicks, 0, 14);
             break;
 
         case RbotMenuAvailable::AIR:
             //Components.ComboBox("fake yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), "rbot_aa_air_fake_yaw");
-			Components.ComboBox("Pitch AA", PitchAAs, IM_ARRAYSIZE(PitchAAs), &Settings::RageBot::AntiAimSettings[AntiAimState::AIR].Pitch);
-			Components.ComboBox("Real yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), &Settings::RageBot::AntiAimSettings[AntiAimState::AIR].Yaw);
+			Components.ComboBox("Pitch AA", PitchAAs, IM_ARRAYSIZE(PitchAAs), Settings::RageBot::AntiAimSettings[AntiAimState::AIR].Pitch);
+			Components.ComboBox("Real yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), Settings::RageBot::AntiAimSettings[AntiAimState::AIR].Yaw);
 
-			Components.ComboBox("Real Add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), &Settings::RageBot::AntiAimSettings[AntiAimState::AIR].YawAdd);
-			ImGui::SliderFloat("Range", &Settings::RageBot::AntiAimSettings[AntiAimState::AIR].Range, 0.f, 360.f);
+			Components.ComboBox("Real Add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), Settings::RageBot::AntiAimSettings[AntiAimState::AIR].YawAdd);
+			Components.SliderFloat("Range",  Settings::RageBot::AntiAimSettings[AntiAimState::AIR].Range, 0.f, 360.f);
 
-			Components.ComboBox("Fakelag mode", FakelagModes, IM_ARRAYSIZE(FakelagModes), &Settings::RageBot::AntiAimSettings[AntiAimState::AIR].FakelagMode);
-			ImGui::SliderInt("Fakelag Ticks", &Settings::RageBot::AntiAimSettings[AntiAimState::AIR].FakelagTicks, 0, 14);
+			Components.ComboBox("Fakelag mode", FakelagModes, IM_ARRAYSIZE(FakelagModes), Settings::RageBot::AntiAimSettings[AntiAimState::AIR].FakelagMode);
+			Components.SliderInt("Fakelag Ticks",  Settings::RageBot::AntiAimSettings[AntiAimState::AIR].FakelagTicks, 0, 14);
             //Components.ComboBox("fake add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), "rbot_aa_air_fake_add_yaw_add");
             //Components.SliderFloat("range ", "rbot_aa_air_fake_add_yaw_add_range", 0.f, 360.f);
             break;
 
         case RbotMenuAvailable::MISC:
 
-			ImGui::SliderFloat("Spinbot speed", &Settings::RageBot::SpinBotSpeed, -20.f, 20.f);
-			ImGui::Checkbox("SlideWalk", &Settings::RageBot::SlideWalk);
-			ImGui::Checkbox("Desync", &Settings::RageBot::Desync);
+			Components.SliderFloat("Spinbot speed",  Settings::RageBot::SpinBotSpeed, -20.f, 20.f);
+			Components.Checkbox("SlideWalk",  Settings::RageBot::SlideWalk);
+			Components.Checkbox("Desync",  Settings::RageBot::Desync);
 
             //Components.Checkbox("Lby breaker", "rbot_aa_lby_breaker");
             //Components.Checkbox("Fake lby break", "rbot_aa_fake_lby_breaker");
@@ -283,34 +283,34 @@ void Menu::RenderRagebot()
             	Components.SliderFloat("Lby breaker backup angle", "rbot_aa_lby_breaker_yaw", -180.f, 180.f);
             }
             */
-			ImGui::Hotkey("Manual AA Right", &Settings::RageBot::ManualAARightKey);
-			ImGui::Hotkey("Manual AA Left", &Settings::RageBot::ManualAALeftKey);
-			ImGui::Hotkey("Manual AA Back", &Settings::RageBot::ManualAABackKey);
+			Components.Hotkey("Manual AA Right",  Settings::RageBot::ManualAARightKey);
+			Components.Hotkey("Manual AA Left",  Settings::RageBot::ManualAALeftKey);
+			Components.Hotkey("Manual AA Back",  Settings::RageBot::ManualAABackKey);
 
             //Components.Hotkey("Fakewalk key", "rbot_aa_fakewalk_key");
             break;
     }
 
-	ImGui::Checkbox("Auto Scope", &Settings::RageBot::AutoScope);
-	ImGui::Checkbox("Auto Stop", &Settings::RageBot::AutoStop);
-	ImGui::Checkbox("Auto Crouch", &Settings::RageBot::AutoCrouch);
-	ImGui::Checkbox("Slow Walk", &Settings::RageBot::SlowWalk);
-	ImGui::Hotkey("Slow Walk Hotkey", &Settings::RageBot::SlowWalkHotkey);
+	Components.Checkbox("Auto Scope",  Settings::RageBot::AutoScope);
+	Components.Checkbox("Auto Stop",  Settings::RageBot::AutoStop);
+	Components.Checkbox("Auto Crouch",  Settings::RageBot::AutoCrouch);
+	Components.Checkbox("Slow Walk",  Settings::RageBot::SlowWalk);
+	Components.Hotkey("Slow Walk Hotkey",  Settings::RageBot::SlowWalkHotkey);
 	//Components.Checkbox("Lby prediction", "rbot_lby_prediction");
 #ifdef _DEBUG
 	//Components.Checkbox("Fakelag prediction", "rbot_flag_prediction");
-	ImGui::Checkbox("Fakelag prediction", &Settings::RageBot::FakelagPrediction);
+	Components.Checkbox("Fakelag prediction",  Settings::RageBot::FakelagPrediction);
 #endif // _DEBUG
 
 	const char* ShootingModes[] = { "normal", "in fakelag", "fakelag while shooting" };
-	Components.ComboBox("Shooting Mode", ShootingModes, IM_ARRAYSIZE(ShootingModes), &Settings::RageBot::ShootingMode);
+	Components.ComboBox("Shooting Mode", ShootingModes, IM_ARRAYSIZE(ShootingModes), Settings::RageBot::ShootingMode);
 #ifdef _DEBUG
 	//Components.Checkbox("Lagcompensation", "rbot_lagcompensation");
-	//Components.Checkbox("Lag compensation", &Settings::RageBot::);
+	//Components.Checkbox("Lag compensation",  Settings::RageBot::);
 #endif // _DEBUG
-	ImGui::Checkbox("Force unlag", &Settings::RageBot::ForceUnlag);
+	Components.Checkbox("Force unlag",  Settings::RageBot::ForceUnlag);
 
-	ImGui::Checkbox("Resolver", &Settings::RageBot::Resolver);
+	Components.Checkbox("Resolver",  Settings::RageBot::Resolver);
     Components.EndChild();
 }
 
@@ -319,7 +319,7 @@ void Menu::RenderLegitbot()
     Components.BeginChild ( "#lbot", ImVec2 ( 0, 0 ) );
 
     Components.Label ( "Legitbot" );
-	ImGui::Checkbox("Enable", &Settings::Aimbot::Enabled);
+	Components.Checkbox("Enable",  Settings::Aimbot::Enabled);
 
     Components.Spacing();
     Components.Columns ( 2, false );
@@ -329,51 +329,51 @@ void Menu::RenderLegitbot()
     static int WeaponSelected = 0;
     Components.NavbarIcons ( WeaponConfigSelectionItems, WeaponConfigSelectionItemsText, IM_ARRAYSIZE ( WeaponConfigSelectionItems ), WeaponSelected, IconsFont );
 
-	ImGui::Hotkey("Aimkey", &Settings::Aimbot::Hotkey);
+	Components.Hotkey("Aimkey",  Settings::Aimbot::Hotkey);
 
     switch ( ( LbotWeaponsAvailable ) WeaponSelected )
     {
         case LbotWeaponsAvailable::PISTOL:
-			ImGui::SliderFloat("FOV", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].FOV, 0.f, 15.f);
-			ImGui::SliderFloat("Smooth", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].Smooth, 1.f, 30.f);
-			ImGui::SliderFloat("Randomize", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].Randomize, 0.f, 10.f);
-			ImGui::SliderFloat("Delay", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].Delay, 0.f, 1.f);
+			Components.SliderFloat("FOV",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].FOV, 0.f, 15.f);
+			Components.SliderFloat("Smooth",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].Smooth, 1.f, 30.f);
+			Components.SliderFloat("Randomize",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].Randomize, 0.f, 10.f);
+			Components.SliderFloat("Delay",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].Delay, 0.f, 1.f);
 
             Components.Spacing();
 
-			ImGui::Checkbox("RCS", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].RCS);
-			ImGui::SliderFloat("Amount X", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].RCS_X, 0.f, 1.f);
-			ImGui::SliderFloat("Amount Y", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].RCS_Y, 0.f, 1.f);
+			Components.Checkbox("RCS",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].RCS);
+			Components.SliderFloat("Amount X",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].RCS_X, 0.f, 1.f);
+			Components.SliderFloat("Amount Y",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].RCS_Y, 0.f, 1.f);
 
             Components.Spacing();
 
             Components.Label ( "Hitboxes:" );
             Components.BeginChild ( "#hitboxes", ImVec2 ( 0.f, 204.f ) );
 
-			ImGui::Checkbox("Head", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxHead);
-			ImGui::Checkbox("Neck", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxNeck);
-			ImGui::Checkbox("Chest", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxChest);
-			ImGui::Checkbox("Pelvis", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxPelvis);
-			ImGui::Checkbox("Stomach", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxStomach);
-			ImGui::Checkbox("Arm", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxArm);
-			ImGui::Checkbox("Leg", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxLeg);
-			ImGui::Checkbox("Foot", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxFoot);
+			Components.Checkbox("Head",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxHead);
+			Components.Checkbox("Neck",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxNeck);
+			Components.Checkbox("Chest",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxChest);
+			Components.Checkbox("Pelvis",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxPelvis);
+			Components.Checkbox("Stomach",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxStomach);
+			Components.Checkbox("Arm",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxArm);
+			Components.Checkbox("Leg",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxLeg);
+			Components.Checkbox("Foot",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].HitboxFoot);
 
             Components.EndChild();
             break;
 
 		case LbotWeaponsAvailable::DEAGLE:
-			ImGui::SliderFloat("FOV", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].FOV, 0.f, 15.f);
-			ImGui::SliderFloat("Smooth", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].Smooth, 1.f, 30.f);
-			ImGui::SliderFloat("Randomize", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].Randomize, 0.f, 10.f);
-			ImGui::SliderFloat("Delay", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].Delay, 0.f, 1.f);
+			Components.SliderFloat("FOV",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].FOV, 0.f, 15.f);
+			Components.SliderFloat("Smooth",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].Smooth, 1.f, 30.f);
+			Components.SliderFloat("Randomize",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].Randomize, 0.f, 10.f);
+			Components.SliderFloat("Delay",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].Delay, 0.f, 1.f);
 
 
 			Components.Spacing();
 
-			ImGui::Checkbox("RCS", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].RCS);
-			ImGui::SliderFloat("Amount X", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].RCS_X, 0.f, 1.f);
-			ImGui::SliderFloat("Amount Y", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].RCS_Y, 0.f, 1.f);
+			Components.Checkbox("RCS",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].RCS);
+			Components.SliderFloat("Amount X",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].RCS_X, 0.f, 1.f);
+			Components.SliderFloat("Amount Y",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].RCS_Y, 0.f, 1.f);
 
 
 			Components.Spacing();
@@ -381,57 +381,57 @@ void Menu::RenderLegitbot()
 			Components.Label("Hitboxes:");
 			Components.BeginChild("#hitboxes", ImVec2(0.f, 204.f));
 
-			ImGui::Checkbox("Head", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxHead);
-			ImGui::Checkbox("Neck", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxNeck);
-			ImGui::Checkbox("Chest", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxChest);
-			ImGui::Checkbox("Pelvis", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxPelvis);
-			ImGui::Checkbox("Stomach", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxStomach);
-			ImGui::Checkbox("Arm", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxArm);
-			ImGui::Checkbox("Leg", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxLeg);
-			ImGui::Checkbox("Foot", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxFoot);
+			Components.Checkbox("Head",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxHead);
+			Components.Checkbox("Neck",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxNeck);
+			Components.Checkbox("Chest",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxChest);
+			Components.Checkbox("Pelvis",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxPelvis);
+			Components.Checkbox("Stomach",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxStomach);
+			Components.Checkbox("Arm",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxArm);
+			Components.Checkbox("Leg",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxLeg);
+			Components.Checkbox("Foot",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].HitboxFoot);
 
 			Components.EndChild();
 			break;
         case LbotWeaponsAvailable::SMG:
-			ImGui::SliderFloat("FOV", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].FOV, 0.f, 15.f);
-			ImGui::SliderFloat("Smooth", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].Smooth, 1.f, 30.f);
-			ImGui::SliderFloat("Randomize", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].Randomize, 0.f, 10.f);
-			ImGui::SliderFloat("Delay", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].Delay, 0.f, 1.f);
+			Components.SliderFloat("FOV",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].FOV, 0.f, 15.f);
+			Components.SliderFloat("Smooth",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].Smooth, 1.f, 30.f);
+			Components.SliderFloat("Randomize",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].Randomize, 0.f, 10.f);
+			Components.SliderFloat("Delay",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].Delay, 0.f, 1.f);
 
             Components.Spacing();
 
-			ImGui::Checkbox("RCS", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].RCS);
-			ImGui::SliderFloat("Amount X", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].RCS_X, 0.f, 1.f);
-			ImGui::SliderFloat("Amount Y", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].RCS_Y, 0.f, 1.f);
+			Components.Checkbox("RCS",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].RCS);
+			Components.SliderFloat("Amount X",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].RCS_X, 0.f, 1.f);
+			Components.SliderFloat("Amount Y",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].RCS_Y, 0.f, 1.f);
 
             Components.Spacing();
 
             Components.Label ( "Hitboxes:" );
             Components.BeginChild ( "#hitboxes", ImVec2 ( 0.f, 204.f ) );
 
-			ImGui::Checkbox("Head", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxHead);
-			ImGui::Checkbox("Neck", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxNeck);
-			ImGui::Checkbox("Chest", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxChest);
-			ImGui::Checkbox("Pelvis", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxPelvis);
-			ImGui::Checkbox("Stomach", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxStomach);
-			ImGui::Checkbox("Arm", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxArm);
-			ImGui::Checkbox("Leg", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxLeg);
-			ImGui::Checkbox("Foot", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxFoot);
+			Components.Checkbox("Head",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxHead);
+			Components.Checkbox("Neck",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxNeck);
+			Components.Checkbox("Chest",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxChest);
+			Components.Checkbox("Pelvis",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxPelvis);
+			Components.Checkbox("Stomach",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxStomach);
+			Components.Checkbox("Arm",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxArm);
+			Components.Checkbox("Leg",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxLeg);
+			Components.Checkbox("Foot",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SMG].HitboxFoot);
 
             Components.EndChild();
             break;
 
         case LbotWeaponsAvailable::MG:
-			ImGui::SliderFloat("FOV", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].FOV, 0.f, 15.f);
-			ImGui::SliderFloat("Smooth", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].Smooth, 1.f, 30.f);
-			ImGui::SliderFloat("Randomize", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].Randomize, 0.f, 10.f);
-			ImGui::SliderFloat("Delay", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].Delay, 0.f, 1.f);
+			Components.SliderFloat("FOV",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].FOV, 0.f, 15.f);
+			Components.SliderFloat("Smooth",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].Smooth, 1.f, 30.f);
+			Components.SliderFloat("Randomize",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].Randomize, 0.f, 10.f);
+			Components.SliderFloat("Delay",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].Delay, 0.f, 1.f);
 
             Components.Spacing();
 
-			ImGui::Checkbox("RCS", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].RCS);
-			ImGui::SliderFloat("Amount X", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].RCS_X, 0.f, 1.f);
-			ImGui::SliderFloat("Amount Y", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].RCS_Y, 0.f, 1.f);
+			Components.Checkbox("RCS",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].RCS);
+			Components.SliderFloat("Amount X",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].RCS_X, 0.f, 1.f);
+			Components.SliderFloat("Amount Y",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].RCS_Y, 0.f, 1.f);
 
 
             Components.Spacing();
@@ -439,29 +439,29 @@ void Menu::RenderLegitbot()
             Components.Label ( "Hitboxes:" );
             Components.BeginChild ( "#hitboxes", ImVec2 ( 0.f, 204.f ) );
 
-			ImGui::Checkbox("Head", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxHead);
-			ImGui::Checkbox("Neck", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxNeck);
-			ImGui::Checkbox("Chest", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxChest);
-			ImGui::Checkbox("Pelvis", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxPelvis);
-			ImGui::Checkbox("Stomach", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxStomach);
-			ImGui::Checkbox("Arm", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxArm);
-			ImGui::Checkbox("Leg", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxLeg);
-			ImGui::Checkbox("Foot", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxFoot);
+			Components.Checkbox("Head",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxHead);
+			Components.Checkbox("Neck",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxNeck);
+			Components.Checkbox("Chest",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxChest);
+			Components.Checkbox("Pelvis",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxPelvis);
+			Components.Checkbox("Stomach",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxStomach);
+			Components.Checkbox("Arm",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxArm);
+			Components.Checkbox("Leg",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxLeg);
+			Components.Checkbox("Foot",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_MACHINEGUN].HitboxFoot);
 
             Components.EndChild();
             break;
 
         case LbotWeaponsAvailable::RIFLE:
-			ImGui::SliderFloat("FOV", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].FOV, 0.f, 15.f);
-			ImGui::SliderFloat("Smooth", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].Smooth, 1.f, 30.f);
-			ImGui::SliderFloat("Randomize", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].Randomize, 0.f, 10.f);
-			ImGui::SliderFloat("Delay", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].Delay, 0.f, 1.f);
+			Components.SliderFloat("FOV",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].FOV, 0.f, 15.f);
+			Components.SliderFloat("Smooth",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].Smooth, 1.f, 30.f);
+			Components.SliderFloat("Randomize",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].Randomize, 0.f, 10.f);
+			Components.SliderFloat("Delay",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].Delay, 0.f, 1.f);
 
             Components.Spacing();
 
-			ImGui::Checkbox("RCS", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].RCS);
-			ImGui::SliderFloat("Amount X", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].RCS_X, 0.f, 1.f);
-			ImGui::SliderFloat("Amount Y", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].RCS_Y, 0.f, 1.f);
+			Components.Checkbox("RCS",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].RCS);
+			Components.SliderFloat("Amount X",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].RCS_X, 0.f, 1.f);
+			Components.SliderFloat("Amount Y",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].RCS_Y, 0.f, 1.f);
 
 
             Components.Spacing();
@@ -469,29 +469,29 @@ void Menu::RenderLegitbot()
             Components.Label ( "Hitboxes:" );
             Components.BeginChild ( "#hitboxes", ImVec2 ( 0.f, 204.f ) );
 
-			ImGui::Checkbox("Head", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxHead);
-			ImGui::Checkbox("Neck", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxNeck);
-			ImGui::Checkbox("Chest", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxChest);
-			ImGui::Checkbox("Pelvis", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxPelvis);
-			ImGui::Checkbox("Stomach", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxStomach);
-			ImGui::Checkbox("Arm", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxArm);
-			ImGui::Checkbox("Leg", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxLeg);
-			ImGui::Checkbox("Foot", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxFoot);
+			Components.Checkbox("Head",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxHead);
+			Components.Checkbox("Neck",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxNeck);
+			Components.Checkbox("Chest",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxChest);
+			Components.Checkbox("Pelvis",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxPelvis);
+			Components.Checkbox("Stomach",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxStomach);
+			Components.Checkbox("Arm",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxArm);
+			Components.Checkbox("Leg",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxLeg);
+			Components.Checkbox("Foot",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_RIFLE].HitboxFoot);
 
             Components.EndChild();
             break;
 
         case LbotWeaponsAvailable::SHOTGUN:
-			ImGui::SliderFloat("FOV", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].FOV, 0.f, 15.f);
-			ImGui::SliderFloat("Smooth", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].Smooth, 1.f, 30.f);
-			ImGui::SliderFloat("Randomize", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].Randomize, 0.f, 10.f);
-			ImGui::SliderFloat("Delay", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].Delay, 0.f, 1.f);
+			Components.SliderFloat("FOV",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].FOV, 0.f, 15.f);
+			Components.SliderFloat("Smooth",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].Smooth, 1.f, 30.f);
+			Components.SliderFloat("Randomize",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].Randomize, 0.f, 10.f);
+			Components.SliderFloat("Delay",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].Delay, 0.f, 1.f);
 
             Components.Spacing();
 
-			ImGui::Checkbox("RCS", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].RCS);
-			ImGui::SliderFloat("Amount X", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].RCS_X, 0.f, 1.f);
-			ImGui::SliderFloat("Amount Y", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].RCS_Y, 0.f, 1.f);
+			Components.Checkbox("RCS",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].RCS);
+			Components.SliderFloat("Amount X",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].RCS_X, 0.f, 1.f);
+			Components.SliderFloat("Amount Y",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].RCS_Y, 0.f, 1.f);
 
 
             Components.Spacing();
@@ -499,27 +499,27 @@ void Menu::RenderLegitbot()
             Components.Label ( "Hitboxes:" );
             Components.BeginChild ( "#hitboxes", ImVec2 ( 0.f, 204.f ) );
 
-			ImGui::Checkbox("Head", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxHead);
-			ImGui::Checkbox("Neck", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxNeck);
-			ImGui::Checkbox("Chest", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxChest);
-			ImGui::Checkbox("Pelvis", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxPelvis);
-			ImGui::Checkbox("Stomach", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxStomach);
-			ImGui::Checkbox("Arm", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxArm);
-			ImGui::Checkbox("Leg", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxLeg);
-			ImGui::Checkbox("Foot", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxFoot);
+			Components.Checkbox("Head",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxHead);
+			Components.Checkbox("Neck",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxNeck);
+			Components.Checkbox("Chest",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxChest);
+			Components.Checkbox("Pelvis",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxPelvis);
+			Components.Checkbox("Stomach",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxStomach);
+			Components.Checkbox("Arm",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxArm);
+			Components.Checkbox("Leg",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxLeg);
+			Components.Checkbox("Foot",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SHOTGUN].HitboxFoot);
             Components.EndChild();
             break;
 		case LbotWeaponsAvailable::SCOUT:
-			ImGui::SliderFloat("FOV", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].FOV, 0.f, 15.f);
-			ImGui::SliderFloat("Smooth", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].Smooth, 1.f, 30.f);
-			ImGui::SliderFloat("Randomize", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].Randomize, 0.f, 10.f);
-			ImGui::SliderFloat("Delay", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].Delay, 0.f, 1.f);
+			Components.SliderFloat("FOV",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].FOV, 0.f, 15.f);
+			Components.SliderFloat("Smooth",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].Smooth, 1.f, 30.f);
+			Components.SliderFloat("Randomize",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].Randomize, 0.f, 10.f);
+			Components.SliderFloat("Delay",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].Delay, 0.f, 1.f);
 
 			Components.Spacing();
 
-			ImGui::Checkbox("RCS", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].RCS);
-			ImGui::SliderFloat("Amount X", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].RCS_X, 0.f, 1.f);
-			ImGui::SliderFloat("Amount Y", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].RCS_Y, 0.f, 1.f);
+			Components.Checkbox("RCS",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].RCS);
+			Components.SliderFloat("Amount X",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].RCS_X, 0.f, 1.f);
+			Components.SliderFloat("Amount Y",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].RCS_Y, 0.f, 1.f);
 
 
 			Components.Spacing();
@@ -527,42 +527,42 @@ void Menu::RenderLegitbot()
 			Components.Label("Hitboxes:");
 			Components.BeginChild("#hitboxes", ImVec2(0.f, 204.f));
 
-			ImGui::Checkbox("Head", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxHead);
-			ImGui::Checkbox("Neck", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxNeck);
-			ImGui::Checkbox("Chest", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxChest);
-			ImGui::Checkbox("Pelvis", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxPelvis);
-			ImGui::Checkbox("Stomach", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxStomach);
-			ImGui::Checkbox("Arm", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxArm);
-			ImGui::Checkbox("Leg", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxLeg);
-			ImGui::Checkbox("Foot", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxFoot);
+			Components.Checkbox("Head",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxHead);
+			Components.Checkbox("Neck",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxNeck);
+			Components.Checkbox("Chest",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxChest);
+			Components.Checkbox("Pelvis",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxPelvis);
+			Components.Checkbox("Stomach",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxStomach);
+			Components.Checkbox("Arm",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxArm);
+			Components.Checkbox("Leg",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxLeg);
+			Components.Checkbox("Foot",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxFoot);
 
 			Components.EndChild();
 			break;
         case LbotWeaponsAvailable::SNIPER:
-			ImGui::SliderFloat("FOV", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].FOV, 0.f, 15.f);
-			ImGui::SliderFloat("Smooth", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].Smooth, 1.f, 30.f);
-			ImGui::SliderFloat("Randomize", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].Randomize, 0.f, 10.f);
-			ImGui::SliderFloat("Delay", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].Delay, 0.f, 1.f);
+			Components.SliderFloat("FOV",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].FOV, 0.f, 15.f);
+			Components.SliderFloat("Smooth",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].Smooth, 1.f, 30.f);
+			Components.SliderFloat("Randomize",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].Randomize, 0.f, 10.f);
+			Components.SliderFloat("Delay",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].Delay, 0.f, 1.f);
 
             Components.Spacing();
 
-			ImGui::Checkbox("RCS", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].RCS);
-			ImGui::SliderFloat("Amount X", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].RCS_X, 0.f, 1.f);
-			ImGui::SliderFloat("Amount Y", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].RCS_Y, 0.f, 1.f);
+			Components.Checkbox("RCS",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].RCS);
+			Components.SliderFloat("Amount X",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].RCS_X, 0.f, 1.f);
+			Components.SliderFloat("Amount Y",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].RCS_Y, 0.f, 1.f);
 
             Components.Spacing();
 
             Components.Label ( "Hitboxes:" );
             Components.BeginChild ( "#hitboxes", ImVec2 ( 0.f, 204.f ) );
 
-			ImGui::Checkbox("Head", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxHead);
-			ImGui::Checkbox("Neck", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxNeck);
-			ImGui::Checkbox("Chest", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxChest);
-			ImGui::Checkbox("Pelvis", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxPelvis);
-			ImGui::Checkbox("Stomach", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxStomach);
-			ImGui::Checkbox("Arm", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxArm);
-			ImGui::Checkbox("Leg", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxLeg);
-			ImGui::Checkbox("Foot", &Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxFoot);
+			Components.Checkbox("Head",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxHead);
+			Components.Checkbox("Neck",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxNeck);
+			Components.Checkbox("Chest",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxChest);
+			Components.Checkbox("Pelvis",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxPelvis);
+			Components.Checkbox("Stomach",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxStomach);
+			Components.Checkbox("Arm",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxArm);
+			Components.Checkbox("Leg",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxLeg);
+			Components.Checkbox("Foot",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxFoot);
 
             Components.EndChild();
             break;
@@ -570,9 +570,9 @@ void Menu::RenderLegitbot()
 
     Components.NextColumn();
 
-	ImGui::Checkbox("Backtrack", &Settings::Aimbot::Backtrack);
-	ImGui::Checkbox("Aim at backtrack", &Settings::Aimbot::BacktrackAtAim);
-	ImGui::SliderFloat("Backtrack time", &Settings::Aimbot::BacktrackTick, 0.f, .2f);
+	Components.Checkbox("Backtrack",  Settings::Aimbot::Backtrack);
+	Components.Checkbox("Aim at backtrack",  Settings::Aimbot::BacktrackAtAim);
+	Components.SliderFloat("Backtrack time",  Settings::Aimbot::BacktrackTick, 0.f, .2f);
     //legit aa
     //triggerbot
 
@@ -596,19 +596,19 @@ void Menu::RenderVisuals()
         case VisualsMenuAvailable::LOCAL:
         {
             //Components.Columns ( 3, false );
-			ImGui::Columns(3, false);
+			Components.Columns(3, false);
 			Components.Label("Chams");
 			Components.ColorCheckbox2("Enable", Settings::Visual::LocalChams.Enabled, Settings::Visual::LocalChams.Visible, Settings::Visual::LocalChams.Invisible);
-			Components.ComboBox("Chams Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), &Settings::Visual::LocalChams.Mode);
-			ImGui::NextColumn();
+			Components.ComboBox("Chams Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), Settings::Visual::LocalChams.Mode);
+			Components.NextColumn();
 
 			Components.Label("ESP");
-			ImGui::Spacing();
-			ImGui::Checkbox("Enable", &Settings::Visual::LocalESP.Enabled);
+			Components.Spacing();
+			Components.Checkbox("Enable ",  Settings::Visual::LocalESP.Enabled);
 			Components.ColorCheckbox("Box", Settings::Visual::LocalESP.BoxEnabled, Settings::Visual::LocalESP.BoxColor);
-			Components.ComboBox("Box Type", BoxTypes, IM_ARRAYSIZE(BoxTypes), &Settings::Visual::LocalESP.BoxType);
+			Components.ComboBox("Box Type", BoxTypes, IM_ARRAYSIZE(BoxTypes), Settings::Visual::LocalESP.BoxType);
 			Components.ColorCheckbox("Name", Settings::Visual::LocalESP.NameEnabled, Settings::Visual::LocalESP.NameColor);
-			ImGui::Checkbox("Health", &Settings::Visual::LocalESP.HealthEnabled);
+			Components.Checkbox("Health",  Settings::Visual::LocalESP.HealthEnabled);
 			Components.ColorCheckbox("Armor", Settings::Visual::LocalESP.ArmorEnabled, Settings::Visual::LocalESP.ArmorColor);
 			Components.ColorCheckbox("Weapon", Settings::Visual::LocalESP.WeaponEnabled, Settings::Visual::LocalESP.WeaponColor);
 			
@@ -617,22 +617,22 @@ void Menu::RenderVisuals()
 
         case VisualsMenuAvailable::ENEMY:
         {
-			ImGui::Columns(3, false);
+			Components.Columns(3, false);
             //Components.Columns ( 3, false );
             //Components.ColorCheckbox ( "Resolver info", "esp_enemy_info", "color_esp_enemy_info" );
             //Components.ColorCheckbox ( "Lby timer", "esp_enemy_lby_timer", "color_esp_enemy_lby_timer" );
 			Components.Label("Chams");
 			Components.ColorCheckbox2("Enable", Settings::Visual::EnemyChams.Enabled, Settings::Visual::EnemyChams.Visible, Settings::Visual::EnemyChams.Invisible);
-			Components.ComboBox("Chams Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), &Settings::Visual::EnemyChams.Mode);
-			ImGui::NextColumn();
+			Components.ComboBox("Chams Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), Settings::Visual::EnemyChams.Mode);
+			Components.NextColumn();
 
 			Components.Label("ESP");
-			ImGui::Spacing();
-			ImGui::Checkbox("Enable", &Settings::Visual::EnemyESP.Enabled);
+			Components.Spacing();
+			Components.Checkbox("Enable ",  Settings::Visual::EnemyESP.Enabled);
 			Components.ColorCheckbox("Box", Settings::Visual::EnemyESP.BoxEnabled, Settings::Visual::EnemyESP.BoxColor);
-			Components.ComboBox("Box Type", BoxTypes, IM_ARRAYSIZE(BoxTypes), &Settings::Visual::EnemyESP.BoxType);
+			Components.ComboBox("Box Type", BoxTypes, IM_ARRAYSIZE(BoxTypes), Settings::Visual::EnemyESP.BoxType);
 			Components.ColorCheckbox("Name", Settings::Visual::EnemyESP.NameEnabled, Settings::Visual::EnemyESP.NameColor);
-			ImGui::Checkbox("Health", &Settings::Visual::EnemyESP.HealthEnabled);
+			Components.Checkbox("Health",  Settings::Visual::EnemyESP.HealthEnabled);
 			Components.ColorCheckbox("Armor", Settings::Visual::EnemyESP.ArmorEnabled, Settings::Visual::EnemyESP.ArmorColor);
 			Components.ColorCheckbox("Weapon", Settings::Visual::EnemyESP.WeaponEnabled, Settings::Visual::EnemyESP.WeaponColor);
 			Components.ColorCheckbox("Snapline", Settings::Visual::EnemyESP.SnaplineEnabled, Settings::Visual::EnemyESP.SnaplineColor);
@@ -642,19 +642,20 @@ void Menu::RenderVisuals()
         case VisualsMenuAvailable::TEAM:
         {
             //Components.Columns ( 3, false );
-			ImGui::Columns(3, false);
+			Components.Columns(3, false);
 			Components.Label("Chams");
 			Components.ColorCheckbox2("Enable", Settings::Visual::TeamChams.Enabled, Settings::Visual::TeamChams.Visible, Settings::Visual::TeamChams.Invisible);
-			Components.ComboBox("Chams Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), &Settings::Visual::TeamChams.Mode);
+			Components.ComboBox("Chams Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), Settings::Visual::TeamChams.Mode);
 			Components.NextColumn();
 
 			Components.Label("ESP");
-			ImGui::Spacing();
-			ImGui::Checkbox("Enable", &Settings::Visual::TeamESP.Enabled);
+			Components.Spacing();
+			//Components.Checkbox("Enable ",  Settings::Visual::TeamESP.Enabled);
+			Components.Checkbox("Enable ", Settings::Visual::TeamESP.Enabled);
 			Components.ColorCheckbox("Box", Settings::Visual::TeamESP.BoxEnabled, Settings::Visual::TeamESP.BoxColor);
-			Components.ComboBox("Box Type", BoxTypes, IM_ARRAYSIZE(BoxTypes), &Settings::Visual::TeamESP.BoxType);
+			Components.ComboBox("Box Type", BoxTypes, IM_ARRAYSIZE(BoxTypes), Settings::Visual::TeamESP.BoxType);
 			Components.ColorCheckbox("Name", Settings::Visual::TeamESP.NameEnabled, Settings::Visual::TeamESP.NameColor);
-			ImGui::Checkbox("Health", &Settings::Visual::TeamESP.HealthEnabled);
+			Components.Checkbox("Health",  Settings::Visual::TeamESP.HealthEnabled);
 			Components.ColorCheckbox("Armor", Settings::Visual::TeamESP.ArmorEnabled, Settings::Visual::TeamESP.ArmorColor);
 			Components.ColorCheckbox("Weapon", Settings::Visual::TeamESP.WeaponEnabled, Settings::Visual::TeamESP.WeaponColor);
 			Components.ColorCheckbox("Snapline", Settings::Visual::TeamESP.SnaplineEnabled, Settings::Visual::TeamESP.SnaplineColor);
@@ -666,33 +667,33 @@ void Menu::RenderVisuals()
         {
             Components.Columns ( 3, false );
             Components.Label ( "Thirdperson: " );
-			ImGui::Spacing();
-			ImGui::Checkbox("Third Person View", &Settings::Visual::ThirdPersonEnabled);
-			ImGui::Hotkey("Third Person Hotkey", &Settings::Visual::ThirdPersonHotkey);
+			Components.Spacing();
+			Components.Checkbox("Third Person View",  Settings::Visual::ThirdPersonEnabled);
+			Components.Hotkey("Third Person Hotkey",  Settings::Visual::ThirdPersonHotkey);
 
-			ImGui::NextColumn();
+			Components.NextColumn();
 
             Components.Label ( "Esp:" );
-			ImGui::Spacing();
-			ImGui::Checkbox("Enable ", &Settings::Visual::GlobalESP.Enabled);
-			ImGui::Checkbox("Grenade", &Settings::Visual::GlobalESP.GrenadeEnabled);
+			Components.Spacing();
+			Components.Checkbox("Enable ",  Settings::Visual::GlobalESP.Enabled);
+			Components.Checkbox("Grenade",  Settings::Visual::GlobalESP.GrenadeEnabled);
 			Components.ColorCheckbox("Bomb", Settings::Visual::GlobalESP.BombEnabled, Settings::Visual::GlobalESP.BombColor);
-			ImGui::Checkbox("DangerZone item ESP", &Settings::Visual::GlobalESP.DZEnabled);
-			ImGui::SliderFloat("DangerZone ESP Range", &Settings::Visual::GlobalESP.DZRange, 0.f, 1000.f);
+			Components.Checkbox("DangerZone item ESP",  Settings::Visual::GlobalESP.DZEnabled);
+			Components.SliderFloat("DangerZone ESP Range",  Settings::Visual::GlobalESP.DZRange, 0.f, 1000.f);
 
-			ImGui::NextColumn();
+			Components.NextColumn();
 
             Components.Label ( "Misc:" );
-			ImGui::Spacing();
-			ImGui::Checkbox("No Scope Overlay", &Settings::Visual::NoScopeOverlay);
-			ImGui::Checkbox("Bullet Tracers", &Settings::Visual::BulletTracers);
-			ImGui::Checkbox("No Flash", &Settings::Visual::NoFlash);
-			ImGui::Checkbox("No Smoke", &Settings::Visual::NoSmoke);
+			Components.Spacing();
+			Components.Checkbox("No Scope Overlay",  Settings::Visual::NoScopeOverlay);
+			Components.Checkbox("Bullet Tracers",  Settings::Visual::BulletTracers);
+			Components.Checkbox("No Flash",  Settings::Visual::NoFlash);
+			Components.Checkbox("No Smoke",  Settings::Visual::NoSmoke);
 			Components.ColorCheckbox("Spread Circle", Settings::Visual::SpreadCircleEnabled, Settings::Visual::SpreadCircleColor);
-			ImGui::Checkbox("Disable Sniper Zoom", &Settings::Visual::DisableScopeZoom);
-			ImGui::SliderInt("Viewmodel FOV", &Settings::Visual::ViewModelFOV, 1, 150);
-			ImGui::SliderInt("FOV", &Settings::Visual::FOV, 1, 150);
-			ImGui::Checkbox("Hitmarker", &Settings::Visual::Hitmarker);
+			Components.Checkbox("Disable Sniper Zoom",  Settings::Visual::DisableScopeZoom);
+			Components.SliderInt("Viewmodel FOV",  Settings::Visual::ViewModelFOV, 1, 150);
+			Components.SliderInt("FOV",  Settings::Visual::FOV, 1, 150);
+			Components.Checkbox("Hitmarker",  Settings::Visual::Hitmarker);
             /*static const char* hitmarkersounds[] = { "amera", "skeet" };
             Components.ComboBox ( "Hitmarker sound", hitmarkersounds, IM_ARRAYSIZE ( hitmarkersounds ), "vis_misc_hitmarker_sound" );*/
             //Components.SliderInt("Asuswalls", "vis_misc_asuswalls_percent", 0, 100);
@@ -717,7 +718,7 @@ void Menu::RenderVisuals()
         }
     }
 
-	ImGui::EndChild();
+	Components.EndChild();
 }
 
 void Menu::RenderMisc()
@@ -725,18 +726,11 @@ void Menu::RenderMisc()
     Components.BeginChild ( "#misc", ImVec2 ( 0, 0 ) );
 
     Components.Label ( "Misc" );
-    /*
-    SetupVar("misc_bhop", false);
-    SetupVar("misc_no_hands", false);
-    SetupVar("misc_thirdperson", false);
-    SetupVar("misc_showranks", false);
-    SetupVar("misc_thirdperson_dist", 50.f);
-    SetupVar("viewmodel_fov", 68);
-    */
+
     //Components.Checkbox("No hands", "misc_no_hands");
 
-	ImGui::Checkbox("BHop", &Settings::Misc::BHop);
-	ImGui::Checkbox("Autostrafe", &Settings::Misc::AutoStrafe);
+	Components.Checkbox("BHop",  Settings::Misc::BHop);
+	Components.Checkbox("Autostrafe",  Settings::Misc::AutoStrafe);
 
     Components.Spacing();
 
@@ -744,29 +738,26 @@ void Menu::RenderMisc()
 
     //Components.Checkbox("Anti untrusted", "misc_antiuntrusted");*/
 
-	ImGui::Checkbox("Rank reveal", &Settings::Misc::RankReveal);
-	ImGui::Checkbox("No crouch cooldown", &Settings::Misc::NoCrouchCooldown);
+	Components.Checkbox("Rank reveal",  Settings::Misc::RankReveal);
+	Components.Checkbox("No crouch cooldown",  Settings::Misc::NoCrouchCooldown);
+	Components.Checkbox("AutoAccept", Settings::Misc::AutoAccept);
 
-	ImGui::Checkbox("Clantag changer", &Settings::Misc::Clantag);
+	Components.Checkbox("Clantag changer",  Settings::Misc::Clantag);
 
     Components.Spacing();
 
-	if (Components.Button("Load Game CFG"))
-		//g_EngineClient->ExecuteClientCmd(g_Config.LoadGameConfig().c_str());
-		g_EngineClient->ExecuteClientCmd(Settings::LoadGameCfg().data());
-
     //buybot
-    /*static const char* Pistols[] = { "none", "glock|usp|p2000", "duals", "tec9|fiveseven", "deagle|r8" };
+    static const char* Pistols[] = { "none", "glock|usp|p2000", "duals", "tec9|fiveseven", "deagle|r8" };
     static const char* Weapons[] = { "none", "sg|aug", "ssg", "auto", "mac10", "p90", "bizon", "ak", "awp" };
     static std::string Grenades[] = { "molotov", "decoy", "flash", "grenade", "smoke" };
     static std::string GrenadesSettings[] = { "misc_buybot_grenade_molotov", "misc_buybot_grenade_decoy", "misc_buybot_grenade_flash", "misc_buybot_grenade_grenade", "misc_buybot_grenade_smoke" };
-    Components.Checkbox ( "Enable buybot", "misc_buybot" );
-    Components.ComboBox ( "Pistols", Pistols, IM_ARRAYSIZE ( Pistols ), "misc_buybot_pistol" );
-    Components.ComboBox ( "Weapon", Weapons, IM_ARRAYSIZE ( Weapons ), "misc_buybot_weapon" );
-    Components.ComboCheckBox ( "Grenades", Grenades, GrenadesSettings, IM_ARRAYSIZE ( Grenades ) );
-    Components.Checkbox ( "Buy armor", "misc_buybot_armor" );
-    Components.Checkbox ( "Buy zeus", "misc_buybot_zeus" );
-    Components.Checkbox ( "Buy defuser", "misc_buybot_defuser" );*/
+    Components.Checkbox ( "Enable buybot", Settings::Misc::BuyBot );
+    Components.ComboBox ( "Pistols", Pistols, IM_ARRAYSIZE ( Pistols ), Settings::Misc::BuyBotPistol );
+    Components.ComboBox ( "Weapon", Weapons, IM_ARRAYSIZE ( Weapons ), Settings::Misc::BuyBotWeapon);
+    //Components.ComboCheckBox ( "Grenades", Grenades, GrenadesSettings, IM_ARRAYSIZE ( Grenades ) );
+    Components.Checkbox ( "Buy armor", Settings::Misc::BuyBotArmor);
+    Components.Checkbox ( "Buy zeus", Settings::Misc::BuyBotZeus);
+    Components.Checkbox ( "Buy defuser", Settings::Misc::BuyBotDefuser);
 
     if ( Components.Button ( "unload" ) )
         g_Unload = true;
@@ -817,7 +808,7 @@ void Menu::RenderSettings()
     static char str0[128] = "";
     Components.Label ( "Name " );
     Components.SameLine();
-    ImGui::InputText ( "  ", str0, IM_ARRAYSIZE ( str0 ) );
+	ImGui::InputText ( "  ", str0, IM_ARRAYSIZE ( str0 ) );
 
 	if (Components.Button("Create") && str0 != "")
 		Settings::CreateConfig(str0);
@@ -832,11 +823,14 @@ void Menu::RenderSettings()
 
 	if (Components.Button("Refresh"))
 		Settings::RefreshConfigList();
+	/*if ( Components.Button ( "Reset" ) )
+	 g_Config.ResetConfig();*/
+	Components.SameLine();
 
-    Components.SameLine();
+	if (Components.Button("Load Game CFG"))
+		g_EngineClient->ExecuteClientCmd(Settings::LoadGameCfg().data());
 
-    if ( Components.Button ( "Reset" ) )
-        g_Config.ResetConfig();
+ 
 
     Components.EndChild();
 }

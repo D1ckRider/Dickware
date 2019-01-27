@@ -6,6 +6,7 @@
 #include "HitPossitionHelper.h"
 #include "ConfigSystem.h"
 #include "RuntimeSaver.h"
+#include "Settings.h"
 #include "Rbot.h"
 
 #include <Windows.h>
@@ -43,10 +44,12 @@ public:
 
         if (!strcmp(event->GetName(), "player_hurt"))
         {
-            if (!g_Config.GetBool("vis_misc_hitmarker"))
+            /*if (!g_Config.GetBool("vis_misc_hitmarker"))
             {
                 return;
-            }
+            }*/
+			if (!Settings::Visual::Hitmarker)
+				return;
             int attacker = event->GetInt("attacker");
             if (g_EngineClient->GetPlayerForUserID(attacker) == g_EngineClient->GetLocalPlayer())
             {

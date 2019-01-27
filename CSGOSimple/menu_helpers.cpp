@@ -365,6 +365,12 @@ void MenuHelper::components::Checkbox(std::string text, std::string settings_nam
     CurrentItem++;
 }
 
+void MenuHelper::components::Checkbox(std::string label, bool & value)
+{
+	ImGui::Checkbox(label.c_str(), &value);
+	CurrentItem++;
+}
+
 void MenuHelper::components::ColorCheckbox(std::string text, std::string settings_name_bool, std::string settings_name_color)
 {
     Color c = g_Config.GetColor(settings_name_color);
@@ -522,11 +528,9 @@ void MenuHelper::components::ComboBox(std::string text, const char* items[], int
     CurrentItem++;
 }
 
-void MenuHelper::components::ComboBox(std::string text, const char* items[], int size, int* value)
+void MenuHelper::components::ComboBox(std::string text, const char* items[], int size, int& value)
 {
-	int selected = *value;
-	int orgs = selected;
-	const char* itemSelected = items[selected];
+	const char* itemSelected = items[value];
 	if (ImGui::BeginCombo(text.c_str(), itemSelected))
 	{
 		for (int n = 0; n < size; n++)
@@ -535,7 +539,7 @@ void MenuHelper::components::ComboBox(std::string text, const char* items[], int
 			if (ImGui::Selectable(items[n], is_selected))
 			{
 				itemSelected = items[n];
-				selected = n;
+				value = n;
 			}
 			if (is_selected)
 			{
@@ -543,11 +547,6 @@ void MenuHelper::components::ComboBox(std::string text, const char* items[], int
 			}
 		}
 		ImGui::EndCombo();
-	}
-	if (selected != orgs)
-	{
-		//g_Config.Set(settings_name, selected);
-		*value = selected;
 	}
 	CurrentItem++;
 }
@@ -574,6 +573,10 @@ void MenuHelper::components::ComboCheckBox(std::string text, std::string items[]
         ImGui::EndCombo();
     }
     CurrentItem++;
+}
+
+void MenuHelper::components::ComboCheckBox(std::string label, const char * items[], bool * values[], int size)
+{
 }
 
 void MenuHelper::components::BeginChild(std::string id, ImVec2 size, bool border, ImGuiWindowFlags flags)
@@ -630,6 +633,17 @@ void MenuHelper::components::SliderInt(std::string text, std::string settings_na
     }
 }
 
+void MenuHelper::components::SliderInt(std::string label, int & value, int min, int max)
+{
+	if (value > max)
+		value = max;
+
+	if (value < min)
+		value = min;
+
+	ImGui::SliderInt(label.c_str(), &value, min, max);
+}
+
 void MenuHelper::components::SliderFloat(std::string text, std::string settings_name, float min, float max)
 {
     float v = g_Config.GetFloat(settings_name);
@@ -649,6 +663,17 @@ void MenuHelper::components::SliderFloat(std::string text, std::string settings_
     }
 }
 
+void MenuHelper::components::SliderFloat(std::string label, float& value, float min, float max)
+{
+	if (value > max)
+		value = max;
+
+	if (value < min)
+		value = min;
+	
+	ImGui::SliderFloat(label.c_str(), &value, min, max);
+}
+
 void MenuHelper::components::Hotkey(std::string text, std::string settings_name)
 {
     int key = g_Config.GetInt(settings_name);
@@ -660,9 +685,14 @@ void MenuHelper::components::Hotkey(std::string text, std::string settings_name)
     }
 }
 
-bool MenuHelper::components::Button(std::string text)
+void MenuHelper::components::Hotkey(std::string label, int & value)
 {
-    return ImGui::Button(text.data());
+	ImGui::Hotkey(label.data(), &value);
+}
+
+bool MenuHelper::components::Button(std::string label)
+{
+    return ImGui::Button(label.data());
 }
 
 void MenuHelper::components::Spacing()
