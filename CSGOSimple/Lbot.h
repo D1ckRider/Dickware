@@ -15,6 +15,7 @@ private:
     int GetBestTarget(C_BasePlayer* local, C_BaseCombatWeapon* weapon, CUserCmd* cmd, Vector& hitpos);
 
     void ResetRecoil(CUserCmd* cmd);
+	void AutoPistol(CUserCmd* cmd);
     void RemoveRecoil(C_BasePlayer* local, CUserCmd* cmd);
     void DoAimbot(CUserCmd* cmd, C_BasePlayer* local, C_BaseCombatWeapon* weapon);
 
@@ -25,7 +26,7 @@ private:
     float WeaponSmooth = 1.f;
     float WeaponRandomness = 0.f;
     float WeaponDelay = 0.f;
-    bool WeaponFlickbot = false;
+    bool WeaponAutopistol = false;
 
     bool WeaponRcs = false;
     float WeaponRecoilX = 1.f;

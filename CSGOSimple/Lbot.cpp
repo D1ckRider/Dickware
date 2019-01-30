@@ -57,22 +57,18 @@ void Lbot::OnCreateMove(CUserCmd* cmd)
         Backtrack::Get().LegitOnCreateMove(hb_enabled);
     }
 
-    // Console.WriteLine("!local"); return; }
+	bool bAttack = (cmd->buttons & IN_ATTACK);
 
-    //Console.WriteLine("lul");
+	if (bAttack)
+		if (weapon->IsPistol() && WeaponAutopistol)
+			AutoPistol(cmd);
 
     if (WeaponRcs)
-    {
         ResetRecoil(cmd);
-    }
     if (WeaponFov != 0.f)
-    {
         DoAimbot(cmd, local, weapon);
-    }
     if (WeaponRcs)
-    {
         RemoveRecoil(local, cmd);
-    }
 
     //Math::NormalizeAngles(cmd->viewangles);
 
@@ -88,6 +84,7 @@ void Lbot::UpdateWeaponConfig(C_BaseCombatWeapon* weapon)
 	WeaponSmooth = Settings::Aimbot::WeaponAimSetting[WeaponID].Smooth;
 	WeaponRandomness = Settings::Aimbot::WeaponAimSetting[WeaponID].Randomize;
 	WeaponDelay = Settings::Aimbot::WeaponAimSetting[WeaponID].Delay;
+	WeaponAutopistol = Settings::Aimbot::WeaponAimSetting[WeaponID].Autopistol;
 
 	WeaponRcs = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS;
 	WeaponRecoilX = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_X;
@@ -306,6 +303,20 @@ int Lbot::GetBestTarget(C_BasePlayer* local, C_BaseCombatWeapon* weapon, CUserCm
 void Lbot::ResetRecoil(CUserCmd* cmd)
 {
     cmd->viewangles += LastAimpunchRemove;
+}
+
+void Lbot::AutoPistol(CUserCmd * cmd)
+{
+	float NextAttack = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack();//m_pLocal->m_pWeaponEntity->GetNextPrimaryAttack();
+	float Tick = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick; //g_Lo->m_pEntity->GetTickBase() * g_GlobalVars->interval_per_tick;
+
+	if (NextAttack < Tick)
+		return;
+
+	if (g_LocalPlayer->m_hActiveWeapon()->GetItemDefinitionIndex() == WEAPON_REVOLVER)
+		cmd->buttons &= ~IN_ATTACK2;
+	else
+		cmd->buttons &= ~IN_ATTACK;
 }
 
 void Lbot::RemoveRecoil(C_BasePlayer* local, CUserCmd* cmd)

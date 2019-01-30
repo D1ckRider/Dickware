@@ -55,6 +55,7 @@ void Settings::Initialize()
 		Aimbot::WeaponAimSetting[i].Smooth = 1.f;
 		Aimbot::WeaponAimSetting[i].Randomize = 0.f;
 		Aimbot::WeaponAimSetting[i].Delay = 0.f;
+		Aimbot::WeaponAimSetting[i].Autopistol = false;
 
 		Aimbot::WeaponAimSetting[i].RCS = false;
 		Aimbot::WeaponAimSetting[i].RCS_X = 0.f;
@@ -233,6 +234,7 @@ void Settings::SaveSettings(std::string fileName)
 		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Smooth", Aimbot::WeaponAimSetting[i].Smooth);
 		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Randomize", Aimbot::WeaponAimSetting[i].Randomize);
 		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Delay", Aimbot::WeaponAimSetting[i].Delay);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Autopistol", Aimbot::WeaponAimSetting[i].Autopistol);
 		/* RCS */
 		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS", Aimbot::WeaponAimSetting[i].RCS);
 		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_X", Aimbot::WeaponAimSetting[i].RCS_X);
@@ -409,6 +411,7 @@ void Settings::LoadSettings(std::string fileName)
 		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Smooth", 		Aimbot::WeaponAimSetting[i].Smooth);
 		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Randomize", 		Aimbot::WeaponAimSetting[i].Randomize);
 		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Delay", 		Aimbot::WeaponAimSetting[i].Delay);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Autopistol", Aimbot::WeaponAimSetting[i].Autopistol);
 		/* RCS */
 		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS", 		Aimbot::WeaponAimSetting[i].RCS);
 		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_X", 		Aimbot::WeaponAimSetting[i].RCS_X);

@@ -137,6 +137,7 @@ namespace Settings
 			float Smooth;
 			float Randomize;
 			float Delay;
+			bool Autopistol;
 			bool RCS;
 			float RCS_X;
 			float RCS_Y;

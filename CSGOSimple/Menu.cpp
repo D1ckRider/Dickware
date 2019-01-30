@@ -339,6 +339,7 @@ void Menu::RenderLegitbot()
 			Components.SliderFloat("Smooth",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].Smooth, 1.f, 30.f);
 			Components.SliderFloat("Randomize",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].Randomize, 0.f, 10.f);
 			Components.SliderFloat("Delay",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].Delay, 0.f, 1.f);
+			Components.Checkbox("Auto Pistol", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_PISTOL].Autopistol);
 
             Components.Spacing();
 
@@ -368,6 +369,7 @@ void Menu::RenderLegitbot()
 			Components.SliderFloat("Smooth",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].Smooth, 1.f, 30.f);
 			Components.SliderFloat("Randomize",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].Randomize, 0.f, 10.f);
 			Components.SliderFloat("Delay",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].Delay, 0.f, 1.f);
+			Components.Checkbox("Auto Pistol", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].Autopistol);
 
 
 			Components.Spacing();
