@@ -17,6 +17,10 @@ void EventHelper::listener::Start()
     {
         throw std::exception("Failed to register the event");
     }
+	if (!g_GameEvents->AddListener(this, "player_footstep", false))
+	{
+		throw std::exception("Failed to register the event");
+	}
 }
 void EventHelper::listener::Stop()
 {
@@ -35,10 +39,12 @@ int EventHelper::listener::GetEventDebugID(void)
 
 void EventHelper::ShotTracer(Vector shot_pos, Vector hit_pos)
 {
-    if (!g_LocalPlayer || !g_Config.GetBool("vis_misc_bullettracer"))
+    /*if (!g_LocalPlayer || !g_Config.GetBool("vis_misc_bullettracer"))
     {
         return;
-    }
+    }*/
+	if (!g_LocalPlayer || !Settings::Visual::BulletTracers)
+		return;
 
     Color clr = Color(Math::RandomInt(0, 255), Math::RandomInt(0, 255), Math::RandomInt(0, 255));
 

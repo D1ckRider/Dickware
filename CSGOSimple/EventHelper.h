@@ -3,11 +3,13 @@
 #include "valve_sdk\csgostructs.hpp"
 #include "options.hpp"
 #include "Resolver.h"
+#include "Logger.h"
 #include "HitPossitionHelper.h"
 #include "ConfigSystem.h"
 #include "RuntimeSaver.h"
 #include "Settings.h"
 #include "Rbot.h"
+#include "Features\visuals.hpp"
 
 #include <Windows.h>
 #pragma comment(lib, "Winmm.lib")
@@ -44,12 +46,9 @@ public:
 
         if (!strcmp(event->GetName(), "player_hurt"))
         {
-            /*if (!g_Config.GetBool("vis_misc_hitmarker"))
-            {
-                return;
-            }*/
 			if (!Settings::Visual::Hitmarker)
 				return;
+
             int attacker = event->GetInt("attacker");
             if (g_EngineClient->GetPlayerForUserID(attacker) == g_EngineClient->GetLocalPlayer())
             {
@@ -71,13 +70,21 @@ public:
             C_BasePlayer* shooter = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(g_EngineClient->GetPlayerForUserID(event->GetInt("userid"))));
 
             if (!shooter || shooter != g_LocalPlayer)
-            {
                 return;
-            }
             Vector p = Vector(event->GetFloat("x"), event->GetFloat("y"), event->GetFloat("z"));
             ShotTracer(g_Saver.LastShotEyePos, p);
         }
 
+		/*if (!strcmp(event->GetName(), "player_footstep"))
+		{
+			g_Logger.Info("VISUAL", "Player footstep triggered");
+			C_BasePlayer* player = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(g_EngineClient->GetPlayerForUserID(event->GetInt("userid"))));
+			if (!player || player == g_LocalPlayer)
+				return;
+
+			//g_Saver.StepInfo = StepInfoStruct{ event->GetInt("userid"), g_GlobalVars->realtime };
+			//Visuals::Get().RenderSoundESP(player);
+		}*/
     }
     void ShotTracer(Vector shot_pos, Vector hit_pos);
 private:

@@ -65,7 +65,7 @@ namespace Settings
 		{
 			STANDING = 0,
 			MOVING = 1,
-			AIR = 3
+			AIR = 2
 		};
 
 		struct RBotWeaponSetting
@@ -118,6 +118,7 @@ namespace Settings
 		extern bool AutoCrouch;
 		extern bool SlowWalk;
 		extern int SlowWalkHotkey;
+		extern float SlowWalkMod;
 
 		extern bool FakelagPrediction;
 		extern int ShootingMode;

@@ -256,7 +256,7 @@ void Menu::RenderRagebot()
 			Components.ComboBox("Yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), Settings::RageBot::AntiAimSettings[AntiAimState::AIR].Yaw);
 
 			Components.ComboBox("Yaw Add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), Settings::RageBot::AntiAimSettings[AntiAimState::AIR].YawAdd);
-			//Components.SliderFloat("Range",  Settings::RageBot::AntiAimSettings[AntiAimState::AIR].Range, 0.f, 360.f);
+			Components.SliderFloat("Range",  Settings::RageBot::AntiAimSettings[AntiAimState::AIR].Range, 0.f, 360.f);
 
 			Components.ComboBox("Fakelag mode", FakelagModes, IM_ARRAYSIZE(FakelagModes), Settings::RageBot::AntiAimSettings[AntiAimState::AIR].FakelagMode);
 			Components.SliderInt("Fakelag Ticks",  Settings::RageBot::AntiAimSettings[AntiAimState::AIR].FakelagTicks, 0, 14);
@@ -291,11 +291,12 @@ void Menu::RenderRagebot()
             break;
     }
 
+	Components.Checkbox("Slow Walk", Settings::RageBot::SlowWalk);
+	Components.Hotkey("Slow Walk Hotkey", Settings::RageBot::SlowWalkHotkey);
 	Components.Checkbox("Auto Scope",  Settings::RageBot::AutoScope);
 	Components.Checkbox("Auto Stop",  Settings::RageBot::AutoStop);
 	Components.Checkbox("Auto Crouch",  Settings::RageBot::AutoCrouch);
-	Components.Checkbox("Slow Walk",  Settings::RageBot::SlowWalk);
-	Components.Hotkey("Slow Walk Hotkey",  Settings::RageBot::SlowWalkHotkey);
+	
 	//Components.Checkbox("Lby prediction", "rbot_lby_prediction");
 #ifdef _DEBUG
 	//Components.Checkbox("Fakelag prediction", "rbot_flag_prediction");

@@ -547,6 +547,39 @@ void Visuals::RenderPlantedC4 ( C_BaseEntity* ent )
     VGSHelper::Get().DrawText ( timer, ( bbox.left + w * 0.5f ) - sz.x * 0.5f, bbox.bottom + 1, clr, 12 );
 }
 
+void Visuals::RenderSoundESP()
+{
+	if (!g_Saver.StepInfo.empty())
+	{
+		for (size_t i = 0; i < g_Saver.StepInfo.size(); i++)
+		{
+			if (g_GlobalVars->realtime - g_Saver.StepInfo[i].SoundTime < 1.f)
+			{
+				Vector pos;
+				auto sz = g_pDefaultFont->CalcTextSizeA(12.f, FLT_MAX, 0.0f, "Step");
+				Math::WorldToScreen(g_Saver.StepInfo[i].Origin, pos);
+
+				VGSHelper::Get().DrawText("Step", pos.x - sz.x * 0.5f, pos.y, Color::White, 12);
+			}
+			/*else
+			{
+				g_Saver.StepInfo.erase(g_Saver.StepInfo.begin() + i);
+			}*/
+		}
+	}
+
+	/*C_BaseEntity* ent2 = static_cast<C_BaseEntity*>(g_EntityList->GetClientEntity(g_Saver.StepInfo.UserID));
+	if (ent != ent2 || g_Saver.StepInfo.Time > .5f)
+		return;
+	Vector pos;
+	//auto bbox = GetBBox(ent->GetRenderOrigin);
+	auto sz = g_pDefaultFont->CalcTextSizeA(12.f, FLT_MAX, 0.0f, "Step");
+	//int w = bbox.right - bbox.left;
+	Math::WorldToScreen(ent->GetRenderOrigin(), pos);
+
+	VGSHelper::Get().DrawText("Step", pos.x - sz.x * 0.5f, pos.y, Color::White, 12);*/
+}
+
 
 void Visuals::DrawGrenade ( C_BaseEntity* ent )
 {
@@ -1155,6 +1188,9 @@ void Visuals::AddToDrawList()
                 if ( Enemy && esp_enemy_lby_timer )
                     player.RenderLbyUpdateBar();
 
+				/*if ((Enemy) || (Team))
+					player.RenderSoundESP();*/
+
                 #ifdef _DEBUG
 
                 if ( misc_debug_overlay )
@@ -1177,6 +1213,8 @@ void Visuals::AddToDrawList()
         // grenade esp
         if ( GrenadeEsp )
             DrawGrenade ( entity );
+
+		RenderSoundESP();
     }
 
 	if ( Settings::RageBot::Enabled )
@@ -1196,7 +1234,6 @@ void Visuals::AddToDrawList()
     ManualAAIndicator();
     #endif // _DEBUG
 
-    //if ( g_Config.GetBool ( "vis_misc_draw_circle" ) )
 	if ( Settings::Visual::SpreadCircleEnabled )
         SpreadCircle();
 
@@ -1206,7 +1243,6 @@ void Visuals::AddToDrawList()
 	if ( Settings::Visual::NoScopeOverlay )
         RenderNoScoopeOverlay();
 
-    //if ( g_Config.GetBool ( "vis_misc_hitmarker" ) )
 	if ( Settings::Visual::Hitmarker )
         RenderHitmarker();
 

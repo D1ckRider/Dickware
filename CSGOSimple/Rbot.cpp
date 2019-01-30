@@ -16,19 +16,19 @@ RbotMatrixData matrixData[128];
 
 TickRecord bRecord;
 
-void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
+void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 {
-    static bool DidShotLastTick = false;
+	static bool DidShotLastTick = false;
 
-    if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive() )
-        return;
+	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
+		return;
 
-    C_BaseCombatWeapon* weapon = g_LocalPlayer->m_hActiveWeapon();
+	C_BaseCombatWeapon* weapon = g_LocalPlayer->m_hActiveWeapon();
 
-    if ( !weapon )
-        return;
+	if (!weapon)
+		return;
 
-    CurrentCmd = cmd;
+	CurrentCmd = cmd;
 	UpdateWeaponConfig(weapon);
 
 	// Get debug config info
@@ -38,131 +38,127 @@ void Rbot::CreateMove ( CUserCmd* cmd, bool& bSendPacket )
 		g_Logger.Info("INFO", "Min Damage is " + std::to_string(MinDmg));
 	}
 
-    if ( weapon->IsKnife() )
-        return;
+	if (weapon->IsKnife())
+		return;
 
-    if ( weapon->IsZeus() )
-    {
-        ZeusBot ( cmd, weapon );
-        return;
-    }
+
+
+	if (weapon->IsZeus())
+	{
+		ZeusBot(cmd, weapon);
+		return;
+	}
 
 	/* Calling SlowWalk */
-	if ( weapon->GetItemDefinitionIndex() == WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == WEAPON_G3SG1 )
+	if (weapon->GetItemDefinitionIndex() == WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == WEAPON_G3SG1)
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 40);
 
-	if ( weapon->GetItemDefinitionIndex() == WEAPON_AWP )
+	if (weapon->GetItemDefinitionIndex() == WEAPON_AWP)
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 33);
 
-	if ( weapon->GetItemDefinitionIndex() == WEAPON_SSG08 )
+	if (weapon->GetItemDefinitionIndex() == WEAPON_SSG08)
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 70);
 
-	if ( !weapon->IsSniper() )  //for every weapon btw
+	if (!weapon->IsSniper())  //for every weapon btw
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 34);
 
-	
 
-    //Console.WriteLine(g_GlobalVars->curtime - weapon->m_flNextPrimaryAttack());
-    //if (g_Saver.curtime - weapon->m_flNextPrimaryAttack() < 0.f) return;
 
-    Vector hitpos = Vector ( 0, 0, 0 );
-    bool bBacktrack = false;
-    //TickRecord bBacktrackRecord = bRecord;
-    UpdateConfigData();
-    int BestEntity = FindBestEntity ( cmd, weapon, hitpos, bBacktrack );
+	//Console.WriteLine(g_GlobalVars->curtime - weapon->m_flNextPrimaryAttack());
+	//if (g_Saver.curtime - weapon->m_flNextPrimaryAttack() < 0.f) return;
 
-    //Console.WriteLine("Backtrack");
-    //Console.WriteLine(bBacktrack ? "true" : "false");
+	Vector hitpos = Vector(0, 0, 0);
+	bool bBacktrack = false;
+	//TickRecord bBacktrackRecord = bRecord;
+	UpdateConfigData();
+	int BestEntity = FindBestEntity(cmd, weapon, hitpos, bBacktrack);
 
-    if ( hitpos == Vector ( 0, 0, 0 ) )
-        return;
+	//Console.WriteLine("Backtrack");
+	//Console.WriteLine(bBacktrack ? "true" : "false");
 
-    if ( BestEntity == -1 )
-        return;
+	if (hitpos == Vector(0, 0, 0))
+		return;
 
-    C_BasePlayer* entity = static_cast<C_BasePlayer*> ( g_EntityList->GetClientEntity ( BestEntity ) );
+	if (BestEntity == -1)
+		return;
 
-    QAngle newAng = Math::CalcAngle ( g_LocalPlayer->GetEyePos(), hitpos );
+	C_BasePlayer* entity = static_cast<C_BasePlayer*> (g_EntityList->GetClientEntity(BestEntity));
 
-    //float recoil_scale = g_CVar->FindVar("weapon_recoil_scale")->GetFloat();
-    QAngle a = ( g_LocalPlayer->m_aimPunchAngle() * 2 );
-    //Math::NormalizeAngles(a);
-    a.roll = 0.f;
-    newAng -= a;
+	QAngle newAng = Math::CalcAngle(g_LocalPlayer->GetEyePos(), hitpos);
 
-    //Vector v;
-    //Math::AngleVectors(a, v);
+	//float recoil_scale = g_CVar->FindVar("weapon_recoil_scale")->GetFloat();
+	QAngle a = (g_LocalPlayer->m_aimPunchAngle() * 2);
+	//Math::NormalizeAngles(a);
+	a.roll = 0.f;
+	newAng -= a;
 
-    //float tdmg = Autowall::Get().CanHit(hitpos - v);
+	//Vector v;
+	//Math::AngleVectors(a, v);
 
-    //if (tdmg == -1.f) return;
+	//float tdmg = Autowall::Get().CanHit(hitpos - v);
 
-    if ( weapon->IsSniper() && !g_LocalPlayer->m_bIsScoped() && ( g_LocalPlayer->m_fFlags() & FL_ONGROUND ) && g_Config.GetBool ( "rbot_autoscope" ) )
-    {
-        if ( ! ( cmd->buttons & IN_ZOOM ) )
-            cmd->buttons |= IN_ZOOM;
+	//if (tdmg == -1.f) return;
 
-        //if ( g_Config.GetBool ( "rbot_autostop" ) )
-		if ( Settings::RageBot::AutoStop )
-            AutoStop ( cmd );
+	if (weapon->IsSniper() && !g_LocalPlayer->m_bIsScoped() && (g_LocalPlayer->m_fFlags() & FL_ONGROUND) && g_Config.GetBool("rbot_autoscope"))
+	{
+		if (!(cmd->buttons & IN_ZOOM))
+			cmd->buttons |= IN_ZOOM;
 
-        //if ( ! ( cmd->buttons & IN_DUCK ) && g_Config.GetBool ( "rbot_autocrouch" ) )
-		if ( !(cmd->buttons & IN_DUCK) && Settings::RageBot::AutoCrouch )
-            AutoCrouch ( cmd );
+		if (Settings::RageBot::AutoStop)
+			AutoStop(cmd);
 
-        return;
-    }
+		if (!(cmd->buttons & IN_DUCK) && Settings::RageBot::AutoCrouch)
+			AutoCrouch(cmd);
 
-    //if ( !HitChance ( newAng, entity, g_Config.GetFloat ( "rbot_min_hitchance" ) ) )
-	if ( !HitChance ( newAng, entity, Hitchance ) )
-    {
-        //if ( g_Config.GetBool ( "rbot_autostop" ) )
-		if ( Settings::RageBot::AutoStop )
-            AutoStop ( cmd );
+		return;
+	}
 
-        //if ( ! ( cmd->buttons & IN_DUCK ) && g_Config.GetBool ( "rbot_autocrouch" ) )
-		if ( !(cmd->buttons & IN_DUCK) && Settings::RageBot::AutoCrouch )
-            AutoCrouch ( cmd );
+	if (!HitChance(newAng, entity, Hitchance))
+	{
+		if (Settings::RageBot::AutoStop)
+			AutoStop(cmd);
 
-        return;
-    }
+		if (!(cmd->buttons & IN_DUCK) && Settings::RageBot::AutoCrouch)
+			AutoCrouch(cmd);
 
-    if ( !weapon->CanFire() && g_Saver.curtime <= weapon->m_flNextPrimaryAttack() )
-        return;
+		return;
+	}
 
-    if ( DidShotLastTick )
-    {
-        DidShotLastTick = false;
-        return;
-    }
+	if (!weapon->CanFire() && g_Saver.curtime <= weapon->m_flNextPrimaryAttack())
+		return;
 
-    //int rbot_shooting_mode = g_Config.GetInt ( "rbot_shooting_mode" );
+	if (DidShotLastTick)
+	{
+		DidShotLastTick = false;
+		return;
+	}
+
 	int rbot_shooting_mode = Settings::RageBot::ShootingMode;
 
-    if ( rbot_shooting_mode == 2 ) g_Saver.RbotDidLastShot = true;
+	if (rbot_shooting_mode == 2) g_Saver.RbotDidLastShot = true;
 
-    LastRbotEnemyIndex = BestEntity;
+	LastRbotEnemyIndex = BestEntity;
 
-    //newAng.Normalize();
-    Math::NormalizeAngles ( newAng );
-    Math::ClampAngles ( newAng );
+	//newAng.Normalize();
+	Math::NormalizeAngles(newAng);
+	Math::ClampAngles(newAng);
 
-    //if (newAng.pitch < -89.f || newAng.pitch > 89.f) return;
+	//if (newAng.pitch < -89.f || newAng.pitch > 89.f) return;
 
-    //if (newAng.yaw == 0.f && newAng.pitch == 0.f && newAng.roll == 0.f) return;
+	//if (newAng.yaw == 0.f && newAng.pitch == 0.f && newAng.roll == 0.f) return;
 
-    int tick = TIME_TO_TICKS ( entity->m_flSimulationTime() + Backtrack::Get().GetLerpTime() );
+	int tick = TIME_TO_TICKS(entity->m_flSimulationTime() + Backtrack::Get().GetLerpTime());
 
-    if ( !Backtrack::Get().IsTickValid ( tick ) )
-        return;
+	if (!Backtrack::Get().IsTickValid(tick))
+		return;
 
-    DidShotLastTick = true;
-    cmd->viewangles = newAng;
-    cmd->buttons |= IN_ATTACK;
+	DidShotLastTick = true;
+	cmd->viewangles = newAng;
+	cmd->buttons |= IN_ATTACK;
     //DidShotLastTick = true;
     g_Saver.RbotShotInfo.InLbyUpdate = g_Resolver.GResolverData[BestEntity].mode == ResolverModes::LBY_BREAK;
     g_Saver.RbotShotInfo.InLc = g_Resolver.GResolverData[BestEntity].BreakingLC;
@@ -285,79 +281,6 @@ void Rbot::UpdateWeaponConfig(C_BaseCombatWeapon * weapon)
 	BAimAfter = Settings::RageBot::WeaponSettings[WeaponID].BAimAfterShots;
 	ForceBAimAfter = Settings::RageBot::WeaponSettings[WeaponID].ForceBAimAfterShots;
 	MovingBAim = Settings::RageBot::WeaponSettings[WeaponID].BAimWhileMoving;
-	/*if ( weapon->GetItemDefinitionIndex() == WEAPON_DEAGLE )
-	{
-		Hitchance = g_Config.GetFloat("rbot_deagle_min_hitchance");
-		Hitchance = g_Config.GetFloat("rbot_deagle_min_hitchance");
-		MinDmg = g_Config.GetFloat("rbot_deagle_mindamage");
-
-		BAimAfter = g_Config.GetInt("rbot_deagle_baim_after_shots");
-		ForceBAimAfter = g_Config.GetInt("rbot_deagle_force_baim_after_shots");
-		MovingBAim = g_Config.GetBool("rbot_deagle_baim_while_moving");
-	}
-	else if ( weapon->GetItemDefinitionIndex() == WEAPON_REVOLVER )
-	{
-		Hitchance = g_Config.GetFloat("rbot_revolver_min_hitchance");
-		MinDmg = g_Config.GetFloat("rbot_revolver_mindamage");
-
-		BAimAfter = g_Config.GetInt("rbot_revolver_baim_after_shots");
-		ForceBAimAfter = g_Config.GetInt("rbot_revolver_force_baim_after_shots");
-		MovingBAim = g_Config.GetBool("rbot_revolver_baim_while_moving");
-	}
-	else if ( weapon->GetItemDefinitionIndex() == WEAPON_SSG08 )
-	{
-		Hitchance = g_Config.GetFloat("rbot_scout_min_hitchance");
-		MinDmg = g_Config.GetFloat("rbot_scout_mindamage");
-
-		BAimAfter = g_Config.GetInt("rbot_scout_baim_after_shots");
-		ForceBAimAfter = g_Config.GetInt("rbot_scout_force_baim_after_shots");
-		MovingBAim = g_Config.GetBool("rbot_scout_baim_while_moving");
-	}
-	else if ( weapon->GetItemDefinitionIndex() == WEAPON_AWP )
-	{
-		Hitchance = g_Config.GetFloat("rbot_awp_min_hitchance");
-		MinDmg = g_Config.GetFloat("rbot_awp_mindamage");
-
-		BAimAfter = g_Config.GetInt("rbot_awp_baim_after_shots");
-		ForceBAimAfter = g_Config.GetInt("rbot_awp_force_baim_after_shots");
-		MovingBAim = g_Config.GetBool("rbot_awp_baim_while_moving");
-	}
-	else if ( weapon->GetItemDefinitionIndex() == WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == WEAPON_G3SG1 )
-	{
-		Hitchance = g_Config.GetFloat("rbot_auto_min_hitchance");
-		MinDmg = g_Config.GetFloat("rbot_auto_mindamage");
-
-		BAimAfter = g_Config.GetInt("rbot_auto_baim_after_shots");
-		ForceBAimAfter = g_Config.GetInt("rbot_auto_force_baim_after_shots");
-		MovingBAim = g_Config.GetBool("rbot_auto_baim_while_moving");
-	}
-	else if (weapon->IsPistol())
-	{
-		Hitchance = g_Config.GetFloat("rbot_pistol_min_hitchance");
-		MinDmg = g_Config.GetFloat("rbot_pistol_mindamage");
-
-		BAimAfter = g_Config.GetInt("rbot_pistol_baim_after_shots");
-		ForceBAimAfter = g_Config.GetInt("rbot_pistol_force_baim_after_shots");
-		MovingBAim = g_Config.GetBool("rbot_pistol_baim_while_moving");
-	}
-	else if ( weapon->IsRifle() )
-	{
-		Hitchance = g_Config.GetFloat("rbot_rifle_min_hitchance");
-		MinDmg = g_Config.GetFloat("rbot_rifle_mindamage");
-
-		BAimAfter = g_Config.GetInt("rbot_rifle_baim_after_shots");
-		ForceBAimAfter = g_Config.GetInt("rbot_rifle_force_baim_after_shots");
-		MovingBAim = g_Config.GetBool("rbot_rifle_baim_while_moving");
-	}
-	else
-	{
-		Hitchance = g_Config.GetFloat("rbot_shotgun_min_hitchance");
-		MinDmg = g_Config.GetFloat("rbot_shotgun_mindamage");
-
-		BAimAfter = g_Config.GetInt("rbot_shotgun_baim_after_shots");
-		ForceBAimAfter = g_Config.GetInt("rbot_shotgun_force_baim_after_shots");
-		MovingBAim = g_Config.GetBool("rbot_shotgun_baim_while_moving");
-	}*/
 }
 
 bool Rbot::InFakeLag ( C_BasePlayer* player )
@@ -387,7 +310,6 @@ void Rbot::AutoCrouch ( CUserCmd* cmd )
 
 void Rbot::SlowWalk( CUserCmd * cmd, float speed )
 {
-	//if (g_Config.GetBool("rbot_slowwalk") || !InputSys::Get().IsKeyDown(g_Config.GetInt("rbot_slowwalk_hotkey")) )
 	if( !Settings::RageBot::SlowWalk || !InputSys::Get().IsKeyDown(Settings::RageBot::SlowWalkHotkey) )
 		return;
 
@@ -404,7 +326,7 @@ void Rbot::SlowWalk( CUserCmd * cmd, float speed )
 	if (min_speed <= speed)
 		return;
 
-	float finalSpeed = speed / min_speed;
+	float finalSpeed = (speed / min_speed);
 
 	cmd->forwardmove *= finalSpeed;
 	cmd->sidemove *= finalSpeed;
@@ -572,13 +494,10 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
     bool BestBacktrack = false;
     TickRecord BestBacktrackRecord;
 
-    /*int baim_after_shots = g_Config.GetInt ( "rbot_baim_after_shots" );
-    int force_baim_after_shots = g_Config.GetInt ( "rbot_force_baim_after_shots" );*/
     bool rbot_lagcompensation = g_Config.GetBool ( "rbot_lagcompensation" );
-	bool rbot_force_unlage = Settings::RageBot::ForceUnlag; //g_Config.GetBool ( "rbot_force_unlage" );
-    // bool rbot_baim_while_moving = g_Config.GetBool ( "rbot_baim_while_moving" );
-	bool rbot_resolver = Settings::RageBot::Resolver; //g_Config.GetBool ( "rbot_resolver" );
-	int rbot_baimmode = Settings::RageBot::BAimMode; //g_Config.GetInt ( "rbot_baimmode" );
+	bool rbot_force_unlage = Settings::RageBot::ForceUnlag;
+	bool rbot_resolver = Settings::RageBot::Resolver; 
+	int rbot_baimmode = Settings::RageBot::BAimMode; 
 
     bool FoundGoodEntity = false;
 

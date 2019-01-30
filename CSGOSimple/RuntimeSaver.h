@@ -17,6 +17,12 @@ struct ImpactInfoStruct
     int Tick = 0;
 };
 
+struct StepInfoStruct
+{
+	Vector Origin = Vector(0, 0, 0);
+	float SoundTime = 0.f;
+};
+
 struct BulletTracerInfoStruct
 {
     bool DidHit = false;
@@ -75,6 +81,8 @@ public:
     bool LCbroken = false;
 
     HitmarkerInfoStruct HitmarkerInfo;
+
+	std::vector<StepInfoStruct> StepInfo;
 
     RbotShotInfoStruct RbotShotInfo;
 

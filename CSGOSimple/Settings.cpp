@@ -216,6 +216,7 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "rbot_autocrouch", RageBot::AutoCrouch);
 	SaveValue(j, "rbot_slowwalk", RageBot::SlowWalk);
 	SaveValue(j, "rbot_slowwalk_hotkey", RageBot::SlowWalkHotkey);
+	SaveValue(j, "rbot_slowwalk_speed", RageBot::SlowWalkMod);
 
 	SaveValue(j, "rbot_fakelag_prediction", RageBot::FakelagPrediction);
 	SaveValue(j, "rbot_shooting_mode", RageBot::ShootingMode);
@@ -391,6 +392,7 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "rbot_autocrouch", 	RageBot::AutoCrouch);
 	LoadValue(j, "rbot_slowwalk", 	RageBot::SlowWalk);
 	LoadValue(j, "rbot_slowwalk_hotkey", 	RageBot::SlowWalkHotkey);
+	LoadValue(j, "rbot_slowwalk_speed", RageBot::SlowWalkMod);
 
 	LoadValue(j, "rbot_fakelag_prediction", 	RageBot::FakelagPrediction);
 	LoadValue(j, "rbot_shooting_mode", 	RageBot::ShootingMode);
@@ -574,6 +576,7 @@ namespace Settings::RageBot
 	bool AutoCrouch = false;
 	bool SlowWalk = false;
 	int SlowWalkHotkey = 0x0;
+	float SlowWalkMod = .0f; 
 
 	bool FakelagPrediction = false;
 	int ShootingMode = 0;

@@ -19,13 +19,10 @@ void BuyBot::OnRoundStart()
 void BuyBot::OnCreateMove()
 {
     if (!g_LocalPlayer || !g_LocalPlayer->IsAlive() || !ShouldBuy)
-    {
         return;
-    }
     ShouldBuy = false;
 
     std::string buycommand = "";
-    //BuyBotHvHWeapons weapon = (BuyBotHvHWeapons)g_Config.GetInt("misc_buybot_weapon");
 	BuyBotHvHWeapons weapon = (BuyBotHvHWeapons)Settings::Misc::BuyBotWeapon;
     switch (weapon)
     {
@@ -55,8 +52,6 @@ void BuyBot::OnCreateMove()
             break;
     }
 
-
-    //BuyBotPistols pistol = (BuyBotPistols)g_Config.GetInt("misc_buybot_pistol");
 	BuyBotPistols pistol = (BuyBotPistols)Settings::Misc::BuyBotPistol;
     switch (pistol)
     {
@@ -78,36 +73,26 @@ void BuyBot::OnCreateMove()
     }
 	/* Nades */
     if (g_Config.GetBool("misc_buybot_grenade_molotov"))
-    {
         buycommand += "buy molotov; ";
-    }
+
     if (g_Config.GetBool("misc_buybot_grenade_grenade"))
-    {
         buycommand += "buy hegrenade; ";
-    }
+
     if (g_Config.GetBool("misc_buybot_grenade_smoke"))
-    {
-        buycommand += "buy smokegrenade; ";
-    }
+            buycommand += "buy smokegrenade; ";
+
     if (g_Config.GetBool("misc_buybot_grenade_flash"))
-    {
         buycommand += "buy flashbang; ";
-    }
     if (g_Config.GetBool("misc_buybot_grenade_decoy"))
-    {
         buycommand += "buy decoy; ";
-    }
 
 	/* Etc */
-   // if (g_Config.GetBool("misc_buybot_armor"))
 	if ( Settings::Misc::BuyBotArmor )
         buycommand += "buy vest; buy vesthelm; ";
 
-    //if (g_Config.GetBool("misc_buybot_zeus"))
 	if ( Settings::Misc::BuyBotZeus )
         buycommand += "buy taser; ";
 
-    //if (g_Config.GetBool("misc_buybot_defuser"))
 	if ( Settings::Misc::BuyBotDefuser )
         buycommand += "buy defuser; ";
 
