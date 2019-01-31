@@ -118,6 +118,7 @@ namespace Settings
 		extern bool AutoCrouch;
 		extern bool SlowWalk;
 		extern int SlowWalkHotkey;
+		extern int FakeDuckHotkey;
 		extern float SlowWalkMod;
 
 		extern bool FakelagPrediction;
@@ -197,6 +198,8 @@ namespace Settings
 		};
 
 		extern Chams LocalChams;
+		extern bool GhostEnabled;
+		extern Color GhostColor;
 		extern PlayerESP LocalESP;
 		extern Chams EnemyChams;
 		extern PlayerESP EnemyESP;
@@ -218,6 +221,7 @@ namespace Settings
 		extern int FOV;
 		extern bool NoSmoke;
 		extern bool Hitmarker;
+		extern bool HitmarkerSound;
 		extern int RagdollForce;
 	}
 
@@ -263,9 +267,6 @@ namespace Settings
 	template<typename T>
 	void LoadValue(json & j, std::string name, T & value)
 	{
-		/*if (!j[name])
-			return;
-		value = j[name];*/
 		try
 		{
 			value = j[name];
@@ -276,12 +277,10 @@ namespace Settings
 			g_Logger.Warning("CONFIG", ex.what());
 		}
 	}
+
 	template<typename T>
 	void LoadNestedValue(json & j, std::string name1, std::string name2, T & value)
 	{
-		/*if (j[name1][name2] != nullptr)
-			return;
-		value = j[name1][name2];*/
 		try
 		{
 			value = j[name1][name2];

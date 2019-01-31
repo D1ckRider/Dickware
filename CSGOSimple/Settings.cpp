@@ -217,6 +217,7 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "rbot_autocrouch", RageBot::AutoCrouch);
 	SaveValue(j, "rbot_slowwalk", RageBot::SlowWalk);
 	SaveValue(j, "rbot_slowwalk_hotkey", RageBot::SlowWalkHotkey);
+	SaveValue(j, "rbot_fakeduck_hotkey", RageBot::FakeDuckHotkey);
 	SaveValue(j, "rbot_slowwalk_speed", RageBot::SlowWalkMod);
 
 	SaveValue(j, "rbot_fakelag_prediction", RageBot::FakelagPrediction);
@@ -258,6 +259,8 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "vis_chams_local_mode", Visual::LocalChams.Mode);
 	SaveColorValue(j, "vis_chams_local_invisible", Visual::LocalChams.Invisible);
 	SaveColorValue(j, "vis_chams_local_visible", Visual::LocalChams.Visible);
+	SaveValue(j, "vis_ghost_enabled", Visual::GhostEnabled);
+	SaveColorValue(j, "vis_ghost_color", Visual::GhostColor);
 	SaveValue(j, "vis_chams_enemy_enabled", Visual::EnemyChams.Enabled);
 	SaveValue(j, "vis_chams_enemy_mode", Visual::EnemyChams.Mode);
 	SaveColorValue(j, "vis_chams_enemy_invisible", Visual::EnemyChams.Invisible);
@@ -325,6 +328,7 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "vis_viewmodel_fov", Visual::ViewModelFOV);
 	SaveValue(j, "vis_nosmoke", Visual::NoSmoke);
 	SaveValue(j, "vis_hitmarker", Visual::Hitmarker);
+	SaveValue(j, "vis_hitmarker_sound", Visual::HitmarkerSound);
 	SaveValue(j, "vis_ragdoll_force", Visual::RagdollForce);
 	/* Misc */
 	SaveValue(j, "misc_bhop", Misc::BHop);
@@ -394,6 +398,7 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "rbot_autocrouch", 	RageBot::AutoCrouch);
 	LoadValue(j, "rbot_slowwalk", 	RageBot::SlowWalk);
 	LoadValue(j, "rbot_slowwalk_hotkey", 	RageBot::SlowWalkHotkey);
+	LoadValue(j, "rbot_fakeduck_hotkey", RageBot::FakeDuckHotkey);
 	LoadValue(j, "rbot_slowwalk_speed", RageBot::SlowWalkMod);
 
 	LoadValue(j, "rbot_fakelag_prediction", 	RageBot::FakelagPrediction);
@@ -435,6 +440,8 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "vis_chams_local_mode", 	Visual::LocalChams.Mode);
 	LoadColorValue(j, "vis_chams_local_invisible", Visual::LocalChams.Invisible);
 	LoadColorValue(j, "vis_chams_local_visible", Visual::LocalChams.Visible);
+	LoadValue(j, "vis_ghost_enabled", Visual::GhostEnabled);
+	LoadColorValue(j, "vis_ghost_color", Visual::GhostColor);
 	LoadValue(j, "vis_chams_enemy_enabled", 	Visual::EnemyChams.Enabled);
 	LoadValue(j, "vis_chams_enemy_mode", Visual::EnemyChams.Mode);
 	LoadColorValue(j, "vis_chams_enemy_invisible", Visual::EnemyChams.Invisible);
@@ -502,6 +509,7 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "vis_viewmodel_fov", 	Visual::ViewModelFOV);
 	LoadValue(j, "vis_nosmoke", 	Visual::NoSmoke);
 	LoadValue(j, "vis_hitmarker", 	Visual::Hitmarker);
+	LoadValue(j, "vis_hitmarker_sound", Visual::HitmarkerSound);
 	LoadValue(j, "vis_ragdoll_force", 	Visual::RagdollForce);
 	/* Misc */
 	LoadValue(j, "misc_bhop", 	Misc::BHop);
@@ -520,20 +528,36 @@ void Settings::LoadSettings(std::string fileName)
 
 void Settings::SaveColorValue(json & j, std::string name, const Color & value)
 {
-	j[name]["R"] = value.r();
-	j[name]["G"] = value.g();
-	j[name]["B"] = value.b();
-	j[name]["A"] = value.a();
+	try
+	{
+		j[name]["R"] = value.r();
+		j[name]["G"] = value.g();
+		j[name]["B"] = value.b();
+		j[name]["A"] = value.a();
+	}
+	catch (json::exception& ex)
+	{
+		g_Logger.Warning("CONFIG", ex.what());
+		//g_Logger.Warning( "CONFIG", "Loading error: " + std::to_string(ex.what()) );
+	}
 }
 
 void Settings::LoadColorValue(json & j, std::string name, Color & value)
 {
-	value.SetColor(
-		(int)j[name]["R"],
-		(int)j[name]["G"],
-		(int)j[name]["B"],
-		(int)j[name]["A"]
-	);
+	try
+	{
+		value.SetColor(
+			(int)j[name]["R"],
+			(int)j[name]["G"],
+			(int)j[name]["B"],
+			(int)j[name]["A"]
+		);
+	}
+	catch (json::exception& ex)
+	{
+		g_Logger.Warning("CONFIG", ex.what());
+		//g_Logger.Warning( "CONFIG", "Loading error: " + std::to_string(ex.what()) );
+	}
 }
 
 std::string Settings::LoadGameCfg()
@@ -579,6 +603,7 @@ namespace Settings::RageBot
 	bool AutoCrouch = false;
 	bool SlowWalk = false;
 	int SlowWalkHotkey = 0x0;
+	int FakeDuckHotkey = 0x0;
 	float SlowWalkMod = .0f; 
 
 	bool FakelagPrediction = false;
@@ -643,6 +668,8 @@ namespace Settings::Visual
 {
 	Chams LocalChams;
 	PlayerESP LocalESP;
+	bool GhostEnabled = false;
+	Color GhostColor = Color::White;
 	Chams EnemyChams;
 	PlayerESP EnemyESP;
 	Chams TeamChams;
@@ -663,6 +690,7 @@ namespace Settings::Visual
 	int FOV = 80;
 	bool NoSmoke = false;
 	bool Hitmarker = false;
+	bool HitmarkerSound = false;
 	int RagdollForce = 0;
 }
 

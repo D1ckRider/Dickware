@@ -338,16 +338,11 @@ void Lbot::DoAimbot(CUserCmd* cmd, C_BasePlayer* local, C_BaseCombatWeapon* weap
     static bool DidLastShot = false;
 
     if (!weapon->CanFire())
-    {
         return;
-    }
-
+    
     if (!weapon->HasBullets())
-    {
         return;
-    }
-
-    //if (!InputSys::Get().IsKeyDown(g_Config.GetInt("lbot_aimkey")))
+	
 	if ( !InputSys::Get().IsKeyDown(Settings::Aimbot::Hotkey) )
         return;
 
@@ -368,21 +363,15 @@ void Lbot::DoAimbot(CUserCmd* cmd, C_BasePlayer* local, C_BaseCombatWeapon* weap
 
     if (WeaponDelay != 0.f)
     {
-        //Console.WriteLine(g_GlobalVars->curtime - EntityFoundTime);
         if (g_GlobalVars->curtime - EntityFoundTime > WeaponDelay)
-        {
             cmd->buttons |= IN_ATTACK;
-        }
+
         else if(weapon->m_Item().m_iItemDefinitionIndex() != WEAPON_REVOLVER)
-        {
             cmd->buttons &= ~IN_ATTACK;
-        }
     }
 
     if (WeaponRandomness != 0.f)
-    {
         Outpos += Vector(Math::RandomFloat(-WeaponRandomness, WeaponRandomness), Math::RandomFloat(-WeaponRandomness, WeaponRandomness), Math::RandomFloat(-WeaponRandomness, WeaponRandomness));
-    }
 
     QAngle CalcAng = Math::CalcAngle(local->GetEyePos(), Outpos);
     QAngle ViewAngle = cmd->viewangles;
@@ -404,10 +393,9 @@ void Lbot::DoAimbot(CUserCmd* cmd, C_BasePlayer* local, C_BaseCombatWeapon* weap
     Math::NormalizeAngles(FinalAngle);
     Math::ClampAngles(FinalAngle);
 
-    if (DidLastShot && weapon->m_Item().m_iItemDefinitionIndex() != WEAPON_REVOLVER && (weapon->IsPistol() || weapon->IsShotgun() || weapon->IsSniper()))
-    {
+    if (DidLastShot && weapon->GetItemDefinitionIndex() != WEAPON_REVOLVER && (weapon->IsPistol() || weapon->IsShotgun() || weapon->IsSniper()))
         cmd->buttons &= ~IN_ATTACK;
-    }
+
     DidLastShot = !DidLastShot;
     cmd->viewangles = FinalAngle;
     if (weapon->CanFire())

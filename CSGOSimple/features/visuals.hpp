@@ -67,6 +67,7 @@ public:
 		void RenderBox();
 		void RenderName();
 		void RenderWeaponName();
+		
 
 		void RenderHealth();
 		void RenderArmour();
@@ -87,6 +88,7 @@ public:
 	void RenderDefuseKit(C_BaseEntity* ent);
 	void RenderPlantedC4(C_BaseEntity* ent);
 	void RenderSoundESP();
+	void DrawEnemyCircle();
 	//void RenderBullettracers();
 	void DrawGrenade(C_BaseEntity* ent);
 	void DrawDangerzoneItem(C_BaseEntity* ent, float maxRange);
@@ -99,6 +101,7 @@ public:
 	void BAimIndicator();
 
 	void AutowallCrosshair();
+	void RenderDamageIndicators();
 
 	/* aa indicator */
 	void ManualAAIndicator();
@@ -130,6 +133,7 @@ public:
 	void DrawTriangle(int count, Vertex_t* vertexes, Color c);
 	void DrawBoxEdges(float x1, float y1, float x2, float y2, Color clr, float edge_size, float size = 1.f);
 	void DrawCircle(float x, float y, float r, int seg, Color clr);
+	void DrawFilledCircle(float x, float y, float r, int seg, Color clr);
 
 	ImVec2 GetSize(std::string text, int size = 15);
 private:

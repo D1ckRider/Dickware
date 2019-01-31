@@ -580,6 +580,22 @@ void Visuals::RenderSoundESP()
 	VGSHelper::Get().DrawText("Step", pos.x - sz.x * 0.5f, pos.y, Color::White, 12);*/
 }
 
+void Visuals::DrawEnemyCircle()
+{
+	Vector poopvec;
+	QAngle eyeangles;
+	int screen_w, screen_h;
+	g_EngineClient->GetScreenSize(screen_w, screen_h);
+	g_EngineClient->GetViewAngles(eyeangles);
+	QAngle newangle = Math::CalcAngle(Vector(g_LocalPlayer->m_angAbsOrigin().x, g_LocalPlayer->m_angAbsOrigin().y, 0), Vector(g_LocalPlayer->m_angAbsOrigin().x, g_LocalPlayer->m_angAbsOrigin().y, 0));
+	Vector finalAngle = Vector(0, 270, 0) - Vector(newangle.pitch, newangle.yaw, newangle.roll) + Vector(0, newangle.yaw, 0);
+	Math::AngleVector(finalAngle, poopvec);
+	//Math::AngleVectors(QAngle(0, 270, 0) - newangle + QAngle(0, eyeangles.y, 0), &poopvec);
+	auto circlevec = Vector(screen_w / 2, screen_h / 2, 0) + (poopvec * 250.f);
+	VGSHelper::Get().DrawFilledCircle(circlevec.x, circlevec.y, 10, 10, Color(255,0,0,100));
+	//Draw::FilledCircle(circlevec.x, circlevec.y, 10, 10, entity->IsDormant() ? Color(100, 100, 100, 100) : Color(255, 0, 0, 100));
+}
+
 
 void Visuals::DrawGrenade ( C_BaseEntity* ent )
 {
@@ -847,6 +863,38 @@ void Visuals::AutowallCrosshair()
     */
 }
 
+void Visuals::RenderDamageIndicators()
+{
+	float CurrentTime = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
+
+	for (int i = 0; i < g_Saver.DamageIndicators.size(); i++)
+	{
+		if (g_Saver.DamageIndicators[i].flEraseTime < CurrentTime)
+		{
+			g_Saver.DamageIndicators.erase(g_Saver.DamageIndicators.begin() + i);
+			continue;
+		}
+
+		if (!g_Saver.DamageIndicators[i].bInitialized)
+		{
+			auto plr = (C_BasePlayer*)g_EngineClient->GetPlayerForUserID(g_Saver.DamageIndicators[i].PlayerID);
+			g_Saver.DamageIndicators[i].Position = plr->GetHitboxPos(HITBOX_HEAD);
+			g_Saver.DamageIndicators[i].bInitialized = true;
+		}
+
+		if (CurrentTime - g_Saver.DamageIndicators[i].flLastUpdate > 0.0001f)
+		{
+			g_Saver.DamageIndicators[i].Position.z -= (0.1f * (CurrentTime - g_Saver.DamageIndicators[i].flEraseTime));
+			g_Saver.DamageIndicators[i].flLastUpdate = CurrentTime;
+		}
+
+		Vector ScreenPosition;
+
+		if (Math::WorldToScreen(g_Saver.DamageIndicators[i].Position, ScreenPosition))
+			VGSHelper::Get().DrawText(std::to_string(g_Saver.DamageIndicators[i].iDamage).c_str(), ScreenPosition.x, ScreenPosition.y, Color(255, 0, 0, 255));
+	}
+}
+
 void Visuals::ManualAAIndicator()
 {
     if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive() )
@@ -857,46 +905,29 @@ void Visuals::ManualAAIndicator()
     float cx = x / 2.f;
     float cy = y / 2.f;
 
-    /*
-    Vertex_t verts[3];
-    verts[0].Init(Vector2D(cx - 70, cy));
-    verts[1].Init(Vector2D(cx - 50.f, cy - 15.f));
-    verts[2].Init(Vector2D(cx - 50.f, cy + 15.f));
-    VGSHelper::Get().DrawTriangle(3, verts, Color(225, 225, 225, 200));
-    */
-
-    /*
-    auto draw_arrow = [&](float rot, Color color) -> void
-    {
-    	Vertex_t verts[3];
-    	verts[0].Init(Vector2D(cx + cosf(rot) * 30.f, cy + sinf(rot) * 30.f));
-    	verts[1].Init(Vector2D(cx + cosf(rot + degrees_to_radians(10)) * (30.f - 25.f), cy + sinf(rot + degrees_to_radians(10)) * (30.f - 25.f)));
-    	verts[2].Init(Vector2D(cx + cosf(rot - degrees_to_radians(10)) * (30.f - 25.f), cy + sinf(rot - degrees_to_radians(10)) * (30.f - 25.f)));
-    	VGSHelper::Get().DrawTriangle(3, verts, color);
-    };
-    */
-    /*
-    Vertex_t verts2[3];
-    verts2[0].Init(Vector2D(cx + 50.f, cy));
-    verts2[1].Init(Vector2D(cx + 70.f, cy - 15.f));
-    verts2[2].Init(Vector2D(cx + 70.f, cy + 15.f));
-    VGSHelper::Get().DrawTriangle(3, verts2, Color(0, 0, 0, 255));
-    */
-
-    //verts[1].Init(Vector2D(cx - 40.f, cy + 15.f));
-    //verts[0].Init(Vector2D(cx - 30.f, cy + 15.f));
-    //verts[2].Init(Vector2D(0, 0));
-    //verts[3].Init(Vector2D(cx - 30.f, cy - 15.f));
-
-    //Render::Get().render
-    //Render::Get().RenderBoxFilled(cx - 30.f, cy - 15.f, cx - 15.f, cy + 15.f, Color::Blue);
-    //Vertex_t* v = &Vertex_t(Vector2D(cx - 30.f, cy - 15.f), );
-    //v[0].Init(Vector2D(cx - 30.f, cy - 15.f), Vector2D(cx - 15.f, cy + 15.f));
-    //v[1].Init(Vector2D(cx + 30.f, cy - 15.f), Vector2D(cx + 15.f, cy + 15.f));
-    //v->Init(Vector2D(15.f, cx), Vector2D(cx - 30.f, cy - 15.f));
-    //VGSHelper::Get().DrawTriangle(25, v, Color::Green);
-    //VGSHelper::Get().DrawFilledBox(cx - 30.f, cy - 15.f, cx - 30.f, cy + 15.f, Color::Blue);
-    //VGSHelper::Get().DrawFilledBox(cx + 30.f, cy - 15.f, cx + 30.f, cy + 15.f, Color::Blue);
+	switch (Settings::RageBot::ManualAAState)
+	{
+		case 1:
+			VGSHelper::Get().DrawText(">", cx + 34, cy - 20, Color::Red);
+			VGSHelper::Get().DrawText("<", cx - 64, cy - 20, Color::White);
+			VGSHelper::Get().DrawText("v", cx - 12, cy + 30, Color::White);
+			break;
+		case 2:
+			VGSHelper::Get().DrawText(">", cx + 34, cy - 20, Color::White);
+			VGSHelper::Get().DrawText("<", cx - 64, cy - 20, Color::Red);
+			VGSHelper::Get().DrawText("v", cx - 12, cy + 30, Color::White);
+			break;
+		case 3:
+			VGSHelper::Get().DrawText(">", cx + 34, cy - 20, Color::White);
+			VGSHelper::Get().DrawText("<", cx - 64, cy - 20, Color::White);
+			VGSHelper::Get().DrawText("v", cx - 12, cy + 30, Color::Red);
+			break;
+		default:
+			VGSHelper::Get().DrawText(">", cx + 34, cy - 20, Color::White);
+			VGSHelper::Get().DrawText("<", cx - 64, cy - 20, Color::White);
+			VGSHelper::Get().DrawText("v", cx - 12, cy + 30, Color::White);
+			break;
+	}
 }
 
 void Visuals::NoFlash()
@@ -922,14 +953,11 @@ void Visuals::SpreadCircle()
     if ( spread == 0.f )
         return;
 
-    //Console.WriteLine(spread);
     int x, y;
     g_EngineClient->GetScreenSize ( x, y );
     float cx = x / 2.f;
     float cy = y / 2.f;
-    //VGSHelper::Get().DrawCircle ( cx, cy, spread, 35, g_Config.GetColor ( "vis_misc_draw_circle_clr" ) );
 	VGSHelper::Get().DrawCircle(cx, cy, spread, 35, Settings::Visual::SpreadCircleColor);
-    //Render::Get().RenderCircle(x, y, spread, 200, Color::Green, 1.f);
 }
 
 void Visuals::RenderNoScoopeOverlay()
@@ -1213,6 +1241,7 @@ void Visuals::AddToDrawList()
         // grenade esp
         if ( GrenadeEsp )
             DrawGrenade ( entity );
+		//DrawEnemyCircle();
 
 		RenderSoundESP();
     }
@@ -1230,21 +1259,19 @@ void Visuals::AddToDrawList()
     if ( g_Config.GetBool ( "vis_misc_autowall_crosshair" ) )
         AutowallCrosshair();
 
-    #ifdef _DEBUG
-    ManualAAIndicator();
-    #endif // _DEBUG
+	if (Settings::RageBot::Enabled)
+		ManualAAIndicator();
 
 	if ( Settings::Visual::SpreadCircleEnabled )
         SpreadCircle();
-
-    //if (g_Config.GetBool("esp_misc_bullettracer")) RenderBullettracers();
-    //if (g_Config.GetBool("vis_misc_noflash")) NoFlash();
 
 	if ( Settings::Visual::NoScopeOverlay )
         RenderNoScoopeOverlay();
 
 	if ( Settings::Visual::Hitmarker )
         RenderHitmarker();
+	
+	//RenderDamageIndicators();
 
     CurrentIndicatorHeight = 0.f;
     //if (g_Config.GetBool("esp_crosshair"))
@@ -1356,6 +1383,47 @@ void VGSHelper::DrawCircle ( float x, float y, float r, int seg, Color clr )
     g_VGuiSurface->DrawSetColor ( clr );
     g_VGuiSurface->DrawOutlinedCircle ( x, y, r, seg );
 }
+void VGSHelper::DrawFilledCircle(float x, float y, float r, int seg, Color clr)
+{
+	//clr..SetAlpha(static_cast<int>(color.a() * alpha_factor));
+
+	static bool once = true;
+
+	static std::vector<float> temppointsx;
+	static std::vector<float> temppointsy;
+
+	if (once)
+	{
+		float step = (float)DirectX::XM_PI * 2.0f / seg;
+		for (float a = 0; a < (DirectX::XM_PI * 2.0f); a += step)
+		{
+			temppointsx.push_back(cosf(a));
+			temppointsy.push_back(sinf(a));
+		}
+		once = false;
+	}
+
+	std::vector<int> pointsx;
+	std::vector<int> pointsy;
+	std::vector<Vertex_t> vertices;
+
+	for (int i = 0; i < temppointsx.size(); i++)
+	{
+		float eeks = r * temppointsx[i] + x;
+		float why = r * temppointsy[i] + y;
+		pointsx.push_back(eeks);
+		pointsy.push_back(why);
+
+		vertices.push_back(Vertex_t(Vector2D(eeks, why)));
+	}
+
+	g_VGuiSurface->DrawSetColor(clr);
+	g_VGuiSurface->DrawTexturedPolygon(seg, vertices.data());
+
+	/*g_csgo.m_surface()->DrawSetColor(color);
+	g_csgo.m_surface()->DrawTexturedPolygon(points, vertices.data());*/
+}
+
 ImVec2 VGSHelper::GetSize ( std::string text, int size )
 {
     if ( !Inited )

@@ -66,6 +66,7 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 34);
 
+	FakeDuck(cmd);
 
 
 	//Console.WriteLine(g_GlobalVars->curtime - weapon->m_flNextPrimaryAttack());
@@ -158,7 +159,19 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 
 	DidShotLastTick = true;
 	cmd->viewangles = newAng;
+	if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_REVOLVER)
+	{
+		static int delay = 0;
+		delay++;
+
+		if (delay <= 15)
+			cmd->buttons |= IN_ATTACK;
+		else
+			delay = 0;
+	}
+
 	cmd->buttons |= IN_ATTACK;
+	
     //DidShotLastTick = true;
     g_Saver.RbotShotInfo.InLbyUpdate = g_Resolver.GResolverData[BestEntity].mode == ResolverModes::LBY_BREAK;
     g_Saver.RbotShotInfo.InLc = g_Resolver.GResolverData[BestEntity].BreakingLC;
@@ -294,6 +307,25 @@ bool Rbot::InFakeLag ( C_BasePlayer* player )
 
     Simtimes[i] = CurrentSimtime;
     return rBool;
+}
+
+void Rbot::FakeDuck(CUserCmd * cmd)
+{
+	/*bool do_once = false, _do;
+	int limit = Settings::RageBot::AntiAimSettings[1].FakelagTicks / 2;
+	bool crouch = g_ClientState->chokedcommands > limit;
+
+	if ( !InputSys::Get().IsKeyDown(Settings::RageBot::FakeDuckHotkey) && do_once )
+		g_EngineClient->ExecuteClientCmd("-duck");
+
+	if ( InputSys::Get().IsKeyDown(Settings::RageBot::FakeDuckHotkey) )
+	{
+		do_once = true;
+		if (crouch)
+			g_EngineClient->ExecuteClientCmd("-duck");
+		else
+			g_EngineClient->ExecuteClientCmd("+duck");
+	}*/
 }
 
 void Rbot::AutoStop ( CUserCmd* cmd )

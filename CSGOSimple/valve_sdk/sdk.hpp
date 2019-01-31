@@ -128,4 +128,3 @@ private:
 };
 
 extern C_LocalPlayer g_LocalPlayer;
-

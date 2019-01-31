@@ -49,11 +49,27 @@ public:
 			if (!Settings::Visual::Hitmarker)
 				return;
 
+			int hurt = event->GetInt("userid");
             int attacker = event->GetInt("attacker");
+			//C_BaseEntity* hurt = (C_BaseEntity*)g_EngineClient->GetPlayerForUserID(event->GetInt("userid"));
+			//C_BaseEntity* attacker = (C_BaseEntity*)g_EngineClient->GetPlayerForUserID(event->GetInt("attacker"));
+
             if (g_EngineClient->GetPlayerForUserID(attacker) == g_EngineClient->GetLocalPlayer())
             {
+				if (g_EngineClient->GetPlayerForUserID(hurt) != g_EngineClient->GetLocalPlayer())
+				{
+					DamageIndicator DmgIndicator;
+					DmgIndicator.iDamage = event->GetInt("dmg_health");
+					DmgIndicator.PlayerID = hurt; //hurt;
+					DmgIndicator.flEraseTime = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick + 3.f;
+						//g_EngineClient->GetLocalPlayer()->TickBase() * Globals->interval_per_tick + 3.f;
+					DmgIndicator.bInitialized = false;
+
+					g_Saver.DamageIndicators.push_back(DmgIndicator);
+				}
+
                 g_Saver.HitmarkerInfo = HitmarkerInfoStruct{ g_GlobalVars->realtime, 0.f };
-                switch (g_Config.GetInt("vis_misc_hitmarker_sound"))
+                /*switch (g_Config.GetInt("vis_misc_hitmarker_sound"))
                 {
                     case 0:
                         PlaySoundA((g_Config.AppdataFolder + "hitsound1.wav").data(), NULL, SND_ASYNC | SND_NODEFAULT | SND_NOSTOP);
@@ -61,7 +77,10 @@ public:
                     case 1:
                         PlaySoundA((g_Config.AppdataFolder + "hitsound2.wav").data(), NULL, SND_ASYNC | SND_NODEFAULT | SND_NOSTOP);
                         break;
-                }
+                }*/
+
+				if(Settings::Visual::HitmarkerSound)
+					g_VGuiSurface->PlaySound_("buttons\\arena_switch_press_02.wav");
             }
         }
 

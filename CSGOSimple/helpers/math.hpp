@@ -29,6 +29,14 @@ namespace Math
 	float GetFOV(const QAngle& viewAngle, const QAngle& aimAngle);
 	float RandomFloat(float min, float max);
 	void VectorAngles(const Vector& forward, Vector& up, QAngle& angles);
+	inline float DotProduct(const Vector& a, const Vector& b)
+	{
+		return (a.x*b.x + a.y*b.y + a.z*b.z);
+	}
+	inline float DotProduct(const QAngle& a, const Vector& b)
+	{
+		return (a.pitch*b.x + a.yaw*b.y + a.roll*b.z);
+	}
 	Vector CrossProduct2(const Vector &a, const Vector &b);
 	void NormalizeAngles(QAngle& angles);
 	void NormalizePitch(float & pitch);

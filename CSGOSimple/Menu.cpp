@@ -293,6 +293,7 @@ void Menu::RenderRagebot()
 
 	Components.Checkbox("Slow Walk", Settings::RageBot::SlowWalk);
 	Components.Hotkey("Slow Walk Hotkey", Settings::RageBot::SlowWalkHotkey);
+	//Components.Hotkey("FakeDuck Hotkey", Settings::RageBot::FakeDuckHotkey);
 	Components.Checkbox("Auto Scope",  Settings::RageBot::AutoScope);
 	Components.Checkbox("Auto Stop",  Settings::RageBot::AutoStop);
 	Components.Checkbox("Auto Crouch",  Settings::RageBot::AutoCrouch);
@@ -370,7 +371,6 @@ void Menu::RenderLegitbot()
 			Components.SliderFloat("Randomize",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].Randomize, 0.f, 10.f);
 			Components.SliderFloat("Delay",  Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].Delay, 0.f, 1.f);
 			Components.Checkbox("Auto Pistol", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_DEAGLE].Autopistol);
-
 
 			Components.Spacing();
 
@@ -598,11 +598,11 @@ void Menu::RenderVisuals()
     {
         case VisualsMenuAvailable::LOCAL:
         {
-            //Components.Columns ( 3, false );
 			Components.Columns(3, false);
 			Components.Label("Chams");
 			Components.ColorCheckbox2("Enable", Settings::Visual::LocalChams.Enabled, Settings::Visual::LocalChams.Visible, Settings::Visual::LocalChams.Invisible);
 			Components.ComboBox("Chams Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), Settings::Visual::LocalChams.Mode);
+			Components.ColorCheckbox("Ghost Chams", Settings::Visual::GhostEnabled, Settings::Visual::GhostColor);
 			Components.NextColumn();
 
 			Components.Label("ESP");
@@ -694,6 +694,7 @@ void Menu::RenderVisuals()
 			Components.SliderInt("Viewmodel FOV",  Settings::Visual::ViewModelFOV, 1, 150);
 			Components.SliderInt("FOV",  Settings::Visual::FOV, 1, 150);
 			Components.Checkbox("Hitmarker",  Settings::Visual::Hitmarker);
+			Components.Checkbox("Hitmarker Sound", Settings::Visual::HitmarkerSound);
             /*static const char* hitmarkersounds[] = { "amera", "skeet" };
             Components.ComboBox ( "Hitmarker sound", hitmarkersounds, IM_ARRAYSIZE ( hitmarkersounds ), "vis_misc_hitmarker_sound" );*/
             //Components.SliderInt("Asuswalls", "vis_misc_asuswalls_percent", 0, 100);

@@ -25,6 +25,7 @@
 #include "Logger.h"
 #include "ClantagChanger.h"
 #include "Backtrack.h"
+#include "features/MaterialManager.hpp"
 #include "Lbot.h"
 #include "Misc.h"
 #include "ConsoleHelper.h"
@@ -47,6 +48,8 @@ namespace Hooks
     vfunc_hook ViewRender_hook;
     vfunc_hook gameevents_hook;
     vfunc_hook clientstate_hook;
+
+	float flAngle = 0.f;
 
     void Initialize()
     {
@@ -277,6 +280,7 @@ namespace Hooks
         QAngle OldViewangles = cmd->viewangles;
         float OldForwardmove = cmd->forwardmove;
         float OldSidemove = cmd->sidemove;
+		flAngle = cmd->viewangles.yaw;
 
         KeyLoop::Get().OnCreateMove();
 
@@ -415,6 +419,8 @@ namespace Hooks
                 Utils::RankRevealAll();
 
             Render::Get().BeginScene();
+			//if ( g_LocalPlayer && flAngle )
+			//	Visuals::Get().DrawEnemyCircle(flAngle);
         }
     }
     //--------------------------------------------------------------------------------
@@ -440,28 +446,6 @@ namespace Hooks
 			}
 		}*/
 		
-
-
-        /*if (Settings::Misc::AutoAccept && !strcmp(pSoundEntry, "UIPanorama.popup_accept_match_beep")) {
-        	static auto fnAccept = reinterpret_cast<bool(__stdcall*)(const char*)>(Utils::PatternScan(GetModuleHandleA("client_panorama.dll"), "55 8B EC 83 E4 F8 8B 4D 08 BA ? ? ? ? E8 ? ? ? ? 85 C0 75 12"));
-
-        	if (fnAccept) {
-
-        		fnAccept("");
-
-        		//This will flash the CSGO window on the taskbar
-        		//so we know a game was found (you cant hear the beep sometimes cause it auto-accepts too fast)
-        		FLASHWINFO fi;
-        		fi.cbSize = sizeof(FLASHWINFO);
-        		fi.hwnd = InputSys::Get().GetMainWindow();
-        		fi.dwFlags = FLASHW_ALL | FLASHW_TIMERNOFG;
-        		fi.uCount = 0;
-        		fi.dwTimeout = 0;
-        		FlashWindowEx(&fi);
-        	}
-        }*/
-        
-
         ofunc ( g_EngineSound, filter, iEntIndex, iChannel, pSoundEntry, nSoundEntryHash, pSample, flVolume, nSeed, flAttenuation, iFlags, iPitch, pOrigin, pDirection, pUtlVecOrigins, bUpdatePositions, soundtime, speakerentity, unk );
 
 		/*if (true)
@@ -730,6 +714,26 @@ namespace Hooks
         // v
         // code here
         Chams::Get().OnSceneEnd();
+
+		/*if (g_LocalPlayer)
+		{
+			/*IMaterial* mat = //Globals.g_pChamsMat;
+			if (mat)
+			{
+			QAngle OrigAng;
+			OrigAng = g_LocalPlayer->m_angEyeAngles();
+			g_LocalPlayer->SetAngle2(QAngle(0, AntiAim::Get().DesyncAngles.yaw, 0)); // paste here ur AA.y value or pLocal->GetLby() (for example)
+			bool LbyColor = false; // u can make LBY INDICATOR. When LbyColor is true. Color will be Green , if false it will be White
+			float NormalColor[3] = { 1, 1, 1 };
+			float lbyUpdateColor[3] = { 0, 1, 0 };
+			MaterialManager::Get().OverrideMaterial(false, true, false, false, false);
+			g_RenderView->SetColorModulation(LbyColor ? lbyUpdateColor : NormalColor);
+			//g_MdlRender->ForcedMaterialOverride(mat);
+			g_LocalPlayer->DrawModel(1, 255);
+			g_MdlRender->ForcedMaterialOverride(nullptr);
+			g_LocalPlayer->SetAngle2(OrigAng);
+			//}
+		}*/
     }
     //--------------------------------------------------------------------------------
 	bool __stdcall hkFireEvent(IGameEvent* pEvent)

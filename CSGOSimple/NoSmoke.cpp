@@ -1,7 +1,6 @@
 
 #include "NoSmoke.h"
-#include "ConfigSystem.h"
-
+#include "Settings.h"
 
 void NoSmoke::OnFrameStageNotify()
 {
@@ -14,7 +13,8 @@ void NoSmoke::OnFrameStageNotify()
         "particle/vistasmokev1/vistasmokev1_emods_impactdust",
     };
 
-    if (!g_Config.GetBool("vis_misc_nosmoke"))
+    //if (!g_Config.GetBool("vis_misc_nosmoke"))
+	if ( !Settings::Visual::NoSmoke )
     {
         if (set)
         {

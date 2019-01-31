@@ -9,6 +9,7 @@
 #include "ConsoleHelper.h"
 #include "helpers\input.hpp"
 #include "Logger.h"
+#include <algorithm>
 
 using AAState = Settings::RageBot::AntiAimType;
 
@@ -420,31 +421,27 @@ bool AntiAim::FreestandingLbyBreak ( float& ang )
 
 float AntiAim::GetMaxDesyncYaw()
 {
-    /*
     //g_LocalPlayer->GetBasePlayerAnimState();
-    auto animstate = uintptr_t(this->GetBasePlayerAnimState());
-
+   // auto animstate = uintptr_t(this->GetBasePlayerAnimState());
+	auto animstate = uintptr_t(g_LocalPlayer->GetBasePlayerAnimState());
     //float rate = 180;
     float duckammount = *(float *)(animstate + 0xA4);
-    float speedfraction = std::max(0, std::min(*reinterpret_cast<float*>(animstate + 0xF8), 1));
+    float speedfraction = std::max(0.f, std::min(*(float *)(animstate + 0xF8), 1.f));
 
-    float speedfactor = std::max(0, min(1, *reinterpret_cast<float*> (animstate + 0xFC)));
+    float speedfactor = std::max(0.f, std::max(1.f, *(float *)(animstate + 0xFC)));
 
     float unk1 = ((*reinterpret_cast<float*> (animstate + 0x11C) * -0.30000001) - 0.19999999) * speedfraction;
     float unk2 = unk1 + 1.f;
     float unk3;
 
-    if (duckammount > 0) {
-
+    if (duckammount > 0) 
+	{
     	unk2 += +((duckammount * speedfactor) * (0.5f - unk2));
-
     }
 
     unk3 = *(float *)(animstate + 0x334) * unk2;
 
-    return 0.0f;
-    */
-    return 0.f;
+    return unk3;
 }
 
 void AntiAim::LbyBreakerPrediction ( CUserCmd* cmd, bool& bSendPacket )
@@ -654,7 +651,6 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
     YawAdd ( cmd, false );
     Pitch ( cmd );
 
-    //if ( g_Config.GetBool ( "rbot_aa_desync" ) )
 	if ( Settings::RageBot::Desync )
     {
         bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1f || ( cmd->sidemove != 0.f || cmd->forwardmove != 0.f );
@@ -683,7 +679,9 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
         if ( !bSendPacket && ! ( cmd->buttons & IN_ATTACK ) )
         {
             static bool bFlip = false;
-            cmd->viewangles += bFlip ? 58.f : -58.f;
+            //cmd->viewangles += bFlip ? 58.f : -58.f;
+			cmd->viewangles += 58.f;
+			DesyncAngles = cmd->viewangles;
         }
 
         if ( bSendPacket )

@@ -1,7 +1,7 @@
 
 #include "Chams.h"
+#include "AntiAim.h"
 #include "Settings.h"
-#include "ConfigSystem.h"
 
 void Chams::OnSceneEnd()
 {
@@ -10,21 +10,6 @@ void Chams::OnSceneEnd()
         return;
     }
 
-    /*ChamsModes LocalChamsMode = (ChamsModes)g_Config.GetInt("chams_mode_local");
-    ChamsModes TeamChamsMode = (ChamsModes)g_Config.GetInt("chams_mode_team");
-    ChamsModes EnemyChamsMode = (ChamsModes)g_Config.GetInt("chams_mode_enemy");
-
-    bool LocalChams = g_Config.GetBool("chams_local");
-    bool TeamChams = g_Config.GetBool("chams_team");
-    bool EnemyChams = g_Config.GetBool("chams_enemy");
-
-    Color LocalColor = g_Config.GetColor("color_chams_local");
-    Color TeamColor = g_Config.GetColor("color_chams_team");
-    Color EnemyColor = g_Config.GetColor("color_chams_enemy");
-
-    Color LocalColorXqz = g_Config.GetColor("color_chams_local_xqz");
-    Color TeamColorXqz = g_Config.GetColor("color_chams_team_xqz");
-    Color EnemyColorXqz = g_Config.GetColor("color_chams_enemy_xqz");*/
 	ChamsModes LocalChamsMode = (ChamsModes)Settings::Visual::LocalChams.Mode;
 	ChamsModes TeamChamsMode = (ChamsModes)Settings::Visual::TeamChams.Mode;
 	ChamsModes EnemyChamsMode = (ChamsModes)Settings::Visual::EnemyChams.Mode;
@@ -121,6 +106,24 @@ void Chams::OnSceneEnd()
         }
         g_MdlRender->ForcedMaterialOverride(nullptr);
     }
-
+	if (g_LocalPlayer && Settings::RageBot::Enabled && Settings::Visual::GhostEnabled)
+	{
+		QAngle OrigAng;
+		OrigAng = g_LocalPlayer->m_angEyeAngles();
+		g_LocalPlayer->SetAngle2(QAngle(0, AntiAim::Get().DesyncAngles.yaw, 0));
+		bool LbyColor = false; // u can make LBY INDICATOR. When LbyColor is true. Color will be Green , if false it will be White
+		float NormalColor[3] = { Settings::Visual::GhostColor.r() / 255.f,
+									Settings::Visual::GhostColor.g() / 255.f,
+									Settings::Visual::GhostColor.b() / 255.f, };
+		float lbyUpdateColor[3] = { 0, 1, 0 };
+		MaterialManager::Get().OverrideMaterial(false, true, false, false, false);
+		g_RenderView->SetColorModulation(LbyColor ? lbyUpdateColor : NormalColor);
+		g_RenderView->SetBlend(.3f);
+		//g_MdlRender->ForcedMaterialOverride(mat);
+		g_LocalPlayer->DrawModel(1, 255);
+		g_MdlRender->ForcedMaterialOverride(nullptr);
+		g_RenderView->SetBlend(1.f);
+		g_LocalPlayer->SetAngle2(OrigAng);
+	}
     g_MdlRender->ForcedMaterialOverride(nullptr);
 }
