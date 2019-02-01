@@ -29,6 +29,7 @@
 #include "Lbot.h"
 #include "Misc.h"
 #include "ConsoleHelper.h"
+#include "Utils\ConvarSpoofer.h"
 #include "Settings.h"
 //#include "Asuswalls.h"
 #include "NoSmoke.h"
@@ -129,6 +130,30 @@ namespace Hooks
         ViewRender_hook.unhook_all();
         gameevents_hook.unhook_all();
     }
+
+	void UpdateSpoofer()
+	{
+		if (!g_EngineClient->IsConnected() || !g_EngineClient->IsInGame())
+		{
+			if (g_CVarSpoofer->Ready())
+				g_CVarSpoofer->Release();
+
+			return;
+		}
+
+		if (!g_CVarSpoofer->Ready()) 
+		{
+			g_CVarSpoofer->Init();
+
+			g_CVarSpoofer->Add("sv_cheats");
+			g_CVarSpoofer->Add("r_drawspecificstaticprop");
+
+			g_CVarSpoofer->Spoof();
+		}
+
+		if (g_CVarSpoofer->Ready())
+			g_CVarSpoofer->Get("sv_cheats")->SetInt(1);
+	}
     //--------------------------------------------------------------------------------
     bool HookedNetchan = false;
     long __stdcall hkEndScene ( IDirect3DDevice9* pDevice )
@@ -572,6 +597,7 @@ namespace Hooks
             {
                 if ( !g_Unload )
                 {
+					UpdateSpoofer();
 					bool rbot = Settings::RageBot::Enabled;
 
 					if ( rbot && Settings::RageBot::EnabledAA && Settings::Visual::ThirdPersonEnabled )

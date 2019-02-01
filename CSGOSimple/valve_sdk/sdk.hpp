@@ -38,6 +38,7 @@
 #include "Interfaces/CClientState.hpp"
 #include "Interfaces/IPhysics.hpp"
 #include "interfaces\memalloc.h"
+#include "..\Utils\ConvarSpoofer.h"
 #include "interfaces\IViewRenderBeams.hpp"
 
 #include "Misc/Convar.hpp"
@@ -96,6 +97,7 @@ extern IPhysicsSurfaceProps* g_PhysSurface;
 extern IMemAlloc			  *g_pMemAlloc;
 extern IViewRenderBeams			*g_RenderBeams;
 extern CUtlVectorSimple *g_ClientSideAnimationList;
+extern C_ConvarSpoofer* g_CVarSpoofer;
 
 template<typename... Args>
 void ConMsg(const char* pMsg, Args... args)

@@ -44,7 +44,9 @@ public:
         HitPossitionHelper::Get().OnFireEvent(event);
         Rbot::Get().OnFireEvent(event);
 
-        if (!strcmp(event->GetName(), "player_hurt"))
+		static ConVar* sv_showimpact = g_CVar->FindVar("sv_showimpacts");
+        
+		if (!strcmp(event->GetName(), "player_hurt"))
         {
 			if (!Settings::Visual::Hitmarker)
 				return;
@@ -91,6 +93,12 @@ public:
             if (!shooter || shooter != g_LocalPlayer)
                 return;
             Vector p = Vector(event->GetFloat("x"), event->GetFloat("y"), event->GetFloat("z"));
+
+			if (Settings::Visual::BulletTracers)
+				sv_showimpact->SetValue(1);
+			else
+				sv_showimpact->SetValue(0);
+
             ShotTracer(g_Saver.LastShotEyePos, p);
         }
 

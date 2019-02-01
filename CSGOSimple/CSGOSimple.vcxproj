@@ -139,6 +139,7 @@
     <ClCompile Include="Settings.cpp" />
     <ClCompile Include="ThirdpersonAngleHelper.cpp" />
     <ClCompile Include="ui.cpp" />
+    <ClCompile Include="Utils\ConvarSpoofer.cpp" />
     <ClCompile Include="valve_sdk\csgostructs.cpp" />
     <ClCompile Include="valve_sdk\sdk.cpp" />
     <ClCompile Include="valve_sdk\math\Vector2D.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="singleton.hpp" />
     <ClInclude Include="ThirdpersonAngleHelper.h" />
     <ClInclude Include="ui.hpp" />
+    <ClInclude Include="Utils\ConvarSpoofer.h" />
     <ClInclude Include="valve_sdk\csgostructs.hpp" />
     <ClInclude Include="valve_sdk\sdk.hpp" />
     <ClInclude Include="valve_sdk\interfaces\CClientState.hpp" />

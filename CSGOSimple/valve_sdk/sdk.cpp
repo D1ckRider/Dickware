@@ -33,6 +33,7 @@ C_LocalPlayer         g_LocalPlayer;
 IMemAlloc*			  g_pMemAlloc = nullptr;
 IViewRenderBeams*     g_RenderBeams = nullptr;
 CUtlVectorSimple* g_ClientSideAnimationList = nullptr;
+C_ConvarSpoofer* g_CVarSpoofer;
 
 namespace Interfaces
 {
