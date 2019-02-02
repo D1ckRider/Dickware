@@ -257,6 +257,9 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "lbot_backtrack", Aimbot::Backtrack);
 	SaveValue(j, "lbot_backtrack_aim", Aimbot::BacktrackAtAim);
 	SaveValue(j, "lbot_backtrack_tick", Aimbot::BacktrackTick);
+	/* Triggerbot */
+	SaveValue(j, "lbot_trigger_enabled", TriggerBot::Enabled);
+	SaveValue(j, "lbot_trigger_key", TriggerBot::Key);
 	/* Visuals */
 	// Chams
 	SaveValue(j, "vis_chams_local_enabled", Visual::LocalChams.Enabled);
@@ -443,6 +446,9 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "lbot_backtrack", 	Aimbot::Backtrack);
 	LoadValue(j, "lbot_backtrack_aim", 	Aimbot::BacktrackAtAim);
 	LoadValue(j, "lbot_backtrack_tick", 	Aimbot::BacktrackTick );
+	/* Triggerbot */
+	LoadValue(j, "lbot_trigger_enabled", TriggerBot::Enabled);
+	LoadValue(j, "lbot_trigger_key", TriggerBot::Key);
 	/* Visuals */
 	// Chams
 	LoadValue(j, "vis_chams_local_enabled", 	Visual::LocalChams.Enabled);
@@ -630,6 +636,8 @@ void Settings::ResetAimbot()
 
 void Settings::ResetTriggerbot()
 {
+	TriggerBot::Enabled = false;
+	TriggerBot::Key = 0x0;
 }
 
 void Settings::ResetVisuals()
@@ -871,6 +879,12 @@ namespace Settings::Aimbot
 		else
 			return WeaponType::WEAPON_SHOTGUN;
 	}
+}
+
+namespace Settings::TriggerBot
+{
+	bool Enabled = false;
+	int Key = 0x0;
 }
 
 namespace Settings::Visual

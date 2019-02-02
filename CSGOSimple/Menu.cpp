@@ -581,6 +581,11 @@ void Menu::RenderLegitbot()
 	Components.Checkbox("Backtrack",  Settings::Aimbot::Backtrack);
 	Components.Checkbox("Aim at backtrack",  Settings::Aimbot::BacktrackAtAim);
 	Components.SliderFloat("Backtrack time",  Settings::Aimbot::BacktrackTick, 0.f, .2f);
+
+	Components.Spacing();
+	Components.Label("Triggerbot");
+	Components.Checkbox("Enabled", Settings::TriggerBot::Enabled);
+	Components.Hotkey("Key", Settings::TriggerBot::Key);
     //legit aa
     //triggerbot
 

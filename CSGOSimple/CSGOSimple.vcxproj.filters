@@ -246,6 +246,9 @@
     <ClCompile Include="features\NightMode.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
+    <ClCompile Include="features\TriggerBot.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="valve_sdk\misc\BaseHandle.hpp">
@@ -589,6 +592,9 @@
     </ClInclude>
     <ClInclude Include="helpers\DynSkin.h">
       <Filter>Header Files\Helpers\DynSkin</Filter>
+    </ClInclude>
+    <ClInclude Include="features\TriggerBot.h">
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

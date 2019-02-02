@@ -30,6 +30,7 @@
 #include "Misc.h"
 #include "ConsoleHelper.h"
 #include "Utils\ConvarSpoofer.h"
+#include "features\TriggerBot.h"
 #include "Settings.h"
 #include "features\NightMode.h"
 #include "features\Skinchanger.h"
@@ -338,13 +339,16 @@ namespace Hooks
             Rbot::Get().CreateMove ( cmd, bSendPacket );
         }
 
-		if(!rbot && Settings::Aimbot::Enabled)
+		if ( !rbot && Settings::Aimbot::Enabled )
         {
             Lbot::Get().OnCreateMove ( cmd );
 
 			if(Settings::Aimbot::Backtrack)
                 Backtrack::Get().FinishLegitBacktrack ( cmd );
         }
+
+		if ( !rbot && Settings::TriggerBot::Enabled )
+			TriggerBot::Get().OnCreateMove(cmd);
 
 		if ( rbot && Settings::RageBot::Resolver )
             Resolver::Get().OnCreateMove ( OldViewangles );

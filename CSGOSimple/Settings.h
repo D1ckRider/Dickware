@@ -166,6 +166,12 @@ namespace Settings
 		int GetWeaponType(C_BaseCombatWeapon* weapon);
 	}
 
+	namespace TriggerBot
+	{
+		extern bool Enabled;
+		extern int Key;
+	}
+
 	namespace Visual
 	{
 		struct Chams
