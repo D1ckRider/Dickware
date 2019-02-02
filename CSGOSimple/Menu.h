@@ -41,6 +41,12 @@ enum class RbotMenuAvailable : int
     MISC
 };
 
+enum class LbotSubsectionsAvailable : int
+{
+	Aimbot,
+	Triggerbot
+};
+
 enum class LbotWeaponsAvailable : int
 {
     PISTOL,

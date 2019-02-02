@@ -237,6 +237,20 @@ void Visuals::Player::RenderWeaponName()
     VGSHelper::Get().DrawText ( text, ctx.bbox.right + 2.f + ctx.PosHelper.right, ctx.head_pos.y - sz.y + TextHeight, ctx.WeaponClr, 12 );
     TextHeight += 12.f;
 }
+void Visuals::Player::DrawPlayerPOV()
+{
+ 	QAngle eyeangles; Vector poopvec;
+	int screen_w, screen_h;
+	g_EngineClient->GetScreenSize(screen_w, screen_h);
+	g_EngineClient->GetViewAngles(eyeangles);
+	//QAngle newangle = Math::CalcAngle(Vector(g_LocalPlayer->m_angAbsOrigin().x, g_LocalPlayer->m_angAbsOrigin().y, 0), Vector(ctx.pl->m_angAbsOrigin().x, ctx.pl->m_angAbsOrigin().y, 0));
+	QAngle newangle = Math::CalcAngle(Vector(g_LocalPlayer->GetRenderOrigin().x, g_LocalPlayer->GetRenderOrigin().y, 0), Vector(ctx.pl->GetRenderOrigin().x, ctx.pl->GetRenderOrigin().y, 0));
+	//Math::AngleVectors(QAngle(0, 270, 0) - newangle + QAngle(0, eyeangles.y, 0), &poopvec);
+	Math::AngleVectors(QAngle(0, 270, 0) - newangle + QAngle(0, eyeangles.yaw, 0), poopvec);
+	auto circlevec = Vector(screen_w / 2, screen_h / 2, 0) + (poopvec * 250.f);
+	//VGSHelper::Get().DrawCircle(circlevec.x, circlevec.y, 6, 4, ctx.pl->IsDormant() ? Color(100, 100, 100, 100) : Color(255, 0, 0, 100));
+	VGSHelper::Get().DrawFilledBox(circlevec.x, circlevec.y, 10, 10, ctx.pl->IsDormant() ? Color(100, 100, 100, 100) : Color(255, 0, 0, 100));
+}
 //--------------------------------------------------------------------------------
 void Visuals::Player::RenderSnapline()
 {
@@ -582,18 +596,60 @@ void Visuals::RenderSoundESP()
 
 void Visuals::DrawEnemyCircle()
 {
-	Vector poopvec;
-	QAngle eyeangles;
-	int screen_w, screen_h;
-	g_EngineClient->GetScreenSize(screen_w, screen_h);
-	g_EngineClient->GetViewAngles(eyeangles);
-	QAngle newangle = Math::CalcAngle(Vector(g_LocalPlayer->m_angAbsOrigin().x, g_LocalPlayer->m_angAbsOrigin().y, 0), Vector(g_LocalPlayer->m_angAbsOrigin().x, g_LocalPlayer->m_angAbsOrigin().y, 0));
-	Vector finalAngle = Vector(0, 270, 0) - Vector(newangle.pitch, newangle.yaw, newangle.roll) + Vector(0, newangle.yaw, 0);
-	Math::AngleVector(finalAngle, poopvec);
-	//Math::AngleVectors(QAngle(0, 270, 0) - newangle + QAngle(0, eyeangles.y, 0), &poopvec);
-	auto circlevec = Vector(screen_w / 2, screen_h / 2, 0) + (poopvec * 250.f);
-	VGSHelper::Get().DrawFilledCircle(circlevec.x, circlevec.y, 10, 10, Color(255,0,0,100));
-	//Draw::FilledCircle(circlevec.x, circlevec.y, 10, 10, entity->IsDormant() ? Color(100, 100, 100, 100) : Color(255, 0, 0, 100));
+	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
+		return;
+
+	/*if (!g_cfg.player.out_pov_arrow)
+		return;*/
+
+	static float alpha = 0.f;
+	static int plus_or_minus = false;
+	if (alpha <= 0.f || alpha >= 255.f)
+		plus_or_minus = !plus_or_minus;
+
+	alpha += plus_or_minus ? (255.f / 0.5f * g_GlobalVars->frametime) : -(255.f / 0.5f * g_GlobalVars->frametime);
+	//alpha = math::clamp< float >(alpha, 0.f, 255.f);
+
+	int screen_width, screen_height;
+	g_EngineClient->GetScreenSize(screen_width, screen_height);
+
+	QAngle client_viewangles;
+	g_EngineClient->GetViewAngles(client_viewangles);
+
+	const float radius = 110.f;//g_cfg.player.out_pov_distance;
+
+	auto draw_arrow = [&](float rotation, Color color, C_BasePlayer* e, Vector poopvec) -> void {
+		//Vector newangle = math::calculate_angle(Vector(g_LocalPlayer->m_angAbsOrigin().x, g_LocalPlayer->m_angAbsOrigin().y, 0), Vector(e->m_angAbsOrigin().x, e->m_angAbsOrigin().y, 0));
+		Vector newangle = Math::CalcAngleV(Vector(g_LocalPlayer->m_angAbsOrigin().x, g_LocalPlayer->m_angAbsOrigin().y, 0), Vector(e->m_angAbsOrigin().x, e->m_angAbsOrigin().y, 0));
+		//math::angle_vectors(Vector(0, 270, 0) - newangle + Vector(0, client_viewangles.y, 0), poopvec);
+		Math::AngleVector(Vector(0, 270, 0) - newangle + Vector(0, client_viewangles.yaw, 0), poopvec);
+		auto circlevec = Vector(screen_width / 2, screen_height / 2, 0) + (poopvec * radius);
+		//render::get().circle_filled(circlevec.x, circlevec.y, 4, 6, color);
+		VGSHelper::Get().DrawFilledCircle(circlevec.x, circlevec.y, 4, 6, color);
+
+	};
+
+	for (auto i = 1; i <= g_EngineClient->GetMaxClients(); i++) {
+		auto e = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(i));
+
+		//if (!e->IsValid(true))
+		if(!e->IsAlive() || !e->IsDormant() || g_LocalPlayer->m_iTeamNum() == e->m_iTeamNum())
+			continue;
+
+		Vector screen_point;
+		g_DebugOverlay->ScreenPosition(e->m_angAbsOrigin(), screen_point);
+
+		if (screen_point.x < 0 || screen_point.y < 0 || screen_point.x > screen_width || screen_point.y > screen_height) {
+			//auto angle = math::calculate_angle(g_LocalPlayer->GetEyePos(), e->m_angAbsOrigin());
+			auto angle = Math::CalcAngle(g_LocalPlayer->GetEyePos(), e->m_angAbsOrigin());
+			const auto angle_yaw_rad = DEG2RAD(client_viewangles.yaw - angle.yaw);
+
+			Color color = Color::Red;//g_cfg.player.out_pov_arrow_color;
+			//color.SetAlpha(alpha);
+
+			draw_arrow(angle_yaw_rad, color, e, screen_point);
+		}
+	}
 }
 
 
@@ -877,8 +933,7 @@ void Visuals::RenderDamageIndicators()
 
 		if (!g_Saver.DamageIndicators[i].bInitialized)
 		{
-			auto plr = (C_BasePlayer*)g_EngineClient->GetPlayerForUserID(g_Saver.DamageIndicators[i].PlayerID);
-			g_Saver.DamageIndicators[i].Position = plr->GetHitboxPos(HITBOX_HEAD);
+			g_Saver.DamageIndicators[i].Position = g_Saver.DamageIndicators[i].Player->GetHitboxPos(HITBOX_HEAD);
 			g_Saver.DamageIndicators[i].bInitialized = true;
 		}
 
@@ -891,7 +946,7 @@ void Visuals::RenderDamageIndicators()
 		Vector ScreenPosition;
 
 		if (Math::WorldToScreen(g_Saver.DamageIndicators[i].Position, ScreenPosition))
-			VGSHelper::Get().DrawText(std::to_string(g_Saver.DamageIndicators[i].iDamage).c_str(), ScreenPosition.x, ScreenPosition.y, Color(255, 0, 0, 255));
+			VGSHelper::Get().DrawText(std::to_string(g_Saver.DamageIndicators[i].iDamage).c_str(), ScreenPosition.x, ScreenPosition.y, Settings::Visual::DamageIndicatorColor);
 	}
 }
 
@@ -957,7 +1012,8 @@ void Visuals::SpreadCircle()
     g_EngineClient->GetScreenSize ( x, y );
     float cx = x / 2.f;
     float cy = y / 2.f;
-	VGSHelper::Get().DrawCircle(cx, cy, spread, 35, Settings::Visual::SpreadCircleColor);
+	//VGSHelper::Get().DrawCircle(cx, cy, spread, 35, Settings::Visual::SpreadCircleColor);
+	VGSHelper::Get().DrawFilledCircle(cx, cy, spread, 35, Settings::Visual::SpreadCircleColor);
 }
 
 void Visuals::RenderNoScoopeOverlay()
@@ -1210,6 +1266,10 @@ void Visuals::AddToDrawList()
                 if ( rbot_resolver && Enemy && esp_enemy_info )
                     player.RenderResolverInfo();
 
+				// Add check
+				//if(Enemy)
+					//player.DrawPlayerPOV();
+
                 if ( ( Local && esp_local_enabled && esp_local_weapons ) || ( Team && esp_team_enabled && esp_team_weapons ) || ( Enemy && esp_enemy_enabled && esp_enemy_weapons ) )
                     player.RenderWeaponName();
 
@@ -1241,9 +1301,8 @@ void Visuals::AddToDrawList()
         // grenade esp
         if ( GrenadeEsp )
             DrawGrenade ( entity );
-		//DrawEnemyCircle();
 
-		RenderSoundESP();
+		//RenderSoundESP();
     }
 
 	if ( Settings::RageBot::Enabled )
@@ -1270,8 +1329,8 @@ void Visuals::AddToDrawList()
 
 	if ( Settings::Visual::Hitmarker )
         RenderHitmarker();
-	
-	//RenderDamageIndicators();
+	if(Settings::Visual::DamageIndicator)
+		RenderDamageIndicators();
 
     CurrentIndicatorHeight = 0.f;
     //if (g_Config.GetBool("esp_crosshair"))
@@ -1378,15 +1437,15 @@ void VGSHelper::DrawBoxEdges ( float x1, float y1, float x2, float y2, Color clr
     DrawLine ( x1, y2, x1 + edge_size, y2, clr, size );
     DrawLine ( x2, y2, x2 - edge_size, y2, clr, size );
 }
+
 void VGSHelper::DrawCircle ( float x, float y, float r, int seg, Color clr )
 {
     g_VGuiSurface->DrawSetColor ( clr );
     g_VGuiSurface->DrawOutlinedCircle ( x, y, r, seg );
 }
+
 void VGSHelper::DrawFilledCircle(float x, float y, float r, int seg, Color clr)
 {
-	//clr..SetAlpha(static_cast<int>(color.a() * alpha_factor));
-
 	static bool once = true;
 
 	static std::vector<float> temppointsx;
@@ -1394,8 +1453,8 @@ void VGSHelper::DrawFilledCircle(float x, float y, float r, int seg, Color clr)
 
 	if (once)
 	{
-		float step = (float)DirectX::XM_PI * 2.0f / seg;
-		for (float a = 0; a < (DirectX::XM_PI * 2.0f); a += step)
+		float step = (float)M_PI * 2.0f / seg;
+		for (float a = 0; a < (M_PI * 2.0f); a += step)
 		{
 			temppointsx.push_back(cosf(a));
 			temppointsy.push_back(sinf(a));
@@ -1409,19 +1468,20 @@ void VGSHelper::DrawFilledCircle(float x, float y, float r, int seg, Color clr)
 
 	for (int i = 0; i < temppointsx.size(); i++)
 	{
-		float eeks = r * temppointsx[i] + x;
-		float why = r * temppointsy[i] + y;
-		pointsx.push_back(eeks);
-		pointsy.push_back(why);
+		float fx = r * temppointsx[i] + x;
+		float fy = r * temppointsy[i] + y;
+		pointsx.push_back(fx);
+		pointsy.push_back(fy);
 
-		vertices.push_back(Vertex_t(Vector2D(eeks, why)));
+		vertices.push_back(Vertex_t(Vector2D(fx, fy)));
 	}
 
 	g_VGuiSurface->DrawSetColor(clr);
 	g_VGuiSurface->DrawTexturedPolygon(seg, vertices.data());
 
-	/*g_csgo.m_surface()->DrawSetColor(color);
-	g_csgo.m_surface()->DrawTexturedPolygon(points, vertices.data());*/
+	//DrawTexturedPoly(points, vertices.data(), color);
+	//g_pSurface->DrawSetColor(outline);
+	//g_pSurface->DrawPolyLine(pointsx.data(), pointsy.data(), points); // only if you want en extra outline
 }
 
 ImVec2 VGSHelper::GetSize ( std::string text, int size )

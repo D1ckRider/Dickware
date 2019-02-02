@@ -111,6 +111,7 @@
     <ClCompile Include="features\bhop.cpp" />
     <ClCompile Include="features\MaterialManager.cpp" />
     <ClCompile Include="features\glow.cpp" />
+    <ClCompile Include="features\NightMode.cpp" />
     <ClCompile Include="features\visuals.cpp" />
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="helpers\input.cpp" />
@@ -172,6 +173,7 @@
     <ClInclude Include="features\bhop.hpp" />
     <ClInclude Include="features\MaterialManager.hpp" />
     <ClInclude Include="features\glow.hpp" />
+    <ClInclude Include="features\NightMode.h" />
     <ClInclude Include="features\visuals.hpp" />
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="helpers\input.hpp" />

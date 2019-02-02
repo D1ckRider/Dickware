@@ -62,7 +62,8 @@ public:
 				{
 					DamageIndicator DmgIndicator;
 					DmgIndicator.iDamage = event->GetInt("dmg_health");
-					DmgIndicator.PlayerID = hurt; //hurt;
+					//DmgIndicator.PlayerID = hurt; //hurt;
+					DmgIndicator.Player = (C_BasePlayer*)g_EntityList->GetClientEntity(g_EngineClient->GetPlayerForUserID(event->GetInt("userid")));
 					DmgIndicator.flEraseTime = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick + 3.f;
 						//g_EngineClient->GetLocalPlayer()->TickBase() * Globals->interval_per_tick + 3.f;
 					DmgIndicator.bInitialized = false;

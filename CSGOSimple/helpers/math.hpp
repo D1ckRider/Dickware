@@ -26,6 +26,7 @@ namespace Math
 	}
 	float VectorDistance(const Vector& v1, const Vector& v2);
 	QAngle CalcAngle(const Vector& src, const Vector& dst);
+	Vector CalcAngleV(const Vector& src, const Vector& dst);
 	float GetFOV(const QAngle& viewAngle, const QAngle& aimAngle);
 	float RandomFloat(float min, float max);
 	void VectorAngles(const Vector& forward, Vector& up, QAngle& angles);

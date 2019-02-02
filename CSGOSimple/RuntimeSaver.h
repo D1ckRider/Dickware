@@ -30,7 +30,7 @@ struct DamageIndicator
 	bool bInitialized;
 	float flEraseTime;
 	float flLastUpdate;
-	int PlayerID;
+	C_BasePlayer* Player;
 	Vector Position;
 };
 

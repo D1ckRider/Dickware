@@ -31,6 +31,7 @@
 #include "ConsoleHelper.h"
 #include "Utils\ConvarSpoofer.h"
 #include "Settings.h"
+#include "features\NightMode.h"
 //#include "Asuswalls.h"
 #include "NoSmoke.h"
 #pragma intrinsic(_ReturnAddress)
@@ -653,6 +654,8 @@ namespace Hooks
             }
 
             case FRAME_RENDER_END:
+				// Add check
+				//NightMode::Get().Apply();
                 break;
         }
 
@@ -740,26 +743,6 @@ namespace Hooks
         // v
         // code here
         Chams::Get().OnSceneEnd();
-
-		/*if (g_LocalPlayer)
-		{
-			/*IMaterial* mat = //Globals.g_pChamsMat;
-			if (mat)
-			{
-			QAngle OrigAng;
-			OrigAng = g_LocalPlayer->m_angEyeAngles();
-			g_LocalPlayer->SetAngle2(QAngle(0, AntiAim::Get().DesyncAngles.yaw, 0)); // paste here ur AA.y value or pLocal->GetLby() (for example)
-			bool LbyColor = false; // u can make LBY INDICATOR. When LbyColor is true. Color will be Green , if false it will be White
-			float NormalColor[3] = { 1, 1, 1 };
-			float lbyUpdateColor[3] = { 0, 1, 0 };
-			MaterialManager::Get().OverrideMaterial(false, true, false, false, false);
-			g_RenderView->SetColorModulation(LbyColor ? lbyUpdateColor : NormalColor);
-			//g_MdlRender->ForcedMaterialOverride(mat);
-			g_LocalPlayer->DrawModel(1, 255);
-			g_MdlRender->ForcedMaterialOverride(nullptr);
-			g_LocalPlayer->SetAngle2(OrigAng);
-			//}
-		}*/
     }
     //--------------------------------------------------------------------------------
 	bool __stdcall hkFireEvent(IGameEvent* pEvent)

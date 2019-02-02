@@ -326,12 +326,15 @@ void Menu::RenderLegitbot()
     Components.Spacing();
     Components.Columns ( 2, false );
 	
+	static char* SubsectionsItems[] = { "AimBot", "Triggerbot" };
     static char* WeaponConfigSelectionItems[] = { "G", "A", "L", "f", "W", "c", "a", "Z" };
     static char* WeaponConfigSelectionItemsText[] = { "pistol", "deagle", "smg", "mg", "rifle", "shotgun", "scout", "sniper" };
     static int WeaponSelected = 0;
+
     Components.NavbarIcons ( WeaponConfigSelectionItems, WeaponConfigSelectionItemsText, IM_ARRAYSIZE ( WeaponConfigSelectionItems ), WeaponSelected, IconsFont );
 
 	Components.Hotkey("Aimkey",  Settings::Aimbot::Hotkey);
+
 
     switch ( ( LbotWeaponsAvailable ) WeaponSelected )
     {
@@ -690,6 +693,7 @@ void Menu::RenderVisuals()
 			Components.Checkbox("No Flash",  Settings::Visual::NoFlash);
 			Components.Checkbox("No Smoke",  Settings::Visual::NoSmoke);
 			Components.ColorCheckbox("Spread Circle", Settings::Visual::SpreadCircleEnabled, Settings::Visual::SpreadCircleColor);
+			Components.ColorCheckbox("Damage Indicators", Settings::Visual::DamageIndicator, Settings::Visual::DamageIndicatorColor);
 			Components.Checkbox("Disable Sniper Zoom",  Settings::Visual::DisableScopeZoom);
 			Components.SliderInt("Viewmodel FOV",  Settings::Visual::ViewModelFOV, 1, 150);
 			Components.SliderInt("FOV",  Settings::Visual::FOV, 1, 150);
@@ -811,21 +815,23 @@ void Menu::RenderSettings()
     Components.SameLine();
 	ImGui::InputText ( "  ", str0, IM_ARRAYSIZE ( str0 ) );
 
-	if (Components.Button("Create") && str0 != "")
+	if ( Components.Button("Create") && str0 != "" )
 		Settings::CreateConfig(str0);
 
-	if (Components.Button("Save"))
+	if ( Components.Button("Save") )
 		Settings::SaveSettings(Settings::Configs[Selected]);
 
     Components.SameLine();
 
-	if (Components.Button("Load"))
+	if ( Components.Button("Load") )
 		Settings::LoadSettings(Settings::Configs[Selected]);
 
-	if (Components.Button("Refresh"))
+	if ( Components.Button("Refresh") )
 		Settings::RefreshConfigList();
-	/*if ( Components.Button ( "Reset" ) )
-	 g_Config.ResetConfig();*/
+
+	if ( Components.Button("Reset") )
+		Settings::ResetConfig();
+
 	Components.SameLine();
 
 	if (Components.Button("Load Game CFG"))

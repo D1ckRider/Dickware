@@ -234,6 +234,9 @@
     <ClCompile Include="Utils\ConvarSpoofer.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="features\NightMode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="valve_sdk\misc\BaseHandle.hpp">
@@ -568,6 +571,9 @@
     </ClInclude>
     <ClInclude Include="Utils\ConvarSpoofer.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="features\NightMode.h">
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

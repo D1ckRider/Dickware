@@ -68,6 +68,7 @@ public:
 		void RenderName();
 		void RenderWeaponName();
 		
+		void DrawPlayerPOV();
 
 		void RenderHealth();
 		void RenderArmour();

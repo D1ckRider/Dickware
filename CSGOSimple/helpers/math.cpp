@@ -70,6 +70,24 @@ namespace Math
         return vAngle;
     }
 
+	Vector CalcAngleV(const Vector& src, const Vector& dst)
+	{
+		Vector vAngle;
+		Vector delta((src.x - dst.x), (src.y - dst.y), (src.z - dst.z));
+		double hyp = sqrt(delta.x*delta.x + delta.y*delta.y);
+
+		vAngle.x = float(atanf(float(delta.z / hyp)) * 57.295779513082f);
+		vAngle.y = float(atanf(float(delta.y / delta.x)) * 57.295779513082f);
+		vAngle.z = 0.0f;
+
+		if (delta.x >= 0.0)
+		{
+			vAngle.y += 180.0f;
+		}
+
+		return vAngle;
+	}
+
     Vector CrossProduct2(const Vector& a, const Vector& b)
     {
         return Vector(a.y*b.z - a.z*b.y, a.z*b.x - a.x*b.z, a.x*b.y - a.y*b.x);

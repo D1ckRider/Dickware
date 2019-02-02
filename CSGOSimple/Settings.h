@@ -216,6 +216,8 @@ namespace Settings
 		extern bool NoFlash;
 		extern bool SpreadCircleEnabled;
 		extern Color SpreadCircleColor;
+		extern bool DamageIndicator;
+		extern Color DamageIndicatorColor;
 		extern bool DisableScopeZoom;
 		extern int ViewModelFOV;
 		extern int FOV;
@@ -288,6 +290,7 @@ namespace Settings
 		catch (json::exception& ex)
 		{
 			g_Logger.Warning("CONFIG", ex.what());
+			value = 0;
 			//g_Logger.Warning( "CONFIG", "Loading error: " + std::to_string(ex.what()) );
 		}
 	}
