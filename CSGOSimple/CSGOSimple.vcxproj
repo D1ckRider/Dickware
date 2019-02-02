@@ -112,8 +112,10 @@
     <ClCompile Include="features\MaterialManager.cpp" />
     <ClCompile Include="features\glow.cpp" />
     <ClCompile Include="features\NightMode.cpp" />
+    <ClCompile Include="features\Skinchanger.cpp" />
     <ClCompile Include="features\visuals.cpp" />
     <ClCompile Include="FontManager.cpp" />
+    <ClCompile Include="helpers\DynSkin.cpp" />
     <ClCompile Include="helpers\input.cpp" />
     <ClCompile Include="helpers\math.cpp" />
     <ClCompile Include="helpers\utils.cpp" />
@@ -174,8 +176,10 @@
     <ClInclude Include="features\MaterialManager.hpp" />
     <ClInclude Include="features\glow.hpp" />
     <ClInclude Include="features\NightMode.h" />
+    <ClInclude Include="features\Skinchanger.h" />
     <ClInclude Include="features\visuals.hpp" />
     <ClInclude Include="FontManager.h" />
+    <ClInclude Include="helpers\DynSkin.h" />
     <ClInclude Include="helpers\input.hpp" />
     <ClInclude Include="helpers\math.hpp" />
     <ClInclude Include="helpers\utils.hpp" />

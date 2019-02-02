@@ -1,7 +1,8 @@
 
 #include "ClantagChanger.h"
 
-std::vector<std::string> dicks = {
+std::vector<std::string> dicks = 
+{
 	":() C===3",
 	":()C===3",
 	":(===3",

@@ -32,6 +32,7 @@
 #include "Utils\ConvarSpoofer.h"
 #include "Settings.h"
 #include "features\NightMode.h"
+#include "features\Skinchanger.h"
 //#include "Asuswalls.h"
 #include "NoSmoke.h"
 #pragma intrinsic(_ReturnAddress)
@@ -556,6 +557,8 @@ namespace Hooks
 
             case FRAME_NET_UPDATE_POSTDATAUPDATE_START:
             {
+				//if(Settings::Misc::SkinchangerEnabled)
+				Skinchanger::Get().OnFrameStageNotify();
                 break;
             }
 
@@ -655,7 +658,8 @@ namespace Hooks
 
             case FRAME_RENDER_END:
 				// Add check
-				//NightMode::Get().Apply();
+				if(Settings::Visual::NightMode)
+					NightMode::Get().Apply();
                 break;
         }
 

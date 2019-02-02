@@ -7,6 +7,8 @@
 #include "Misc.h"
 #include "Settings.h"
 #include "ui.hpp"
+#include "features\Skinchanger.h"
+#include "features\NightMode.h"
 
 using WeaponType = Settings::WeaponType;
 using HitboxType = Settings::HitboxType;
@@ -692,6 +694,7 @@ void Menu::RenderVisuals()
 			Components.Checkbox("Bullet Tracers",  Settings::Visual::BulletTracers);
 			Components.Checkbox("No Flash",  Settings::Visual::NoFlash);
 			Components.Checkbox("No Smoke",  Settings::Visual::NoSmoke);
+			Components.Checkbox("Night Mode", Settings::Visual::NightMode);
 			Components.ColorCheckbox("Spread Circle", Settings::Visual::SpreadCircleEnabled, Settings::Visual::SpreadCircleColor);
 			Components.ColorCheckbox("Damage Indicators", Settings::Visual::DamageIndicator, Settings::Visual::DamageIndicatorColor);
 			Components.Checkbox("Disable Sniper Zoom",  Settings::Visual::DisableScopeZoom);
@@ -780,8 +783,59 @@ void Menu::RenderSkinchanger()
 	Components.BeginChild("#skinchanger", ImVec2(0, 0));
 
 	Components.Label("Skinchanger");
-	Components.Label("Not today");
 
+	if (Components.Button("Apply"))
+	{
+		// StatTrak™ AWP | Oni Taji
+		g_SkinchangerCfg[WEAPON_AWP].nFallbackPaintKit = 662;
+		//g_SkinchangerCfg[WEAPON_AWP].flFallbackWear = 0.00000001f;
+		g_SkinchangerCfg[WEAPON_AWP].nFallbackStatTrak = 1337;
+
+		// Valve AK-47 | Wasteland Rebel
+		g_SkinchangerCfg[WEAPON_AK47].nFallbackPaintKit = 380;
+		g_SkinchangerCfg[WEAPON_AK47].iEntityQuality = 6;
+
+		// Souvenir M4A4 | Howl
+		g_SkinchangerCfg[WEAPON_M4A1].nFallbackPaintKit = 309;
+		//g_SkinchangerCfg[WEAPON_M4A1].iEntityQuality = 12;
+
+		// Prototype Desert Eagle | Conspiracy
+		g_SkinchangerCfg[WEAPON_DEAGLE].nFallbackPaintKit = 351;
+		g_SkinchangerCfg[WEAPON_DEAGLE].iEntityQuality = 7;
+
+		// Glock-18 | Fade
+		g_SkinchangerCfg[WEAPON_GLOCK].nFallbackPaintKit = 38;
+
+		// USP-S | Stainless
+		g_SkinchangerCfg[WEAPON_USP_SILENCER].nFallbackPaintKit = 277;
+
+		// Karambit | Fade (CT)
+		/*g_SkinChangerCfg[WEAPON_KNIFE].iItemDefinitionIndex = WEAPON_KNIFE_KARAMBIT;
+		g_SkinChangerCfg[WEAPON_KNIFE].nFallbackPaintKit = 38;
+		g_SkinChangerCfg[WEAPON_KNIFE].iEntityQuality = 3;
+
+		// Bowie Knife | Crimson Web (T)
+		g_SkinChangerCfg[WEAPON_KNIFE_T].iItemDefinitionIndex = WEAPON_KNIFE_SURVIVAL_BOWIE;
+		g_SkinChangerCfg[WEAPON_KNIFE_T].nFallbackPaintKit = 12;
+		g_SkinChangerCfg[WEAPON_KNIFE_T].iEntityQuality = 3;*/
+
+
+		// Get the indexes of the models we want to replace.
+		int nOriginalKnifeCT = g_MdlInfo->GetModelIndex("models/weapons/v_knife_default_ct.mdl");
+		int nOriginalKnifeT = g_MdlInfo->GetModelIndex("models/weapons/v_knife_default_t.mdl");
+
+		// Configure model replacements.
+		g_ViewModelCfg[nOriginalKnifeCT] = "models/weapons/v_knife_karam.mdl";
+		g_ViewModelCfg[nOriginalKnifeT] = "models/weapons/v_knife_survival_bowie.mdl";
+	}
+
+	if (Components.Button("Load All"))
+		Skinchanger::Get().LoadAllSkinsForWeapon();
+
+	/*if (Components.Button("Save"))
+		Skinchanger::Get().SaveCustomSkins();
+	if (Components.Button("Load"))
+		Skinchanger::Get().LoadCustomSkins();*/
 	Components.EndChild();
 }
 
@@ -837,7 +891,7 @@ void Menu::RenderSettings()
 	if (Components.Button("Load Game CFG"))
 		g_EngineClient->ExecuteClientCmd(Settings::LoadGameCfg().data());
 
- 
+	
 
     Components.EndChild();
 }

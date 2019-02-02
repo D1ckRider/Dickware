@@ -20,6 +20,11 @@ namespace Settings
 	void ResetConfig();
 	void SaveSettings(std::string fileName);
 	void LoadSettings(std::string fileName);
+	void ResetRagebot();
+	void ResetAimbot();
+	void ResetTriggerbot();
+	void ResetVisuals();
+	void ResetMisc();
 	template <typename T>
 	void SaveValue(json &j, std::string name, const T& value);
 	template <typename T>
@@ -219,6 +224,7 @@ namespace Settings
 		extern bool DamageIndicator;
 		extern Color DamageIndicatorColor;
 		extern bool DisableScopeZoom;
+		extern bool NightMode;
 		extern int ViewModelFOV;
 		extern int FOV;
 		extern bool NoSmoke;
@@ -250,6 +256,8 @@ namespace Settings
 		extern bool BuyBotArmor;
 		extern bool BuyBotZeus;
 		extern bool BuyBotDefuser;
+
+		extern bool SkinchangerEnabled;
 	}
 
 	template<typename T>

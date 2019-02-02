@@ -13,6 +13,7 @@
 #include "EventHelper.h"
 #include "ConsoleHelper.h"
 #include "Logger.h"
+#include "features\Skinchanger.h"
 #include <filesystem>
 
 namespace fs = std::filesystem;
@@ -45,6 +46,7 @@ DWORD WINAPI OnDllAttach ( LPVOID base )
         MenuHelper::Get().Initialize();
 
 		Settings::Initialize();
+//		Skinchanger::Get().InitalizeSkins();
         Hooks::Initialize();
 
         // Register some hotkeys.

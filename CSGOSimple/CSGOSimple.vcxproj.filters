@@ -64,6 +64,9 @@
     <Filter Include="Source Files\Utils">
       <UniqueIdentifier>{abeeac52-f8d1-4290-99c4-401f590987dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Helpers\DynSkin">
+      <UniqueIdentifier>{ad110c8d-015e-4937-ac0f-33d90ec463fd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Helpers\math.cpp">
@@ -234,8 +237,14 @@
     <ClCompile Include="Utils\ConvarSpoofer.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="features\Skinchanger.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="helpers\DynSkin.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
     <ClCompile Include="features\NightMode.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -574,6 +583,12 @@
     </ClInclude>
     <ClInclude Include="features\NightMode.h">
       <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="features\Skinchanger.h">
+      <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers\DynSkin.h">
+      <Filter>Header Files\Helpers\DynSkin</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

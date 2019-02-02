@@ -164,182 +164,11 @@ void Settings::RefreshConfigList()
 
 void Settings::ResetConfig()
 {
-	/* Setting up variables */
-	RageBot::Enabled = false;
-	RageBot::BAimMode = 0;
-	RageBot::AirBAim = false;
-	RageBot::BAimHotkey = 0x0;
-
-	RageBot::EnabledAA = false;
-	RageBot::SpinBotSpeed = 0.f;
-	RageBot::SlideWalk = false;
-	RageBot::Desync = false;
-	RageBot::ManualAAState = 0;
-	RageBot::ManualAALeftKey = 0x0;
-	RageBot::ManualAARightKey = 0x0;
-	RageBot::ManualAABackKey = 0x0;
-
-	RageBot::AutoScope = false;
-	RageBot::AutoStop = false;
-	RageBot::AutoCrouch = false;
-	RageBot::SlowWalk = false;
-	RageBot::SlowWalkHotkey = 0x0;
-	RageBot::FakeDuckHotkey = 0x0;
-	RageBot::SlowWalkMod = .0f;
-
-	RageBot::FakelagPrediction = false;
-	RageBot::ShootingMode = 0;
-	RageBot::ForceUnlag = false;
-	RageBot::Resolver = false;
-	/* Init weapon settings for RBot */
-	for (size_t i = 0; i < 11; i++)
-	{
-		RageBot::WeaponSettings[i].Hitchance = 0.f;
-		RageBot::WeaponSettings[i].MinDamage = 0.f;
-		RageBot::WeaponSettings[i].BAimAfterShots = 0;
-		RageBot::WeaponSettings[i].ForceBAimAfterShots = 0;
-		RageBot::WeaponSettings[i].BAimWhileMoving = false;
-	}
-	/* Init Hitbox settings */
-	for (size_t i = 0; i < 7; i++)
-	{
-		RageBot::Hitboxes[i].Enabled = false;
-		RageBot::Hitboxes[i].Scale = 0.f;
-
-	}
-	/* Init AA settings */
-	for (size_t i = 0; i < 3; i++)
-	{
-		RageBot::AntiAimSettings[i].Pitch = 0;
-		RageBot::AntiAimSettings[i].Yaw = 0;
-		RageBot::AntiAimSettings[i].YawCustom = 0.f;
-		RageBot::AntiAimSettings[i].YawAdd = 0;
-		RageBot::AntiAimSettings[i].YawAddCustom = 0.f;
-		RageBot::AntiAimSettings[i].FakelagTicks = 0;
-		RageBot::AntiAimSettings[i].FakelagMode = 0;
-	}
-	/* Init weapon settings for LBot */
-	Aimbot::Enabled = false;
-	Aimbot::Hotkey = 0x0;
-	Aimbot::Backtrack = false;
-	Aimbot::BacktrackAtAim = false;
-	Aimbot::BacktrackTick = false;
-	for (size_t i = 0; i < 11; i++)
-	{
-		Aimbot::WeaponAimSetting[i].FOV = 0.f;
-		Aimbot::WeaponAimSetting[i].Smooth = 1.f;
-		Aimbot::WeaponAimSetting[i].Randomize = 0.f;
-		Aimbot::WeaponAimSetting[i].Delay = 0.f;
-		Aimbot::WeaponAimSetting[i].Autopistol = false;
-
-		Aimbot::WeaponAimSetting[i].RCS = false;
-		Aimbot::WeaponAimSetting[i].RCS_X = 0.f;
-		Aimbot::WeaponAimSetting[i].RCS_Y = 0.f;
-
-		Aimbot::WeaponAimSetting[i].HitboxHead = false;
-		Aimbot::WeaponAimSetting[i].HitboxNeck = false;
-		Aimbot::WeaponAimSetting[i].HitboxChest = false;
-		Aimbot::WeaponAimSetting[i].HitboxPelvis = false;
-		Aimbot::WeaponAimSetting[i].HitboxStomach = false;
-		Aimbot::WeaponAimSetting[i].HitboxArm = false;
-		Aimbot::WeaponAimSetting[i].HitboxLeg = false;
-		Aimbot::WeaponAimSetting[i].HitboxFoot = false;
-	}
-	Visual::GhostEnabled = false;
-	Visual::GhostColor = Color::White;
-
-	Visual::ThirdPersonEnabled = false;
-	Visual::ThirdPersonHotkey = 0x0;
-
-	Visual::NoScopeOverlay = false;
-	Visual::BulletTracers = false;
-	Visual::NoFlash = false;
-	Visual::SpreadCircleEnabled = false;
-	Visual::SpreadCircleColor = Color::Blue;
-	Visual::DamageIndicator = false;
-	Visual::DamageIndicatorColor = Color::Red;
-	Visual::DisableScopeZoom = false;
-	Visual::ViewModelFOV = 80;
-	Visual::FOV = 80;
-	Visual::NoSmoke = false;
-	Visual::Hitmarker = false;
-	Visual::HitmarkerSound = false;
-	Visual::RagdollForce = 0;
-
-	Visual::LocalChams.Enabled = false;
-	Visual::LocalChams.Mode = 0;
-	Visual::LocalChams.Visible = Color::Red;
-	Visual::LocalChams.Invisible = Color::Black;
-	Visual::LocalESP.Enabled = false;
-	Visual::LocalESP.BoxEnabled = false;
-	Visual::LocalESP.BoxType = 0;
-	Visual::LocalESP.BoxColor = Color::Black;
-	Visual::LocalESP.NameEnabled = false;
-	Visual::LocalESP.NameColor = Color::White;
-	Visual::LocalESP.HealthEnabled = false;
-	Visual::LocalESP.ArmorEnabled = false;
-	Visual::LocalESP.ArmorColor = Color::White;
-	Visual::LocalESP.WeaponEnabled = false;
-	Visual::LocalESP.WeaponColor = Color::White;
-	Visual::LocalESP.SnaplineEnabled = false;
-	Visual::LocalESP.SnaplineColor = Color::White;
-
-	Visual::TeamChams.Enabled = false;
-	Visual::TeamChams.Mode = 0;
-	Visual::TeamChams.Visible = Color::Red;
-	Visual::TeamChams.Invisible = Color::Black;
-	Visual::TeamESP.Enabled = false;
-	Visual::TeamESP.BoxEnabled = false;
-	Visual::TeamESP.BoxType = 0;
-	Visual::TeamESP.BoxColor = Color::Black;
-	Visual::TeamESP.NameEnabled = false;
-	Visual::TeamESP.NameColor = Color::White;
-	Visual::TeamESP.HealthEnabled = false;
-	Visual::TeamESP.ArmorEnabled = false;
-	Visual::TeamESP.ArmorColor = Color::White;
-	Visual::TeamESP.WeaponEnabled = false;
-	Visual::TeamESP.WeaponColor = Color::White;
-	Visual::TeamESP.SnaplineEnabled = false;
-	Visual::TeamESP.SnaplineColor = Color::White;
-
-	Visual::EnemyChams.Enabled = false;
-	Visual::EnemyChams.Mode = 0;
-	Visual::EnemyChams.Visible = Color::Red;
-	Visual::EnemyChams.Invisible = Color::Black;
-	Visual::EnemyESP.Enabled = false;
-	Visual::EnemyESP.BoxEnabled = false;
-	Visual::EnemyESP.BoxType = 0;
-	Visual::EnemyESP.BoxColor = Color::Black;
-	Visual::EnemyESP.NameEnabled = false;
-	Visual::EnemyESP.NameColor = Color::White;
-	Visual::EnemyESP.HealthEnabled = false;
-	Visual::EnemyESP.ArmorEnabled = false;
-	Visual::EnemyESP.ArmorColor = Color::White;
-	Visual::EnemyESP.WeaponEnabled = false;
-	Visual::EnemyESP.WeaponColor = Color::White;
-	Visual::EnemyESP.SnaplineEnabled = false;
-	Visual::EnemyESP.SnaplineColor = Color::White;
-
-	Visual::GlobalESP.Enabled = false;
-	Visual::GlobalESP.GrenadeEnabled = false;
-	Visual::GlobalESP.BombEnabled = false;
-	Visual::GlobalESP.BombColor = Color::Green;
-	Visual::GlobalESP.DZEnabled = false;
-	Visual::GlobalESP.DZRange = 100.f;
-	
-
-	Misc::BHop = false;
-	Misc::AutoStrafe = false;
-	Misc::RankReveal = false;
-	Misc::NoCrouchCooldown = false;
-	Misc::AutoAccept = false;
-	Misc::Clantag = false;
-	Misc::BuyBot = false;
-	Misc::BuyBotPistol = 0;
-	Misc::BuyBotWeapon = 0;
-	Misc::BuyBotArmor = false;
-	Misc::BuyBotZeus = false;
-	Misc::BuyBotDefuser = false;
+	ResetRagebot();
+	ResetAimbot();
+	ResetTriggerbot();
+	ResetVisuals();
+	ResetMisc();
 }
 
 void Settings::SaveSettings(std::string fileName)
@@ -496,6 +325,7 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "vis_noscope_overlay", Visual::NoScopeOverlay);
 	SaveValue(j, "vis_bullet_tracers", Visual::BulletTracers);
 	SaveValue(j, "vis_noflash", Visual::NoFlash);
+	SaveValue(j, "vis_nightmode", Visual::NightMode);
 	SaveValue(j, "vis_spread_cirlce_enabled", Visual::SpreadCircleEnabled);
 	SaveColorValue(j, "vis_spread_circle_color", Visual::SpreadCircleColor);
 	SaveValue(j, "vis_damage_ind_enabled", Visual::DamageIndicator);
@@ -520,6 +350,7 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "misc_buybot_armor", Misc::BuyBotArmor);
 	SaveValue(j, "misc_buybot_zeus", Misc::BuyBotZeus);
 	SaveValue(j, "misc_buybot_defuser", Misc::BuyBotDefuser);
+	SaveValue(j, "misc_skin_enabled", Misc::SkinchangerEnabled);
 	/* Write file */
 	o << std::setw(4) << j << std::endl;
 }
@@ -680,6 +511,7 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "vis_noscope_overlay", 	Visual::NoScopeOverlay);
 	LoadValue(j, "vis_bullet_tracers", 	Visual::BulletTracers);
 	LoadValue(j, "vis_noflash", 	Visual::NoFlash);
+	LoadValue(j, "vis_nightmode", Visual::NightMode);
 	LoadValue(j, "vis_spread_cirlce_enabled", 	Visual::SpreadCircleEnabled);
 	LoadColorValue(j, "vis_spread_circle_color", Visual::SpreadCircleColor);
 	LoadValue(j, "vis_damage_ind_enabled", Visual::DamageIndicator);
@@ -704,6 +536,203 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "misc_buybot_armor", 	Misc::BuyBotArmor);
 	LoadValue(j, "misc_buybot_zeus", 	Misc::BuyBotZeus);
 	LoadValue(j, "misc_buybot_defuser", 	Misc::BuyBotDefuser);
+	LoadValue(j, "misc_skin_enabled", Misc::SkinchangerEnabled);
+}
+
+void Settings::ResetRagebot()
+{
+	/* Setting up variables */
+	RageBot::Enabled = false;
+	RageBot::BAimMode = 0;
+	RageBot::AirBAim = false;
+	RageBot::BAimHotkey = 0x0;
+
+	RageBot::EnabledAA = false;
+	RageBot::SpinBotSpeed = 0.f;
+	RageBot::SlideWalk = false;
+	RageBot::Desync = false;
+	RageBot::ManualAAState = 0;
+	RageBot::ManualAALeftKey = 0x0;
+	RageBot::ManualAARightKey = 0x0;
+	RageBot::ManualAABackKey = 0x0;
+
+	RageBot::AutoScope = false;
+	RageBot::AutoStop = false;
+	RageBot::AutoCrouch = false;
+	RageBot::SlowWalk = false;
+	RageBot::SlowWalkHotkey = 0x0;
+	RageBot::FakeDuckHotkey = 0x0;
+	RageBot::SlowWalkMod = .0f;
+
+	RageBot::FakelagPrediction = false;
+	RageBot::ShootingMode = 0;
+	RageBot::ForceUnlag = false;
+	RageBot::Resolver = false;
+	/* Init weapon settings for RBot */
+	for (size_t i = 0; i < 11; i++)
+	{
+		RageBot::WeaponSettings[i].Hitchance = 0.f;
+		RageBot::WeaponSettings[i].MinDamage = 0.f;
+		RageBot::WeaponSettings[i].BAimAfterShots = 0;
+		RageBot::WeaponSettings[i].ForceBAimAfterShots = 0;
+		RageBot::WeaponSettings[i].BAimWhileMoving = false;
+	}
+	/* Init Hitbox settings */
+	for (size_t i = 0; i < 7; i++)
+	{
+		RageBot::Hitboxes[i].Enabled = false;
+		RageBot::Hitboxes[i].Scale = 0.f;
+
+	}
+	/* Init AA settings */
+	for (size_t i = 0; i < 3; i++)
+	{
+		RageBot::AntiAimSettings[i].Pitch = 0;
+		RageBot::AntiAimSettings[i].Yaw = 0;
+		RageBot::AntiAimSettings[i].YawCustom = 0.f;
+		RageBot::AntiAimSettings[i].YawAdd = 0;
+		RageBot::AntiAimSettings[i].YawAddCustom = 0.f;
+		RageBot::AntiAimSettings[i].FakelagTicks = 0;
+		RageBot::AntiAimSettings[i].FakelagMode = 0;
+	}
+}
+
+void Settings::ResetAimbot()
+{
+	/* Init weapon settings for LBot */
+	Aimbot::Enabled = false;
+	Aimbot::Hotkey = 0x0;
+	Aimbot::Backtrack = false;
+	Aimbot::BacktrackAtAim = false;
+	Aimbot::BacktrackTick = false;
+	for (size_t i = 0; i < 11; i++)
+	{
+		Aimbot::WeaponAimSetting[i].FOV = 0.f;
+		Aimbot::WeaponAimSetting[i].Smooth = 1.f;
+		Aimbot::WeaponAimSetting[i].Randomize = 0.f;
+		Aimbot::WeaponAimSetting[i].Delay = 0.f;
+		Aimbot::WeaponAimSetting[i].Autopistol = false;
+
+		Aimbot::WeaponAimSetting[i].RCS = false;
+		Aimbot::WeaponAimSetting[i].RCS_X = 0.f;
+		Aimbot::WeaponAimSetting[i].RCS_Y = 0.f;
+
+		Aimbot::WeaponAimSetting[i].HitboxHead = false;
+		Aimbot::WeaponAimSetting[i].HitboxNeck = false;
+		Aimbot::WeaponAimSetting[i].HitboxChest = false;
+		Aimbot::WeaponAimSetting[i].HitboxPelvis = false;
+		Aimbot::WeaponAimSetting[i].HitboxStomach = false;
+		Aimbot::WeaponAimSetting[i].HitboxArm = false;
+		Aimbot::WeaponAimSetting[i].HitboxLeg = false;
+		Aimbot::WeaponAimSetting[i].HitboxFoot = false;
+	}
+}
+
+void Settings::ResetTriggerbot()
+{
+}
+
+void Settings::ResetVisuals()
+{
+	Visual::GhostEnabled = false;
+	Visual::GhostColor = Color::White;
+
+	Visual::ThirdPersonEnabled = false;
+	Visual::ThirdPersonHotkey = 0x0;
+
+	Visual::NoScopeOverlay = false;
+	Visual::BulletTracers = false;
+	Visual::NoFlash = false;
+	Visual::SpreadCircleEnabled = false;
+	Visual::SpreadCircleColor = Color::Blue;
+	Visual::DamageIndicator = false;
+	Visual::DamageIndicatorColor = Color::Red;
+	Visual::DisableScopeZoom = false;
+	Visual::ViewModelFOV = 80;
+	Visual::FOV = 80;
+	Visual::NightMode = false;
+	Visual::NoSmoke = false;
+	Visual::Hitmarker = false;
+	Visual::HitmarkerSound = false;
+	Visual::RagdollForce = 0;
+
+	Visual::LocalChams.Enabled = false;
+	Visual::LocalChams.Mode = 0;
+	Visual::LocalChams.Visible = Color::Red;
+	Visual::LocalChams.Invisible = Color::Black;
+	Visual::LocalESP.Enabled = false;
+	Visual::LocalESP.BoxEnabled = false;
+	Visual::LocalESP.BoxType = 0;
+	Visual::LocalESP.BoxColor = Color::Black;
+	Visual::LocalESP.NameEnabled = false;
+	Visual::LocalESP.NameColor = Color::White;
+	Visual::LocalESP.HealthEnabled = false;
+	Visual::LocalESP.ArmorEnabled = false;
+	Visual::LocalESP.ArmorColor = Color::White;
+	Visual::LocalESP.WeaponEnabled = false;
+	Visual::LocalESP.WeaponColor = Color::White;
+	Visual::LocalESP.SnaplineEnabled = false;
+	Visual::LocalESP.SnaplineColor = Color::White;
+
+	Visual::TeamChams.Enabled = false;
+	Visual::TeamChams.Mode = 0;
+	Visual::TeamChams.Visible = Color::Red;
+	Visual::TeamChams.Invisible = Color::Black;
+	Visual::TeamESP.Enabled = false;
+	Visual::TeamESP.BoxEnabled = false;
+	Visual::TeamESP.BoxType = 0;
+	Visual::TeamESP.BoxColor = Color::Black;
+	Visual::TeamESP.NameEnabled = false;
+	Visual::TeamESP.NameColor = Color::White;
+	Visual::TeamESP.HealthEnabled = false;
+	Visual::TeamESP.ArmorEnabled = false;
+	Visual::TeamESP.ArmorColor = Color::White;
+	Visual::TeamESP.WeaponEnabled = false;
+	Visual::TeamESP.WeaponColor = Color::White;
+	Visual::TeamESP.SnaplineEnabled = false;
+	Visual::TeamESP.SnaplineColor = Color::White;
+
+	Visual::EnemyChams.Enabled = false;
+	Visual::EnemyChams.Mode = 0;
+	Visual::EnemyChams.Visible = Color::Red;
+	Visual::EnemyChams.Invisible = Color::Black;
+	Visual::EnemyESP.Enabled = false;
+	Visual::EnemyESP.BoxEnabled = false;
+	Visual::EnemyESP.BoxType = 0;
+	Visual::EnemyESP.BoxColor = Color::Black;
+	Visual::EnemyESP.NameEnabled = false;
+	Visual::EnemyESP.NameColor = Color::White;
+	Visual::EnemyESP.HealthEnabled = false;
+	Visual::EnemyESP.ArmorEnabled = false;
+	Visual::EnemyESP.ArmorColor = Color::White;
+	Visual::EnemyESP.WeaponEnabled = false;
+	Visual::EnemyESP.WeaponColor = Color::White;
+	Visual::EnemyESP.SnaplineEnabled = false;
+	Visual::EnemyESP.SnaplineColor = Color::White;
+
+	Visual::GlobalESP.Enabled = false;
+	Visual::GlobalESP.GrenadeEnabled = false;
+	Visual::GlobalESP.BombEnabled = false;
+	Visual::GlobalESP.BombColor = Color::Green;
+	Visual::GlobalESP.DZEnabled = false;
+	Visual::GlobalESP.DZRange = 100.f;
+}
+
+void Settings::ResetMisc()
+{
+	Misc::BHop = false;
+	Misc::AutoStrafe = false;
+	Misc::RankReveal = false;
+	Misc::NoCrouchCooldown = false;
+	Misc::AutoAccept = false;
+	Misc::Clantag = false;
+	Misc::BuyBot = false;
+	Misc::BuyBotPistol = 0;
+	Misc::BuyBotWeapon = 0;
+	Misc::BuyBotArmor = false;
+	Misc::BuyBotZeus = false;
+	Misc::BuyBotDefuser = false;
+	Misc::SkinchangerEnabled = false;
 }
 
 void Settings::SaveColorValue(json & j, std::string name, const Color & value)
@@ -871,6 +900,7 @@ namespace Settings::Visual
 	int ViewModelFOV = 80;
 	int FOV = 80;
 	bool NoSmoke = false;
+	bool NightMode = false;
 	bool Hitmarker = false;
 	bool HitmarkerSound = false;
 	int RagdollForce = 0;
@@ -890,4 +920,5 @@ namespace Settings::Misc
 	bool BuyBotArmor = false;
 	bool BuyBotZeus = false;
 	bool BuyBotDefuser = false;
+	bool SkinchangerEnabled = false;
 }

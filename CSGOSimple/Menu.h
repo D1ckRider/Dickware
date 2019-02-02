@@ -68,7 +68,6 @@ public:
     void Render();
 
     /* sections */
-    //void RenderLegitbot();
     void RenderRagebot();
     void RenderLegitbot();
     void RenderVisuals();
