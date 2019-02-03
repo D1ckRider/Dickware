@@ -204,7 +204,10 @@ public:
         return *(C_EconItemView*)this;
     }
     void SetGloveModelIndex(int modelIndex);
-
+	void SetModelIndex(const int index)
+	{
+		return CallVFunction<void(__thiscall*)(C_BaseEntity*, int)>(this, 75)(this, index);
+	}
 };
 
 class C_BaseWeaponWorldModel : public C_BaseEntity

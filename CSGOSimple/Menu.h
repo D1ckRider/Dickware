@@ -74,6 +74,7 @@ public:
     void RenderMisc();
 	void RenderSkinchanger();
     void RenderSettings();
+	void RenderSpectatorList();
 private:
     MenuHelper::components Components;
     //MenuFonts* fonts;

@@ -5,6 +5,7 @@
 #include <istream>
 #include "valve_sdk\csgostructs.hpp"
 #include "valve_sdk\misc\Color.hpp"
+#include "options.hpp"
 #pragma once
 
 using json = nlohmann::json;
@@ -20,6 +21,8 @@ namespace Settings
 	void ResetConfig();
 	void SaveSettings(std::string fileName);
 	void LoadSettings(std::string fileName);
+	void SaveSkinsSettings();
+	void LoadSkinsSettings();
 	void ResetRagebot();
 	void ResetAimbot();
 	void ResetTriggerbot();
@@ -239,6 +242,18 @@ namespace Settings
 		extern int RagdollForce;
 	}
 
+
+	namespace Skins
+	{
+		extern std::map<int, item_setting> m_items;
+		extern std::unordered_map<std::string, std::string> m_icon_overrides;
+
+		/*auto get_icon_override(const std::string original) const -> const char*
+		{
+			return m_icon_overrides.count(original) ? m_icon_overrides.at(original).data() : nullptr;
+		}*/
+	}
+
 	namespace Misc
 	{
 		struct BuyBotNades
@@ -254,6 +269,7 @@ namespace Settings
 		extern bool RankReveal;
 		extern bool NoCrouchCooldown;
 		extern bool Clantag;
+		extern bool SpectatorsEnabled;
 		extern bool AutoAccept;
 		extern bool BuyBot;
 		extern int BuyBotPistol;

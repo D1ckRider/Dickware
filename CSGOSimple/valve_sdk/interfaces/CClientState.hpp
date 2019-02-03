@@ -175,7 +175,8 @@ class CClientState
 public:
     void ForceFullUpdate()
     {
-        m_nDeltaTick = -1;
+        //m_nDeltaTick = -1;
+		*reinterpret_cast<int*>(std::uintptr_t(this) + 0x174) = -1;
     }
 
 	char pad_0000[148]; //0x0000

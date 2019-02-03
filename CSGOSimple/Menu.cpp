@@ -587,7 +587,6 @@ void Menu::RenderLegitbot()
 	Components.Checkbox("Enabled", Settings::TriggerBot::Enabled);
 	Components.Hotkey("Key", Settings::TriggerBot::Key);
     //legit aa
-    //triggerbot
 
     Components.EndChild();
 }
@@ -756,6 +755,7 @@ void Menu::RenderMisc()
 	Components.Checkbox("AutoAccept", Settings::Misc::AutoAccept);
 
 	Components.Checkbox("Clantag changer",  Settings::Misc::Clantag);
+	Components.Checkbox("Spectator List", Settings::Misc::SpectatorsEnabled);
 
     Components.Spacing();
 
@@ -784,63 +784,99 @@ void Menu::RenderMisc()
 }
 
 void Menu::RenderSkinchanger()
-{
+ {
 	Components.BeginChild("#skinchanger", ImVec2(0, 0));
 
 	Components.Label("Skinchanger");
 
-	if (Components.Button("Apply"))
+	if (k_skins.size() == 0)
+		initialize_kits();
+
+
+	auto& entries = Settings::Skins::m_items;
+	static auto definition_vector_index = 0;
+	ImGui::Columns(2, nullptr, false);
 	{
-		// StatTrak™ AWP | Oni Taji
-		g_SkinchangerCfg[WEAPON_AWP].nFallbackPaintKit = 662;
-		//g_SkinchangerCfg[WEAPON_AWP].flFallbackWear = 0.00000001f;
-		g_SkinchangerCfg[WEAPON_AWP].nFallbackStatTrak = 1337;
+		ImGui::PushItemWidth(-1);
+		ImGui::ListBoxHeader("##config");
+		{
+			for (size_t w = 0; w < k_weapon_names.size(); w++) {
+				if (ImGui::Selectable(k_weapon_names[w].name, definition_vector_index == w)) 
+				{
+					definition_vector_index = w;
+				}
+			}
+		}
+		ImGui::ListBoxFooter();
+		if (ImGui::Button("Update"))
+			g_ClientState->ForceFullUpdate();
 
-		// Valve AK-47 | Wasteland Rebel
-		g_SkinchangerCfg[WEAPON_AK47].nFallbackPaintKit = 380;
-		g_SkinchangerCfg[WEAPON_AK47].iEntityQuality = 6;
-
-		// Souvenir M4A4 | Howl
-		g_SkinchangerCfg[WEAPON_M4A1].nFallbackPaintKit = 309;
-		//g_SkinchangerCfg[WEAPON_M4A1].iEntityQuality = 12;
-
-		// Prototype Desert Eagle | Conspiracy
-		g_SkinchangerCfg[WEAPON_DEAGLE].nFallbackPaintKit = 351;
-		g_SkinchangerCfg[WEAPON_DEAGLE].iEntityQuality = 7;
-
-		// Glock-18 | Fade
-		g_SkinchangerCfg[WEAPON_GLOCK].nFallbackPaintKit = 38;
-
-		// USP-S | Stainless
-		g_SkinchangerCfg[WEAPON_USP_SILENCER].nFallbackPaintKit = 277;
-
-		// Karambit | Fade (CT)
-		/*g_SkinChangerCfg[WEAPON_KNIFE].iItemDefinitionIndex = WEAPON_KNIFE_KARAMBIT;
-		g_SkinChangerCfg[WEAPON_KNIFE].nFallbackPaintKit = 38;
-		g_SkinChangerCfg[WEAPON_KNIFE].iEntityQuality = 3;
-
-		// Bowie Knife | Crimson Web (T)
-		g_SkinChangerCfg[WEAPON_KNIFE_T].iItemDefinitionIndex = WEAPON_KNIFE_SURVIVAL_BOWIE;
-		g_SkinChangerCfg[WEAPON_KNIFE_T].nFallbackPaintKit = 12;
-		g_SkinChangerCfg[WEAPON_KNIFE_T].iEntityQuality = 3;*/
+		if (Components.Button("Save Config"))
+			Settings::SaveSkinsSettings();
+		Components.SameLine();
+		if (Components.Button("Load Config"))
+			Settings::LoadSkinsSettings();
 
 
-		// Get the indexes of the models we want to replace.
-		int nOriginalKnifeCT = g_MdlInfo->GetModelIndex("models/weapons/v_knife_default_ct.mdl");
-		int nOriginalKnifeT = g_MdlInfo->GetModelIndex("models/weapons/v_knife_default_t.mdl");
-
-		// Configure model replacements.
-		g_ViewModelCfg[nOriginalKnifeCT] = "models/weapons/v_knife_karam.mdl";
-		g_ViewModelCfg[nOriginalKnifeT] = "models/weapons/v_knife_survival_bowie.mdl";
+		ImGui::PopItemWidth();
 	}
+	ImGui::NextColumn();
+	{
+		auto& selected_entry = entries[k_weapon_names[definition_vector_index].definition_index];
+		selected_entry.definition_index = k_weapon_names[definition_vector_index].definition_index;
+		selected_entry.definition_vector_index = definition_vector_index;
+		ImGui::Checkbox("Enabled", &selected_entry.enabled);
+		ImGui::InputInt("Seed", &selected_entry.seed);
+		ImGui::InputInt("StatTrak", &selected_entry.stat_trak);
+		ImGui::SliderFloat("Wear", &selected_entry.wear, FLT_MIN, 1.f, "%.10f", 5);
+		if (selected_entry.definition_index != GLOVE_T_SIDE)
+		{
+			ImGui::Combo("Paint Kit", &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text)
+			{
+				*out_text = k_skins[idx].name.c_str();
+				return true;
+			}, nullptr, k_skins.size(), 10);
+			selected_entry.paint_kit_index = k_skins[selected_entry.paint_kit_vector_index].id;
+		}
+		else
+		{
+			ImGui::Combo("Paint Kit", &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text)
+			{
+				*out_text = k_gloves[idx].name.c_str();
+				return true;
+			}, nullptr, k_gloves.size(), 10);
+			selected_entry.paint_kit_index = k_gloves[selected_entry.paint_kit_vector_index].id;
+		}
+		if (selected_entry.definition_index == WEAPON_KNIFE)
+		{
+			ImGui::Combo("Knife", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
+			{
+				*out_text = k_knife_names.at(idx).name;
+				return true;
+			}, nullptr, k_knife_names.size(), 5);
 
-	if (Components.Button("Load All"))
-		Skinchanger::Get().LoadAllSkinsForWeapon();
+			selected_entry.definition_override_index = k_knife_names.at(selected_entry.definition_override_vector_index).definition_index;
+		}
+		else if (selected_entry.definition_index == GLOVE_T_SIDE)
+		{
+			ImGui::Combo("Glove", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
+			{
+				*out_text = k_glove_names.at(idx).name;
+				return true;
+			}, nullptr, k_glove_names.size(), 5);
+			selected_entry.definition_override_index = k_glove_names.at(selected_entry.definition_override_vector_index).definition_index;
+		}
+		else
+		{
+			static auto unused_value = 0;
+			selected_entry.definition_override_vector_index = 0;
+			ImGui::Combo("Unavailable", &unused_value, "For knives or gloves\0");
+		}
+		ImGui::InputText("Name Tag", selected_entry.custom_name, 32);
+	}
+	ImGui::Columns(1, nullptr, false);
 
-	/*if (Components.Button("Save"))
-		Skinchanger::Get().SaveCustomSkins();
-	if (Components.Button("Load"))
-		Skinchanger::Get().LoadCustomSkins();*/
+	
 	Components.EndChild();
 }
 
@@ -899,4 +935,10 @@ void Menu::RenderSettings()
 	
 
     Components.EndChild();
+}
+
+void Menu::RenderSpectatorList()
+{
+	if (Settings::Misc::SpectatorsEnabled)
+		Misc::Get().SpectatorList();
 }

@@ -48,6 +48,7 @@ namespace Hooks
     vfunc_hook mdlrender_hook;
     vfunc_hook clientmode_hook;
     vfunc_hook sv_cheats;
+	recv_prop_hook* sequence_hook;
     vfunc_hook RenderView_hook;
     vfunc_hook ViewRender_hook;
     vfunc_hook gameevents_hook;
@@ -72,6 +73,7 @@ namespace Hooks
         RenderView_hook.setup ( g_RenderView, "engine.dll" );
         gameevents_hook.setup ( g_GameEvents, "engine.dll" );
         ViewRender_hook.setup ( g_ViewRender, "client_panorama.dll" );
+		sequence_hook = new recv_prop_hook(C_BaseViewModel::m_nSequence(), hkRecvProxy);
 
         direct3d_hook.hook_index ( index::EndScene, hkEndScene );
         direct3d_hook.hook_index ( index::Reset, hkReset );
@@ -132,6 +134,8 @@ namespace Hooks
         RenderView_hook.unhook_all();
         ViewRender_hook.unhook_all();
         gameevents_hook.unhook_all();
+		sequence_hook->~recv_prop_hook();
+
     }
 
 	void UpdateSpoofer()
@@ -541,6 +545,8 @@ namespace Hooks
     {
         static auto ofunc = hlclient_hook.get_original<FrameStageNotify> ( index::FrameStageNotify );
 
+		Skinchanger::Get().OnFrameStageNotify(stage);
+
         //if (g_ClientState->m_nDeltaTick != -1) return  ofunc(g_CHLClient, stage);
         if ( !g_EngineClient->IsConnected() || !g_EngineClient->IsInGame() )
             return ofunc ( g_CHLClient, stage );
@@ -561,9 +567,8 @@ namespace Hooks
 
             case FRAME_NET_UPDATE_POSTDATAUPDATE_START:
             {
-				//if(Settings::Misc::SkinchangerEnabled)
-				Skinchanger::Get().OnFrameStageNotify();
-                break;
+
+				break;
             }
 
             case FRAME_NET_UPDATE_POSTDATAUPDATE_END:
@@ -662,8 +667,10 @@ namespace Hooks
 
             case FRAME_RENDER_END:
 				// Add check
-				if(Settings::Visual::NightMode)
-					NightMode::Get().Apply();
+				if (Settings::Visual::NightMode)
+					NightMode::Get().Apply(false);
+				//else
+				//	NightMode::Get().Revert();
                 break;
         }
 
@@ -778,6 +785,139 @@ namespace Hooks
 
         return oFireEvent ( g_GameEvents, pEvent );
     }
+
+	static auto random_sequence(const int low, const int high) -> int
+	{
+		return rand() % (high - low + 1) + low;
+	}
+
+	static auto fix_animation(const char* model, const int sequence) -> int
+	{
+		enum ESequence
+		{
+			SEQUENCE_DEFAULT_DRAW = 0,
+			SEQUENCE_DEFAULT_IDLE1 = 1,
+			SEQUENCE_DEFAULT_IDLE2 = 2,
+			SEQUENCE_DEFAULT_LIGHT_MISS1 = 3,
+			SEQUENCE_DEFAULT_LIGHT_MISS2 = 4,
+			SEQUENCE_DEFAULT_HEAVY_MISS1 = 9,
+			SEQUENCE_DEFAULT_HEAVY_HIT1 = 10,
+			SEQUENCE_DEFAULT_HEAVY_BACKSTAB = 11,
+			SEQUENCE_DEFAULT_LOOKAT01 = 12,
+			SEQUENCE_BUTTERFLY_DRAW = 0,
+			SEQUENCE_BUTTERFLY_DRAW2 = 1,
+			SEQUENCE_BUTTERFLY_LOOKAT01 = 13,
+			SEQUENCE_BUTTERFLY_LOOKAT03 = 15,
+			SEQUENCE_FALCHION_IDLE1 = 1,
+			SEQUENCE_FALCHION_HEAVY_MISS1 = 8,
+			SEQUENCE_FALCHION_HEAVY_MISS1_NOFLIP = 9,
+			SEQUENCE_FALCHION_LOOKAT01 = 12,
+			SEQUENCE_FALCHION_LOOKAT02 = 13,
+			SEQUENCE_DAGGERS_IDLE1 = 1,
+			SEQUENCE_DAGGERS_LIGHT_MISS1 = 2,
+			SEQUENCE_DAGGERS_LIGHT_MISS5 = 6,
+			SEQUENCE_DAGGERS_HEAVY_MISS2 = 11,
+			SEQUENCE_DAGGERS_HEAVY_MISS1 = 12,
+			SEQUENCE_BOWIE_IDLE1 = 1,
+		};
+		if (strstr(model, "models/weapons/v_knife_butterfly.mdl")) {
+			switch (sequence)
+			{
+			case SEQUENCE_DEFAULT_DRAW:
+				return random_sequence(SEQUENCE_BUTTERFLY_DRAW, SEQUENCE_BUTTERFLY_DRAW2);
+			case SEQUENCE_DEFAULT_LOOKAT01:
+				return random_sequence(SEQUENCE_BUTTERFLY_LOOKAT01, SEQUENCE_BUTTERFLY_LOOKAT03);
+			default:
+				return sequence + 1;
+			}
+		}
+		else if (strstr(model, "models/weapons/v_knife_falchion_advanced.mdl")) {
+			switch (sequence)
+			{
+			case SEQUENCE_DEFAULT_IDLE2:
+				return SEQUENCE_FALCHION_IDLE1;
+			case SEQUENCE_DEFAULT_HEAVY_MISS1:
+				return random_sequence(SEQUENCE_FALCHION_HEAVY_MISS1, SEQUENCE_FALCHION_HEAVY_MISS1_NOFLIP);
+			case SEQUENCE_DEFAULT_LOOKAT01:
+				return random_sequence(SEQUENCE_FALCHION_LOOKAT01, SEQUENCE_FALCHION_LOOKAT02);
+			case SEQUENCE_DEFAULT_DRAW:
+			case SEQUENCE_DEFAULT_IDLE1:
+				return sequence;
+			default:
+				return sequence - 1;
+			}
+		}
+		else if (strstr(model, "models/weapons/v_knife_push.mdl")) {
+			switch (sequence)
+			{
+			case SEQUENCE_DEFAULT_IDLE2:
+				return SEQUENCE_DAGGERS_IDLE1;
+			case SEQUENCE_DEFAULT_LIGHT_MISS1:
+			case SEQUENCE_DEFAULT_LIGHT_MISS2:
+				return random_sequence(SEQUENCE_DAGGERS_LIGHT_MISS1, SEQUENCE_DAGGERS_LIGHT_MISS5);
+			case SEQUENCE_DEFAULT_HEAVY_MISS1:
+				return random_sequence(SEQUENCE_DAGGERS_HEAVY_MISS2, SEQUENCE_DAGGERS_HEAVY_MISS1);
+			case SEQUENCE_DEFAULT_HEAVY_HIT1:
+			case SEQUENCE_DEFAULT_HEAVY_BACKSTAB:
+			case SEQUENCE_DEFAULT_LOOKAT01:
+				return sequence + 3;
+			case SEQUENCE_DEFAULT_DRAW:
+			case SEQUENCE_DEFAULT_IDLE1:
+				return sequence;
+			default:
+				return sequence + 2;
+			}
+		}
+		else if (strstr(model, "models/weapons/v_knife_survival_bowie.mdl")) {
+			switch (sequence)
+			{
+			case SEQUENCE_DEFAULT_DRAW:
+			case SEQUENCE_DEFAULT_IDLE1:
+				return sequence;
+			case SEQUENCE_DEFAULT_IDLE2:
+				return SEQUENCE_BOWIE_IDLE1;
+			default:
+				return sequence - 1;
+			}
+		}
+		else {
+			return sequence;
+		}
+	}
+
+	void hkRecvProxy(const CRecvProxyData* pData, void* entity, void* output)
+	{
+		static auto original_fn = sequence_hook->get_original_function();
+		const auto local = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(g_EngineClient->GetLocalPlayer()));
+		if (local && local->IsAlive())
+		{
+			const auto proxy_data = const_cast<CRecvProxyData*>(pData);
+			const auto view_model = static_cast<C_BaseViewModel*>(entity);
+			if (view_model && view_model->m_hOwner() && view_model->m_hOwner().IsValid())
+			{
+				const auto owner = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntityFromHandle(view_model->m_hOwner()));
+				if (owner == g_EntityList->GetClientEntity(g_EngineClient->GetLocalPlayer()))
+				{
+					const auto view_model_weapon_handle = view_model->m_hWeapon();
+					if (view_model_weapon_handle.IsValid())
+					{
+						const auto view_model_weapon = static_cast<C_BaseAttributableItem*>(g_EntityList->GetClientEntityFromHandle(view_model_weapon_handle));
+						if (view_model_weapon)
+						{
+							if (k_weapon_info.count(view_model_weapon->m_Item().m_iItemDefinitionIndex()))
+							{
+								auto original_sequence = proxy_data->m_Value.m_Int;
+								const auto override_model = k_weapon_info.at(view_model_weapon->m_Item().m_iItemDefinitionIndex()).model;
+								proxy_data->m_Value.m_Int = fix_animation(override_model, proxy_data->m_Value.m_Int);
+							}
+						}
+					}
+				}
+			}
+		}
+		original_fn(pData, entity, output);
+	}
+
     //--------------------------------------------------------------------------------
     void __stdcall Hooked_RenderSmokeOverlay ( bool unk ) { /* no need to call :) we want to remove the smoke overlay */ }
     //--------------------------------------------------------------------------------

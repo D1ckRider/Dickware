@@ -347,6 +347,7 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "misc_autoaccept", Misc::AutoAccept);
 	SaveValue(j, "misc_no_crouch_cooldown", Misc::NoCrouchCooldown);
 	SaveValue(j, "misc_clantag", Misc::Clantag);
+	SaveValue(j, "misc_spectator_list", Misc::SpectatorsEnabled);
 	SaveValue(j, "misc_buybot_enabled", Misc::BuyBot);
 	SaveValue(j, "misc_buybot_pistol", Misc::BuyBotPistol);
 	SaveValue(j, "misc_buybot_weapon", Misc::BuyBotWeapon);
@@ -535,6 +536,7 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "misc_rank_reveal", 	Misc::RankReveal);
 	LoadValue(j, "misc_no_crouch_cooldown", 	Misc::NoCrouchCooldown);
 	LoadValue(j, "misc_autoaccept", 	Misc::AutoAccept);
+	LoadValue(j, "misc_spectator_list", Misc::SpectatorsEnabled);
 	LoadValue(j, "misc_clantag", 	Misc::Clantag);
 	LoadValue(j, "misc_buybot_enabled", 	Misc::BuyBot);
 	LoadValue(j, "misc_buybot_pistol", 	Misc::BuyBotPistol);
@@ -543,6 +545,60 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "misc_buybot_zeus", 	Misc::BuyBotZeus);
 	LoadValue(j, "misc_buybot_defuser", 	Misc::BuyBotDefuser);
 	LoadValue(j, "misc_skin_enabled", Misc::SkinchangerEnabled);
+}
+
+void Settings::SaveSkinsSettings()
+{
+	std::string fileName = AppDataFolder + "skins";
+	
+	std::ofstream o(fileName);
+	json j;
+
+	/*int i = 0;
+	for (auto lt : Skins::m_items)
+	{
+		SaveNestedValue(j, std::to_string(i), "id", lt.first);
+		SaveNestedValue(j, std::to_string(i), "item_name", lt.second.name);
+		SaveNestedValue(j, std::to_string(i), "enabled", lt.second.enabled);
+		SaveNestedValue(j, std::to_string(i), "definition_vector_index", lt.second.definition_vector_index);
+		SaveNestedValue(j, std::to_string(i), "definition_index", lt.second.definition_index);
+		SaveNestedValue(j, std::to_string(i), "paint_kit_vector_index", lt.second.paint_kit_vector_index);
+		SaveNestedValue(j, std::to_string(i), "paint_kit_index", lt.second.paint_kit_index);
+		SaveNestedValue(j, std::to_string(i), "definition_override_vector_index", lt.second.definition_override_vector_index);
+		SaveNestedValue(j, std::to_string(i), "definition_override_index", lt.second.definition_override_index);
+		SaveNestedValue(j, std::to_string(i), "seed", lt.second.seed);
+		SaveNestedValue(j, std::to_string(i), "stat_trak", lt.second.stat_trak);
+		SaveNestedValue(j, std::to_string(i), "wear", lt.second.wear);
+		SaveNestedValue(j, std::to_string(i), "custom_name", lt.second.custom_name);
+		i++;
+	}
+
+	o << std::setw(4) << j << std::endl;*/
+}
+
+void Settings::LoadSkinsSettings()
+{
+	std::string fileName = AppDataFolder + "skins";
+
+	/*std::ifstream i(fileName);
+	json j;
+	i >> j;*/
+
+	/*try
+	{
+		auto ifile = std::ifstream(fileName);
+		if (ifile.good())
+		{
+			Skins::m_items = json::parse(ifile).get<std::vector<item_setting>>();
+			g_ClientState->ForceFullUpdate();
+		}
+	}
+	catch (const std::exception&)
+	{
+		// Config file doesn't exists or is malformed, just ignore it
+		// This will probably crash if you use a manual mapper that doesnt do proper exception handling
+	}
+	*/
 }
 
 void Settings::ResetRagebot()
@@ -734,6 +790,7 @@ void Settings::ResetMisc()
 	Misc::NoCrouchCooldown = false;
 	Misc::AutoAccept = false;
 	Misc::Clantag = false;
+	Misc::SpectatorsEnabled = false;
 	Misc::BuyBot = false;
 	Misc::BuyBotPistol = 0;
 	Misc::BuyBotWeapon = 0;
@@ -887,6 +944,12 @@ namespace Settings::TriggerBot
 	int Key = 0x0;
 }
 
+namespace Settings::Skins
+{
+	std::map<int, item_setting> m_items;
+	std::unordered_map<std::string, std::string> m_icon_overrides;
+}
+
 namespace Settings::Visual
 {
 	Chams LocalChams;
@@ -929,6 +992,7 @@ namespace Settings::Misc
 	bool AutoAccept = false;
 	bool Clantag = false;
 	bool BuyBot = false;
+	bool SpectatorsEnabled = false;
 	int BuyBotPistol = 0;
 	int BuyBotWeapon = 0;
 	bool BuyBotArmor = false;

@@ -1,16 +1,19 @@
-
+﻿
 #include "Misc.h"
 #include "ConfigSystem.h"
 #include "Settings.h"
+#include "render.hpp"
+#include "imgui\imgui.h"
 
 void Misc::OnCreateMove(CUserCmd* cmd)
 {
 	pCmd = cmd;
     if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
-    {
         return;
-    }
+
     NoCrouchCooldown(cmd);
+
+	
 }
 
 void Misc::OnFrameStageNotify(ClientFrameStage_t stage)
@@ -49,6 +52,50 @@ void Misc::SetLocalPlayerReady()
 		SetLocalPlayerReadyFn("");
 }
 
+void Misc::SpectatorList()
+{
+	if (!g_EngineClient->IsInGame() || !g_LocalPlayer)
+		return;
+
+	std::string spectators;
+
+	for (int i = 0; i < g_EngineClient->GetMaxClients(); i++)
+	{
+		C_BasePlayer* entity = C_BasePlayer::GetPlayerByIndex(i);
+
+		if (!entity)
+			continue;
+
+		if (entity->IsAlive())
+			continue;
+
+		if (entity->IsDormant())
+			continue;
+
+		if (!entity->m_hObserverTarget())
+			continue;
+
+		C_BasePlayer* target = entity->m_hObserverTarget();
+
+		if (!target->IsPlayer())
+			continue;
+
+		player_info_t entityinfo = entity->GetPlayerInfo();
+		player_info_t targetinfo = target->GetPlayerInfo();
+
+		spectators += std::string(entityinfo.szName) + " > " + targetinfo.szName + "\n";
+	}
+
+	auto size = g_pDefaultFont->CalcTextSizeA(16.f, FLT_MAX, NULL, spectators.c_str()); // 16 на размер шрифта меняете и Menu::Get().globalFont на ваш шрифт
+
+	ImGui::SetNextWindowSize(ImVec2(300, size.y + 40.f));
+	if (ImGui::Begin("Spectator List", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse))
+	{
+		ImGui::Text(spectators.c_str());
+		ImGui::End();
+	}
+}
+
 void Misc::NoCrouchCooldown(CUserCmd* cmd)
 {
 	if(!Settings::Misc::NoCrouchCooldown)
@@ -59,7 +106,6 @@ void Misc::NoCrouchCooldown(CUserCmd* cmd)
 
 void Misc::NoFlash()
 {
-    //if (!g_LocalPlayer || !g_LocalPlayer->IsAlive() || !g_Config.GetBool("vis_misc_noflash"))
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive() || !Settings::Visual::NoFlash)
         return;
 

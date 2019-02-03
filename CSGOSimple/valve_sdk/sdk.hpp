@@ -33,6 +33,7 @@
 #include "Interfaces/IMDLCache.hpp"
 #include "Interfaces/IPrediction.hpp"
 #include "Interfaces/IPanel.hpp"
+#include "interfaces/ILocalize.h"
 #include "Interfaces/IEngineSound.hpp"
 #include "Interfaces/IViewRender.hpp"
 #include "Interfaces/CClientState.hpp"
@@ -94,10 +95,11 @@ extern IViewRender*          g_ViewRender;
 extern IDirect3DDevice9*     g_D3DDevice9;
 extern CClientState*         g_ClientState;
 extern IPhysicsSurfaceProps* g_PhysSurface;
-extern IMemAlloc			  *g_pMemAlloc;
-extern IViewRenderBeams			*g_RenderBeams;
-extern CUtlVectorSimple *g_ClientSideAnimationList;
-extern C_ConvarSpoofer* g_CVarSpoofer;
+extern ILocalize*			 g_Localize;
+extern IMemAlloc*			 g_pMemAlloc;
+extern IViewRenderBeams*	 g_RenderBeams;
+extern CUtlVectorSimple*	 g_ClientSideAnimationList;
+extern C_ConvarSpoofer*		 g_CVarSpoofer;
 
 template<typename... Args>
 void ConMsg(const char* pMsg, Args... args)

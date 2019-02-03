@@ -10,6 +10,7 @@ public:
     void OnFrameStageNotify(ClientFrameStage_t stage);
 	void ExecuteGameConfig(const std::string& config);
 	void SetLocalPlayerReady();
+	void SpectatorList();
 private:
 	CUserCmd* pCmd;
 

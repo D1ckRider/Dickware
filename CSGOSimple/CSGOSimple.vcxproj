@@ -118,6 +118,8 @@
     <ClCompile Include="FontManager.cpp" />
     <ClCompile Include="helpers\DynSkin.cpp" />
     <ClCompile Include="helpers\input.cpp" />
+    <ClCompile Include="helpers\ItemDefinitions.cpp" />
+    <ClCompile Include="helpers\KitParser.cpp" />
     <ClCompile Include="helpers\math.cpp" />
     <ClCompile Include="helpers\utils.cpp" />
     <ClCompile Include="helpers\vfunc_hook.cpp" />
@@ -183,6 +185,8 @@
     <ClInclude Include="FontManager.h" />
     <ClInclude Include="helpers\DynSkin.h" />
     <ClInclude Include="helpers\input.hpp" />
+    <ClInclude Include="helpers\ItemDefinitions.h" />
+    <ClInclude Include="helpers\KitParser.h" />
     <ClInclude Include="helpers\math.hpp" />
     <ClInclude Include="helpers\utils.hpp" />
     <ClInclude Include="helpers\vfunc_hook.hpp" />
@@ -216,6 +220,7 @@
     <ClInclude Include="ui.hpp" />
     <ClInclude Include="Utils\ConvarSpoofer.h" />
     <ClInclude Include="valve_sdk\csgostructs.hpp" />
+    <ClInclude Include="valve_sdk\interfaces\ILocalize.h" />
     <ClInclude Include="valve_sdk\sdk.hpp" />
     <ClInclude Include="valve_sdk\interfaces\CClientState.hpp" />
     <ClInclude Include="valve_sdk\interfaces\CInput.hpp" />

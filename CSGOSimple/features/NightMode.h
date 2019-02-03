@@ -5,9 +5,16 @@
 class NightMode : public Singleton<NightMode>
 {
 public:
-	void Apply();
+	void Apply(bool ForceUpdate);
 	void Revert();
 private:
+	struct 
+	{
+		float AutoExposureMax;
+		float AutoExposureMin;
+		char* sv_skybox;
+	} SavedValues;
+
 	bool Active;
 };
 

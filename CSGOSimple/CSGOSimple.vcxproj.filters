@@ -249,6 +249,12 @@
     <ClCompile Include="features\TriggerBot.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
+    <ClCompile Include="helpers\ItemDefinitions.cpp">
+      <Filter>Source Files\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="helpers\KitParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="valve_sdk\misc\BaseHandle.hpp">
@@ -595,6 +601,15 @@
     </ClInclude>
     <ClInclude Include="features\TriggerBot.h">
       <Filter>Header Files\Features</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\ILocalize.h">
+      <Filter>Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers\ItemDefinitions.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers\KitParser.h">
+      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
