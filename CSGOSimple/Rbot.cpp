@@ -66,7 +66,8 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 34);
 
-	//FakeDuck(cmd, bSendPacket);
+	if(Settings::RageBot::FakeDuck)
+		FakeDuck(cmd, bSendPacket);
 
 
 	//Console.WriteLine(g_GlobalVars->curtime - weapon->m_flNextPrimaryAttack());
@@ -311,7 +312,7 @@ bool Rbot::InFakeLag ( C_BasePlayer* player )
 
 void Rbot::FakeDuck(CUserCmd * cmd, bool &bSendPackets)
 {
-	/*if (cmd->buttons & IN_DUCK) 
+	if (cmd->buttons & IN_DUCK) 
 	{
 		static bool counter = false;
 		static int counte = 0;
@@ -328,9 +329,9 @@ void Rbot::FakeDuck(CUserCmd * cmd, bool &bSendPackets)
 		}
 		else 
 			cmd->buttons &= ~IN_DUCK;
-	}*/
+	}
 
-	bool do_once = false, _do;
+	/*bool do_once = false, _do;
 	int limit = Settings::RageBot::AntiAimSettings[0].FakelagTicks / 2;
 	_do = g_ClientState->chokedcommands > limit;
 
@@ -349,7 +350,7 @@ void Rbot::FakeDuck(CUserCmd * cmd, bool &bSendPackets)
 		else
 			cmd->buttons &= ~IN_DUCK;
 			//g_EngineClient->ExecuteClientCmd("+duck");
-	}
+	}*/
 	
 }
 
@@ -383,7 +384,7 @@ void Rbot::SlowWalk( CUserCmd * cmd, float speed )
 	if (min_speed <= speed)
 		return;
 
-	float finalSpeed = (speed / min_speed);
+	float finalSpeed = (speed / min_speed) * Settings::RageBot::SlowWalkMod;
 
 	cmd->forwardmove *= finalSpeed;
 	cmd->sidemove *= finalSpeed;

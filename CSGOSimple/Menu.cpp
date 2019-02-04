@@ -160,6 +160,7 @@ void Menu::RenderRagebot()
 	//Components.SliderFloat("Pointscale head", "rbot_head_scale", 0.f, 1.f);
 	//Components.SliderFloat("Pointscale body", "rbot_body_scale", 0.f, 1.f);
 
+#pragma region Hitbox Scales
     Components.BeginChild ( "#hitboxes", ImVec2 ( 0.f, 204.f ) );
 	Components.Checkbox("Head",  Settings::RageBot::Hitboxes[HitboxType::HEAD].Enabled);
 	Components.SameLine();
@@ -211,6 +212,7 @@ void Menu::RenderRagebot()
     Components.EndChild();
 
     Components.NextColumn();
+#pragma endregion
 
     static const char* YawAAs[]		= { "none", "backwards", "spinbot", "lower body yaw", "random", "freestanding", "custom" };
     static const char* YawAddAAs[]  = { "none", "jitter", "switch", "spin", "random" };
@@ -295,6 +297,8 @@ void Menu::RenderRagebot()
 
 	Components.Checkbox("Slow Walk", Settings::RageBot::SlowWalk);
 	Components.Hotkey("Slow Walk Hotkey", Settings::RageBot::SlowWalkHotkey);
+	Components.SliderFloat("Slow Walk Speed", Settings::RageBot::SlowWalkMod, 0.f, 1.f);
+	Components.Checkbox("Fake Duck", Settings::RageBot::FakeDuck);
 	//Components.Hotkey("FakeDuck Hotkey", Settings::RageBot::FakeDuckHotkey);
 	Components.Checkbox("Auto Scope",  Settings::RageBot::AutoScope);
 	Components.Checkbox("Auto Stop",  Settings::RageBot::AutoStop);

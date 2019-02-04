@@ -669,8 +669,8 @@ namespace Hooks
 				// Add check
 				if (Settings::Visual::NightMode)
 					NightMode::Get().Apply(false);
-				//else
-				//	NightMode::Get().Revert();
+				else
+					NightMode::Get().Revert();
                 break;
         }
 

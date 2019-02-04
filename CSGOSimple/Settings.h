@@ -126,7 +126,8 @@ namespace Settings
 		extern bool AutoCrouch;
 		extern bool SlowWalk;
 		extern int SlowWalkHotkey;
-		extern int FakeDuckHotkey;
+		extern float SlowWalkMod;
+		extern bool FakeDuck;
 		extern float SlowWalkMod;
 
 		extern bool FakelagPrediction;
