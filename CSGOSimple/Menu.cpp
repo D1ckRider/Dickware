@@ -7,6 +7,8 @@
 #include "Misc.h"
 #include "Settings.h"
 #include "ui.hpp"
+#include "features\Skinchanger.h"
+#include "features\NightMode.h"
 
 using WeaponType = Settings::WeaponType;
 using HitboxType = Settings::HitboxType;
@@ -158,6 +160,7 @@ void Menu::RenderRagebot()
 	//Components.SliderFloat("Pointscale head", "rbot_head_scale", 0.f, 1.f);
 	//Components.SliderFloat("Pointscale body", "rbot_body_scale", 0.f, 1.f);
 
+#pragma region Hitbox Scales
     Components.BeginChild ( "#hitboxes", ImVec2 ( 0.f, 204.f ) );
 	Components.Checkbox("Head",  Settings::RageBot::Hitboxes[HitboxType::HEAD].Enabled);
 	Components.SameLine();
@@ -209,6 +212,7 @@ void Menu::RenderRagebot()
     Components.EndChild();
 
     Components.NextColumn();
+#pragma endregion
 
     static const char* YawAAs[]		= { "none", "backwards", "spinbot", "lower body yaw", "random", "freestanding", "custom" };
     static const char* YawAddAAs[]  = { "none", "jitter", "switch", "spin", "random" };
@@ -293,6 +297,8 @@ void Menu::RenderRagebot()
 
 	Components.Checkbox("Slow Walk", Settings::RageBot::SlowWalk);
 	Components.Hotkey("Slow Walk Hotkey", Settings::RageBot::SlowWalkHotkey);
+	Components.SliderFloat("Slow Walk Speed", Settings::RageBot::SlowWalkMod, 0.f, 1.f);
+	Components.Checkbox("Fake Duck", Settings::RageBot::FakeDuck);
 	//Components.Hotkey("FakeDuck Hotkey", Settings::RageBot::FakeDuckHotkey);
 	Components.Checkbox("Auto Scope",  Settings::RageBot::AutoScope);
 	Components.Checkbox("Auto Stop",  Settings::RageBot::AutoStop);
@@ -579,8 +585,12 @@ void Menu::RenderLegitbot()
 	Components.Checkbox("Backtrack",  Settings::Aimbot::Backtrack);
 	Components.Checkbox("Aim at backtrack",  Settings::Aimbot::BacktrackAtAim);
 	Components.SliderFloat("Backtrack time",  Settings::Aimbot::BacktrackTick, 0.f, .2f);
+
+	Components.Spacing();
+	Components.Label("Triggerbot");
+	Components.Checkbox("Enabled", Settings::TriggerBot::Enabled);
+	Components.Hotkey("Key", Settings::TriggerBot::Key);
     //legit aa
-    //triggerbot
 
     Components.EndChild();
 }
@@ -692,6 +702,7 @@ void Menu::RenderVisuals()
 			Components.Checkbox("Bullet Tracers",  Settings::Visual::BulletTracers);
 			Components.Checkbox("No Flash",  Settings::Visual::NoFlash);
 			Components.Checkbox("No Smoke",  Settings::Visual::NoSmoke);
+			Components.Checkbox("Night Mode", Settings::Visual::NightMode);
 			Components.ColorCheckbox("Spread Circle", Settings::Visual::SpreadCircleEnabled, Settings::Visual::SpreadCircleColor);
 			Components.ColorCheckbox("Damage Indicators", Settings::Visual::DamageIndicator, Settings::Visual::DamageIndicatorColor);
 			Components.Checkbox("Disable Sniper Zoom",  Settings::Visual::DisableScopeZoom);
@@ -748,6 +759,7 @@ void Menu::RenderMisc()
 	Components.Checkbox("AutoAccept", Settings::Misc::AutoAccept);
 
 	Components.Checkbox("Clantag changer",  Settings::Misc::Clantag);
+	Components.Checkbox("Spectator List", Settings::Misc::SpectatorsEnabled);
 
     Components.Spacing();
 
@@ -776,12 +788,99 @@ void Menu::RenderMisc()
 }
 
 void Menu::RenderSkinchanger()
-{
+ {
 	Components.BeginChild("#skinchanger", ImVec2(0, 0));
 
 	Components.Label("Skinchanger");
-	Components.Label("Not today");
 
+	if (k_skins.size() == 0)
+		initialize_kits();
+
+
+	auto& entries = Settings::Skins::m_items;
+	static auto definition_vector_index = 0;
+	ImGui::Columns(2, nullptr, false);
+	{
+		ImGui::PushItemWidth(-1);
+		ImGui::ListBoxHeader("##config");
+		{
+			for (size_t w = 0; w < k_weapon_names.size(); w++) {
+				if (ImGui::Selectable(k_weapon_names[w].name, definition_vector_index == w)) 
+				{
+					definition_vector_index = w;
+				}
+			}
+		}
+		ImGui::ListBoxFooter();
+		if (ImGui::Button("Update"))
+			g_ClientState->ForceFullUpdate();
+
+		if (Components.Button("Save Config"))
+			Settings::SaveSkinsSettings();
+		Components.SameLine();
+		if (Components.Button("Load Config"))
+			Settings::LoadSkinsSettings();
+
+
+		ImGui::PopItemWidth();
+	}
+	ImGui::NextColumn();
+	{
+		auto& selected_entry = entries[k_weapon_names[definition_vector_index].definition_index];
+		selected_entry.definition_index = k_weapon_names[definition_vector_index].definition_index;
+		selected_entry.definition_vector_index = definition_vector_index;
+		ImGui::Checkbox("Enabled", &selected_entry.enabled);
+		ImGui::InputInt("Seed", &selected_entry.seed);
+		ImGui::InputInt("StatTrak", &selected_entry.stat_trak);
+		ImGui::SliderFloat("Wear", &selected_entry.wear, FLT_MIN, 1.f, "%.10f", 5);
+		if (selected_entry.definition_index != GLOVE_T_SIDE)
+		{
+			ImGui::Combo("Paint Kit", &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text)
+			{
+				*out_text = k_skins[idx].name.c_str();
+				return true;
+			}, nullptr, k_skins.size(), 10);
+			selected_entry.paint_kit_index = k_skins[selected_entry.paint_kit_vector_index].id;
+		}
+		else
+		{
+			ImGui::Combo("Paint Kit", &selected_entry.paint_kit_vector_index, [](void* data, int idx, const char** out_text)
+			{
+				*out_text = k_gloves[idx].name.c_str();
+				return true;
+			}, nullptr, k_gloves.size(), 10);
+			selected_entry.paint_kit_index = k_gloves[selected_entry.paint_kit_vector_index].id;
+		}
+		if (selected_entry.definition_index == WEAPON_KNIFE)
+		{
+			ImGui::Combo("Knife", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
+			{
+				*out_text = k_knife_names.at(idx).name;
+				return true;
+			}, nullptr, k_knife_names.size(), 5);
+
+			selected_entry.definition_override_index = k_knife_names.at(selected_entry.definition_override_vector_index).definition_index;
+		}
+		else if (selected_entry.definition_index == GLOVE_T_SIDE)
+		{
+			ImGui::Combo("Glove", &selected_entry.definition_override_vector_index, [](void* data, int idx, const char** out_text)
+			{
+				*out_text = k_glove_names.at(idx).name;
+				return true;
+			}, nullptr, k_glove_names.size(), 5);
+			selected_entry.definition_override_index = k_glove_names.at(selected_entry.definition_override_vector_index).definition_index;
+		}
+		else
+		{
+			static auto unused_value = 0;
+			selected_entry.definition_override_vector_index = 0;
+			ImGui::Combo("Unavailable", &unused_value, "For knives or gloves\0");
+		}
+		ImGui::InputText("Name Tag", selected_entry.custom_name, 32);
+	}
+	ImGui::Columns(1, nullptr, false);
+
+	
 	Components.EndChild();
 }
 
@@ -837,7 +936,13 @@ void Menu::RenderSettings()
 	if (Components.Button("Load Game CFG"))
 		g_EngineClient->ExecuteClientCmd(Settings::LoadGameCfg().data());
 
- 
+	
 
     Components.EndChild();
+}
+
+void Menu::RenderSpectatorList()
+{
+	if (Settings::Misc::SpectatorsEnabled)
+		Misc::Get().SpectatorList();
 }

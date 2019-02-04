@@ -66,7 +66,8 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 34);
 
-	FakeDuck(cmd);
+	if(Settings::RageBot::FakeDuck)
+		FakeDuck(cmd, bSendPacket);
 
 
 	//Console.WriteLine(g_GlobalVars->curtime - weapon->m_flNextPrimaryAttack());
@@ -309,23 +310,48 @@ bool Rbot::InFakeLag ( C_BasePlayer* player )
     return rBool;
 }
 
-void Rbot::FakeDuck(CUserCmd * cmd)
+void Rbot::FakeDuck(CUserCmd * cmd, bool &bSendPackets)
 {
+	if (cmd->buttons & IN_DUCK) 
+	{
+		static bool counter = false;
+		static int counte = 0;
+		if (counte == 9) 
+		{
+			counte = 0;
+			counter = !counter;
+		}
+		counte++;
+		if (counter) 
+		{
+			cmd->buttons |= IN_DUCK;
+			bSendPackets = true;
+		}
+		else 
+			cmd->buttons &= ~IN_DUCK;
+	}
+
 	/*bool do_once = false, _do;
-	int limit = Settings::RageBot::AntiAimSettings[1].FakelagTicks / 2;
-	bool crouch = g_ClientState->chokedcommands > limit;
+	int limit = Settings::RageBot::AntiAimSettings[0].FakelagTicks / 2;
+	_do = g_ClientState->chokedcommands > limit;
 
-	if ( !InputSys::Get().IsKeyDown(Settings::RageBot::FakeDuckHotkey) && do_once )
-		g_EngineClient->ExecuteClientCmd("-duck");
-
-	if ( InputSys::Get().IsKeyDown(Settings::RageBot::FakeDuckHotkey) )
+	if (!GetAsyncKeyState(VK_LCONTROL) && do_once)
+		cmd->buttons |= IN_DUCK;
+		//g_EngineClient->ExecuteClientCmd("-duck");
+	if (GetAsyncKeyState(VK_LCONTROL))
 	{
 		do_once = true;
-		if (crouch)
-			g_EngineClient->ExecuteClientCmd("-duck");
+		if (_do)
+		{
+			cmd->buttons |= IN_DUCK;
+			//g_EngineClient->ExecuteClientCmd("-duck");
+			bSendPackets = true;
+		}
 		else
-			g_EngineClient->ExecuteClientCmd("+duck");
+			cmd->buttons &= ~IN_DUCK;
+			//g_EngineClient->ExecuteClientCmd("+duck");
 	}*/
+	
 }
 
 void Rbot::AutoStop ( CUserCmd* cmd )
@@ -358,7 +384,7 @@ void Rbot::SlowWalk( CUserCmd * cmd, float speed )
 	if (min_speed <= speed)
 		return;
 
-	float finalSpeed = (speed / min_speed);
+	float finalSpeed = (speed / min_speed) * Settings::RageBot::SlowWalkMod;
 
 	cmd->forwardmove *= finalSpeed;
 	cmd->sidemove *= finalSpeed;

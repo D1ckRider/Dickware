@@ -29,11 +29,12 @@ IViewRender*          g_ViewRender     = nullptr;
 IDirect3DDevice9*     g_D3DDevice9     = nullptr;
 CClientState*         g_ClientState    = nullptr;
 IPhysicsSurfaceProps* g_PhysSurface    = nullptr;
+ILocalize*			  g_Localize	   = nullptr;
 C_LocalPlayer         g_LocalPlayer;
-IMemAlloc*			  g_pMemAlloc = nullptr;
-IViewRenderBeams*     g_RenderBeams = nullptr;
-CUtlVectorSimple* g_ClientSideAnimationList = nullptr;
-C_ConvarSpoofer* g_CVarSpoofer;
+IMemAlloc*			  g_pMemAlloc	   = nullptr;
+IViewRenderBeams*     g_RenderBeams    = nullptr;
+CUtlVectorSimple*	  g_ClientSideAnimationList = nullptr;
+C_ConvarSpoofer*	  g_CVarSpoofer;
 
 namespace Interfaces
 {
@@ -85,6 +86,11 @@ namespace Interfaces
         g_VGuiSurface         = get_interface<ISurface>            (vguiFactory, "VGUI_Surface031");
         g_PhysSurface         = get_interface<IPhysicsSurfaceProps>(vphysicsFactory, "VPhysicsSurfaceProps001");
         g_pMemAlloc = *(IMemAlloc**)(GetProcAddress(GetModuleHandleW(L"tier0.dll"), "g_pMemAlloc"));
+
+		
+		auto localizeFactory = get_module_factory(GetModuleHandleW(L"localize.dll"));
+		g_Localize = get_interface<ILocalize>(localizeFactory, "Localize_001");
+
 
         auto client = GetModuleHandleW(L"client_panorama.dll");
         auto engine = GetModuleHandleW(L"engine.dll");

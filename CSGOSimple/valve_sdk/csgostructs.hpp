@@ -150,6 +150,25 @@ public:
     //bool isSpotted();
 };
 
+
+class CEnvTonemapController : public C_BaseEntity
+{
+public:
+	NETVAR(int32_t, m_bUseCustomAutoExposureMin, "DT_EnvTonemapController", "m_bUseCustomAutoExposureMin");
+	NETVAR(int32_t, m_bUseCustomAutoExposureMax, "DT_EnvTonemapController", "m_bUseCustomAutoExposureMax");
+	NETVAR(int32_t, m_bUseCustomBloomScale, "DT_EnvTonemapController", "m_bUseCustomBloomScale");
+	NETVAR(float_t, m_flCustomAutoExposureMin, "DT_EnvTonemapController", "m_flCustomAutoExposureMin");
+	NETVAR(float_t, m_flCustomAutoExposureMax, "DT_EnvTonemapController", "m_flCustomAutoExposureMax");
+	NETVAR(float_t, m_flCustomBloomScale, "DT_EnvTonemapController", "m_flCustomBloomScale");
+	NETVAR(float_t, m_flCustomBloomScaleMinimum, "DT_EnvTonemapController", "m_flCustomBloomScaleMinimum");
+	NETVAR(float_t, m_flBloomExponent, "DT_EnvTonemapController", "m_flBloomExponent");
+	NETVAR(float_t, m_flBloomSaturation, "DT_EnvTonemapController", "m_flBloomSaturation");
+	NETVAR(float_t, m_flTonemapPercentTarget, "DT_EnvTonemapController", "m_flTonemapPercentTarget");
+	NETVAR(float_t, m_flTonemapPercentBrightPixels, "DT_EnvTonemapController", "m_flTonemapPercentBrightPixels");
+	NETVAR(float_t, m_flTonemapMinAvgLum, "DT_EnvTonemapController", "m_flTonemapMinAvgLum");
+	NETVAR(float_t, m_flTonemapRate, "DT_EnvTonemapController", "m_flTonemapRate");
+};
+
 class C_PlantedC4
 {
 public:
@@ -172,6 +191,8 @@ public:
     NETVAR(int32_t, m_nFallbackPaintKit, "DT_BaseAttributableItem", "m_nFallbackPaintKit");
     NETVAR(int32_t, m_nFallbackSeed, "DT_BaseAttributableItem", "m_nFallbackSeed");
     NETVAR(float_t, m_flFallbackWear, "DT_BaseAttributableItem", "m_flFallbackWear");
+	NETVAR(int32_t, m_iItemIDHigh, "DT_BaseAttributableItem", "m_iItemIDHigh");
+	NETVAR(char*, m_szCustomName, "DT_BaseAttributableItem ", "m_szCustomName");
     NETVAR(short, m_iItemDefinitionIndex, "DT_BaseAttributableItem", "m_iItemDefinitionIndex");
 
     NETVAR(C_EconItemView, m_Item2, "DT_BaseAttributableItem", "m_Item");
@@ -183,7 +204,10 @@ public:
         return *(C_EconItemView*)this;
     }
     void SetGloveModelIndex(int modelIndex);
-
+	void SetModelIndex(const int index)
+	{
+		return CallVFunction<void(__thiscall*)(C_BaseEntity*, int)>(this, 75)(this, index);
+	}
 };
 
 class C_BaseWeaponWorldModel : public C_BaseEntity

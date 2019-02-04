@@ -73,6 +73,7 @@ namespace Hooks
 
     void __fastcall hkSceneEnd ( void* pEcx, void* pEdx );
     bool __stdcall hkFireEvent ( IGameEvent* pEvent );
+	void hkRecvProxy(const CRecvProxyData* pData, void* entity, void* output);
     void __stdcall Hooked_RenderSmokeOverlay ( bool unk );
     int __fastcall SendDatagram_h ( INetChannel* netchan, void*, bf_write* datagram );
     //void __fastcall DoExtraBonesProcessing(void *ecx, void *edx, studiohdr_t *hdr, Vector *vector, Quaternion *something, matrix3x4_t *matrix, CBoneBitList &bone_list, cik *context);

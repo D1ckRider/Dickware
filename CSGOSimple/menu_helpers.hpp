@@ -44,8 +44,9 @@ public:
         void ColorCheckbox2(std::string text, std::string settings_name, std::string settings_name_color, std::string settings_name_color2);
 		void ColorCheckbox2(std::string text, bool &name, Color &color1, Color &color2);
 		void Label(std::string text);
-        void ComboBox(std::string text, const char* items[], int size, std::string settings_name);
+        void ComboBox(std::string label, const char* items[], int size, std::string settings_name);
 		void ComboBox(std::string text, const char* items[], int size, int& value);
+		void ComboFilterBox(std::string label, const char* items[], int size, int &value);
         void ComboCheckBox(std::string text, std::string items[], std::string setting_names[], int size);
 		void ComboCheckBox(std::string label, const char* items[], bool* values[], int size);
         void BeginChild(std::string id, ImVec2 size, bool border = true, ImGuiWindowFlags flags = 0);

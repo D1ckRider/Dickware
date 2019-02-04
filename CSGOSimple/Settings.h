@@ -5,6 +5,7 @@
 #include <istream>
 #include "valve_sdk\csgostructs.hpp"
 #include "valve_sdk\misc\Color.hpp"
+#include "options.hpp"
 #pragma once
 
 using json = nlohmann::json;
@@ -20,6 +21,13 @@ namespace Settings
 	void ResetConfig();
 	void SaveSettings(std::string fileName);
 	void LoadSettings(std::string fileName);
+	void SaveSkinsSettings();
+	void LoadSkinsSettings();
+	void ResetRagebot();
+	void ResetAimbot();
+	void ResetTriggerbot();
+	void ResetVisuals();
+	void ResetMisc();
 	template <typename T>
 	void SaveValue(json &j, std::string name, const T& value);
 	template <typename T>
@@ -118,7 +126,8 @@ namespace Settings
 		extern bool AutoCrouch;
 		extern bool SlowWalk;
 		extern int SlowWalkHotkey;
-		extern int FakeDuckHotkey;
+		extern float SlowWalkMod;
+		extern bool FakeDuck;
 		extern float SlowWalkMod;
 
 		extern bool FakelagPrediction;
@@ -159,6 +168,12 @@ namespace Settings
 		extern float BacktrackTick;
 
 		int GetWeaponType(C_BaseCombatWeapon* weapon);
+	}
+
+	namespace TriggerBot
+	{
+		extern bool Enabled;
+		extern int Key;
 	}
 
 	namespace Visual
@@ -219,12 +234,25 @@ namespace Settings
 		extern bool DamageIndicator;
 		extern Color DamageIndicatorColor;
 		extern bool DisableScopeZoom;
+		extern bool NightMode;
 		extern int ViewModelFOV;
 		extern int FOV;
 		extern bool NoSmoke;
 		extern bool Hitmarker;
 		extern bool HitmarkerSound;
 		extern int RagdollForce;
+	}
+
+
+	namespace Skins
+	{
+		extern std::map<int, item_setting> m_items;
+		extern std::unordered_map<std::string, std::string> m_icon_overrides;
+
+		/*auto get_icon_override(const std::string original) const -> const char*
+		{
+			return m_icon_overrides.count(original) ? m_icon_overrides.at(original).data() : nullptr;
+		}*/
 	}
 
 	namespace Misc
@@ -242,6 +270,7 @@ namespace Settings
 		extern bool RankReveal;
 		extern bool NoCrouchCooldown;
 		extern bool Clantag;
+		extern bool SpectatorsEnabled;
 		extern bool AutoAccept;
 		extern bool BuyBot;
 		extern int BuyBotPistol;
@@ -250,6 +279,8 @@ namespace Settings
 		extern bool BuyBotArmor;
 		extern bool BuyBotZeus;
 		extern bool BuyBotDefuser;
+
+		extern bool SkinchangerEnabled;
 	}
 
 	template<typename T>

@@ -5,6 +5,11 @@
 class NightMode : public Singleton<NightMode>
 {
 public:
-	void Apply();
+	void Apply(bool ForceUpdate);
+	void Revert();
+private:
+	
+
+	bool Active;
 };
 

@@ -68,13 +68,13 @@ public:
     void Render();
 
     /* sections */
-    //void RenderLegitbot();
     void RenderRagebot();
     void RenderLegitbot();
     void RenderVisuals();
     void RenderMisc();
 	void RenderSkinchanger();
     void RenderSettings();
+	void RenderSpectatorList();
 private:
     MenuHelper::components Components;
     //MenuFonts* fonts;
