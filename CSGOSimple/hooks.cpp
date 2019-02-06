@@ -618,6 +618,9 @@ namespace Hooks
                         ThirdpersonAngleHelper::Get().SetThirdpersonAngle();
                         ThirdpersonAngleHelper::Get().AnimFix();
 
+						if (!g_LocalPlayer->IsAlive())
+							g_LocalPlayer->m_iObserverMode() = 5;
+						
                         //bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1f || ( cmd->sidemove != 0.f || cmd->forwardmove != 0.f );
                         //bool InAir = ! ( g_LocalPlayer->m_fFlags() & FL_ONGROUND );
 
@@ -655,11 +658,6 @@ namespace Hooks
 
                     g_GlobalVars->curtime = old_curtime;
                     g_GlobalVars->frametime = old_frametime;
-                    //if (g_Config.GetBool("rbot") && g_Config.GetBool("vis_misc_thirdperson"))
-                    //{
-                    //	ThirdpersonAngleHelper::Get().AnimFix();
-                    //	ThirdpersonAngleHelper::Get().SetThirdpersonAngle();
-                    //}
                 }
 
                 break;

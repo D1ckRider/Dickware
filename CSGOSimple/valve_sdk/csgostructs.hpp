@@ -298,6 +298,7 @@ public:
     NETVAR(int32_t, m_nHitboxSet, "DT_BaseAnimating", "m_nHitboxSet");
     NETVAR(CHandle<C_BaseCombatWeapon>, m_hActiveWeapon, "DT_BaseCombatCharacter", "m_hActiveWeapon");
     NETVAR(int32_t, m_iAccount, "DT_CSPlayer", "m_iAccount");
+	NETVAR(int32_t, m_iObserverMode, "DT_BasePlayer", "m_iObserverMode");
     NETVAR(float, m_flFlashDuration, "DT_CSPlayer", "m_flFlashDuration");
     NETVAR(float, m_flSimulationTime, "DT_BaseEntity", "m_flSimulationTime");
     NETVAR(float, m_flCycle, "DT_ServerAnimationData", "m_flCycle");

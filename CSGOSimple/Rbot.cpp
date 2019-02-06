@@ -590,7 +590,7 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
 
         baim = g_Resolver.GResolverData[i].Resolved ? BaimMode::NONE : BaimMode::BAIM;
 
-		if (ForceBAim)
+		if (g_Saver.ForceBAim)
 		{
 			baim = BaimMode::FORCE_BAIM;
 		}

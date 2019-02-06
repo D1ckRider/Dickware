@@ -215,6 +215,7 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "rbot_manual_leftkey", RageBot::ManualAALeftKey);
 	SaveValue(j, "rbot_manual_rightkey", RageBot::ManualAARightKey);
 	SaveValue(j, "rbot_manual_backkey", RageBot::ManualAABackKey);
+	SaveValue(j, "rbot_desync_hotkey", RageBot::DesyncFlipHotkey);
 
 	SaveValue(j, "rbot_autostop", RageBot::AutoStop);
 	SaveValue(j, "rbot_autoscope", RageBot::AutoScope);
@@ -406,6 +407,7 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "rbot_manual_leftkey", 	RageBot::ManualAALeftKey);
 	LoadValue(j, "rbot_manual_rightkey", 	RageBot::ManualAARightKey);
 	LoadValue(j, "rbot_manual_backkey", 	RageBot::ManualAABackKey);
+	LoadValue(j, "rbot_desync_hotkey", RageBot::DesyncFlipHotkey);
 
 	LoadValue(j, "rbot_autostop", 	RageBot::AutoStop);
 	LoadValue(j, "rbot_autoscope", 	RageBot::AutoScope);
@@ -619,6 +621,7 @@ void Settings::ResetRagebot()
 	RageBot::ManualAALeftKey = 0x0;
 	RageBot::ManualAARightKey = 0x0;
 	RageBot::ManualAABackKey = 0x0;
+	RageBot::DesyncFlipHotkey = 0x0;
 
 	RageBot::AutoScope = false;
 	RageBot::AutoStop = false;
@@ -874,6 +877,7 @@ namespace Settings::RageBot
 	int ManualAALeftKey = 0x0;
 	int ManualAARightKey = 0x0;
 	int ManualAABackKey = 0x0;
+	int DesyncFlipHotkey = 0x0;
 
 	bool AutoScope = false;
 	bool AutoStop = false;
@@ -891,19 +895,19 @@ namespace Settings::RageBot
 
 	int GetWeaponType(C_BaseCombatWeapon * weapon)
 	{
-		if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_DEAGLE)
+		if ( weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_DEAGLE )
 			return WeaponType::WEAPON_DEAGLE;
-		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_REVOLVER)
+		else if ( weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_REVOLVER )
 			return WeaponType::WEAPON_REVOLVER;
-		else if (weapon->IsRifle())
+		else if ( weapon->IsRifle() || weapon->IsMachinegun() )
 			return WeaponType::WEAPON_RIFLE;
-		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_SSG08) 
+		else if ( weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_SSG08 ) 
 			return WeaponType::WEAPON_SSG08;
-		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_AWP)
+		else if ( weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_AWP )
 			return WeaponType::WEAPON_AWP;
-		else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_G3SG1)
+		else if ( weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_G3SG1 )
 			return WeaponType::WEAPON_AUTO;
-		else if (weapon->IsPistol())
+		else if ( weapon->IsPistol() )
 			return WeaponType::WEAPON_PISTOL;
 		else
 			return WeaponType::WEAPON_SHOTGUN;

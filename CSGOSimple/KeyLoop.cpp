@@ -4,6 +4,7 @@
 #include "helpers/input.hpp"
 #include "RuntimeSaver.h"
 #include "Rbot.h"
+#include "AntiAim.h"
 #include "Logger.h"
 #include "Settings.h"
 
@@ -15,8 +16,14 @@ void KeyLoop::OnCreateMove()
 	// FIXME: 3:
 	if ( InputSys::Get().WasKeyPressed(Settings::RageBot::BAimHotkey) )
 	{
-		Rbot::Get().ForceBAim = !Rbot::Get().ForceBAim;
-		g_Logger.Info("INFO", "ForceBAim is " + std::to_string(Rbot::Get().ForceBAim));
+		g_Saver.ForceBAim = !g_Saver.ForceBAim;
+		//Rbot::Get().ForceBAim = !Rbot::Get().ForceBAim;
+		//g_Logger.Info("INFO", "ForceBAim is " + std::to_string(Rbot::Get().ForceBAim));
+	}
+
+	if (InputSys::Get().WasKeyPressed(Settings::RageBot::DesyncFlipHotkey))
+	{
+		AntiAim::Get().DesyncFlip = !AntiAim::Get().DesyncFlip;
 	}
 		
 	if( InputSys::Get().WasKeyPressed(Settings::RageBot::ManualAARightKey) )

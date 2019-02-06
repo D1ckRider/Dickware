@@ -29,9 +29,7 @@ void AntiAim::OnCreateMove ( CUserCmd* cmd, bool& bSendPacket )
     )
     {
         if ( bSendPacket )
-        {
             g_Saver.FakelagData.ang = cmd->viewangles;
-        }
 
         return;
     }
@@ -39,14 +37,10 @@ void AntiAim::OnCreateMove ( CUserCmd* cmd, bool& bSendPacket )
     C_BaseCombatWeapon* weapon = g_LocalPlayer->m_hActiveWeapon().Get();
 
     if ( !weapon )
-    {
         return;
-    }
 
     if ( weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && ( cmd->buttons & IN_ATTACK || cmd->buttons & IN_ATTACK2 ) )
-    {
         return;
-    }
 
     if ( movetype == MOVETYPE_LADDER )
     {
@@ -55,15 +49,13 @@ void AntiAim::OnCreateMove ( CUserCmd* cmd, bool& bSendPacket )
         last = !last;
 
         if ( bSendPacket )
-        {
             g_Saver.FakelagData.ang = cmd->viewangles;
-        }
 
         return;
     }
 
     if ( weapon->IsGrenade() && weapon->m_fThrowTime() > 0.1f )
-    {
+	{
         bSendPacket = false;
         return;
     }
@@ -198,9 +190,7 @@ int AntiAim::GetNearestPlayerToCrosshair()
 bool AntiAim::Freestanding ( C_BasePlayer* player, float& ang )
 {
     if ( !g_LocalPlayer || !player || !player->IsAlive() || !g_LocalPlayer->IsAlive() )
-    {
         return false;
-    }
 
     C_BasePlayer* local = g_LocalPlayer;
 
@@ -216,7 +206,6 @@ bool AntiAim::Freestanding ( C_BasePlayer* player, float& ang )
 
     auto checkWallThickness = [&] ( C_BasePlayer * pPlayer, Vector newhead ) -> float
     {
-
         Vector endpos1, endpos2;
 
         Vector eyepos = pPlayer->m_vecOrigin() + pPlayer->m_vecViewOffset();
@@ -253,19 +242,13 @@ bool AntiAim::Freestanding ( C_BasePlayer* player, float& ang )
     static C_BasePlayer* entity;
 
     if ( !local->IsAlive() )
-    {
         hold = 0.f;
-    }
 
     if ( index != -1 )
-    {
         entity = ( C_BasePlayer* ) g_EntityList->GetClientEntity ( index ); // maybe?
-    }
 
     if ( !entity || entity == nullptr )
-    {
         return false;
-    }
 
     float radius = Vector ( headpos - origin ).Length2D();
 
@@ -311,9 +294,7 @@ bool AntiAim::FreestandingLbyBreak ( float& ang )
     return false;
 
     if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive() )
-    {
         return false;
-    }
 
     C_BasePlayer* local = g_LocalPlayer;
 
@@ -340,21 +321,15 @@ bool AntiAim::FreestandingLbyBreak ( float& ang )
         g_EngineTrace->TraceRay ( ray, MASK_SHOT_BRUSHONLY | MASK_OPAQUE_AND_NPCS, &filter, &trace1 );
 
         if ( trace1.DidHit() )
-        {
             endpos1 = trace1.endpos;
-        }
-        else
-        {
+		else
             return 0.f;
-        }
 
         ray.Init ( eyepos, newhead );
         g_EngineTrace->TraceRay ( ray, MASK_SHOT_BRUSHONLY | MASK_OPAQUE_AND_NPCS, &filter, &trace2 );
 
         if ( trace2.DidHit() )
-        {
             endpos2 = trace2.endpos;
-        }
 
         float add = newhead.DistTo ( eyepos ) - leyepos.DistTo ( eyepos ) + 3.f;
         return endpos1.DistTo ( endpos2 ) + add / 3;
@@ -365,19 +340,13 @@ bool AntiAim::FreestandingLbyBreak ( float& ang )
     static C_BasePlayer* entity;
 
     if ( !local->IsAlive() )
-    {
         hold = 0.f;
-    }
 
     if ( index != -1 )
-    {
         entity = ( C_BasePlayer* ) g_EntityList->GetClientEntity ( index ); // maybe?
-    }
 
     if ( !entity || entity == nullptr )
-    {
         return false;
-    }
 
     float radius = Vector ( headpos - origin ).Length2D();
 
@@ -450,10 +419,7 @@ void AntiAim::LbyBreakerPrediction ( CUserCmd* cmd, bool& bSendPacket )
 
     //if ( !g_Config.GetBool ( "rbot_aa_desync" ) || !g_Config.GetBool ( "rbot" ) || !g_LocalPlayer || !g_LocalPlayer->IsAlive() )
 	if (!Settings::RageBot::Desync || !Settings::RageBot::Enabled || !g_LocalPlayer || !g_LocalPlayer->IsAlive())
-	{
         return;
-    }
-
     /*
     new
     */
@@ -543,13 +509,9 @@ void AntiAim::LbyBreakerPrediction ( CUserCmd* cmd, bool& bSendPacket )
     if ( WasLastfakeBreak || fakeBreak && g_Config.GetBool ( "rbot_aa_fake_lby_breaker" ) )
     {
         if ( WasLastfakeBreak )
-        {
             WasLastfakeBreak = false;
-        }
         else
-        {
             WasLastfakeBreak = true;
-        }
 
         cmd->viewangles.yaw += 150.f;
         brokeThisTick = true;
@@ -577,9 +539,7 @@ void AntiAim::LbyBreakerPrediction ( CUserCmd* cmd, bool& bSendPacket )
             bSendPacket = false;
 
             if ( g_LocalPlayer->m_hActiveWeapon().Get() && g_LocalPlayer->m_hActiveWeapon().Get()->IsGrenade() )
-            {
                 return;
-            }
 
             cmd->buttons &= ~IN_ATTACK;
         }
@@ -678,16 +638,14 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
 
         if ( !bSendPacket && ! ( cmd->buttons & IN_ATTACK ) )
         {
-            static bool bFlip = false;
-            //cmd->viewangles += bFlip ? 58.f : -58.f;
-			cmd->viewangles += 58.f;
-			DesyncAngles = cmd->viewangles;
+            //static bool bFlip = false;
+            cmd->viewangles += DesyncFlip ? 58.f : -58.f;
+			//cmd->viewangles += 58.f;
+			g_Saver.AADesyncAngle = cmd->viewangles;
         }
 
         if ( bSendPacket )
-        {
             LastRealAngle = cmd->viewangles;
-        }
 
         g_Saver.FakelagData.ang = LastRealAngle;
     }

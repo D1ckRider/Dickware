@@ -1,5 +1,6 @@
 
 #include "Chams.h"
+#include "RuntimeSaver.h"
 #include "AntiAim.h"
 #include "Settings.h"
 
@@ -110,7 +111,7 @@ void Chams::OnSceneEnd()
 	{
 		QAngle OrigAng;
 		OrigAng = g_LocalPlayer->m_angEyeAngles();
-		g_LocalPlayer->SetAngle2(QAngle(0, AntiAim::Get().DesyncAngles.yaw, 0));
+		g_LocalPlayer->SetAngle2(QAngle(0, g_Saver.AADesyncAngle.yaw, 0));
 		bool LbyColor = false; // u can make LBY INDICATOR. When LbyColor is true. Color will be Green , if false it will be White
 		float NormalColor[3] = { Settings::Visual::GhostColor.r() / 255.f,
 									Settings::Visual::GhostColor.g() / 255.f,
@@ -118,8 +119,7 @@ void Chams::OnSceneEnd()
 		float lbyUpdateColor[3] = { 0, 1, 0 };
 		MaterialManager::Get().OverrideMaterial(false, true, false, false, false);
 		g_RenderView->SetColorModulation(LbyColor ? lbyUpdateColor : NormalColor);
-		g_RenderView->SetBlend(.3f);
-		//g_MdlRender->ForcedMaterialOverride(mat);
+		g_RenderView->SetBlend(.5f);
 		g_LocalPlayer->DrawModel(1, 255);
 		g_MdlRender->ForcedMaterialOverride(nullptr);
 		g_RenderView->SetBlend(1.f);

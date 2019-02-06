@@ -59,10 +59,12 @@ class RuntimeSaver
 {
 public:
     QAngle AARealAngle = QAngle(0, 0, 0);
-    QAngle AAFakeAngle = QAngle(0, 0, 0);
+    QAngle AADesyncAngle = QAngle(0, 0, 0);
     bool FakelagCurrentlyEnabled = false;
     FakeLagData FakelagData;
     float curtime = 0.f;
+	bool ForceBAim = false;
+
 
     //Lby update
     bool InLbyUpdate = false;

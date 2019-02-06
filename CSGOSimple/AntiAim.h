@@ -49,7 +49,9 @@ enum class PitchAntiAims : int
 class AntiAim : public Singleton<AntiAim>
 {
 public:
+	// Ghetto code
 	QAngle DesyncAngles;
+	bool DesyncFlip;
 
     void OnCreateMove(CUserCmd* cmd, bool& bSendPacket);
     void LbyBreakerPrediction(CUserCmd* cmd, bool& bSendPacket);

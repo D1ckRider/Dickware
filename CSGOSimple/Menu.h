@@ -21,6 +21,12 @@ enum class VisualsMenuAvailable : int
     GLOBAL
 };
 
+enum class RbotMenuAvailable : int
+{
+	GENERAL,
+	WEAPONS
+};
+
 enum class RbotWeaponsAvailable : int
 {
 	PISTOL,
@@ -33,7 +39,7 @@ enum class RbotWeaponsAvailable : int
 	SHOTGUN
 };
 
-enum class RbotMenuAvailable : int
+enum class RbotAntiAimAvailable : int
 {
     STANDING,
     MOVING,
@@ -41,9 +47,10 @@ enum class RbotMenuAvailable : int
     MISC
 };
 
-enum class LbotSubsectionsAvailable : int
+enum class LbotMenuAvailable : int
 {
 	Aimbot,
+	Backtrack,
 	Triggerbot
 };
 

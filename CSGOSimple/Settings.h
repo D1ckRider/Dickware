@@ -120,6 +120,7 @@ namespace Settings
 		extern int ManualAALeftKey;
 		extern int ManualAARightKey;
 		extern int ManualAABackKey;
+		extern int DesyncFlipHotkey;
 
 		extern bool AutoScope;
 		extern bool AutoStop;

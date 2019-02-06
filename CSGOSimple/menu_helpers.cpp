@@ -368,7 +368,7 @@ void MenuHelper::components::Checkbox(std::string text, std::string settings_nam
 void MenuHelper::components::Checkbox(std::string label, bool & value)
 {
 	ImGui::Checkbox(label.c_str(), &value);
-	CurrentItem++;
+	//CurrentItem++;
 }
 
 void MenuHelper::components::ColorCheckbox(std::string text, std::string settings_name_bool, std::string settings_name_color)
