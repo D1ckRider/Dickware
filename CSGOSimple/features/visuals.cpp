@@ -706,6 +706,19 @@ void Visuals::DrawGrenade ( C_BaseEntity* ent )
             VGSHelper::Get().DrawText ( "decoy", vGrenadePos2D.x, vGrenadePos2D.y, Color::White, 12 );
             break;
     }
+
+	for (int i = 0; i < g_Saver.MolotovInfo.size(); i++)
+	{
+		float CurrentTime = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
+		//Render::Get().RenderCircle3D(g_Saver.MolotovInfo[i].position, 32.f, 100.f, Color::Red);
+		VGSHelper::Get().Draw3DCircle(g_Saver.MolotovInfo[i].position, 150.f, 15);
+
+		Vector screen;
+		const std::string to_render = "fire: " + std::to_string(g_Saver.MolotovInfo[i].timeToExpire - CurrentTime); //hdr->szName;
+		if (Math::WorldToScreen(g_Saver.MolotovInfo[i].position, screen))
+			VGSHelper::Get().DrawText(to_render, screen.x, screen.y, Color::White, 12);
+	}
+
 }
 void Visuals::DrawDangerzoneItem ( C_BaseEntity* ent, float maxRange )
 {
@@ -1482,6 +1495,47 @@ void VGSHelper::DrawFilledCircle(float x, float y, float r, int seg, Color clr)
 	//DrawTexturedPoly(points, vertices.data(), color);
 	//g_pSurface->DrawSetColor(outline);
 	//g_pSurface->DrawPolyLine(pointsx.data(), pointsy.data(), points); // only if you want en extra outline
+}
+
+void VGSHelper::Draw3DCircle(Vector position, float radius, int seg)
+{
+	Vector prev_scr_pos{ -1, -1, -1 };
+	Vector scr_pos;
+
+	float step = M_PI * 2.0 / seg;
+
+	Vector origin = position;
+
+	for (float rotation = 0; rotation < (M_PI * 2.0); rotation += step)
+	{
+		Vector pos(radius * cos(rotation) + origin.x, radius * sin(rotation) + origin.y, origin.z + 2);
+		Vector tracepos(origin.x, origin.y, origin.z + 2);
+
+		Ray_t ray;
+		trace_t trace;
+		CTraceFilter filter;
+
+		ray.Init(tracepos, pos);
+
+		g_EngineTrace->TraceRay(ray, MASK_SPLITAREAPORTAL, &filter, &trace);
+
+		if (Math::WorldToScreen(trace.endpos, scr_pos))
+		{
+			if (prev_scr_pos != Vector{ -1, -1, -1 })
+			{
+				//int hue = RAD2DEG(rotation) + hue_offset;
+
+				//Color color = Color::FromHSB(1, hue / 360.f, 1);
+
+				g_VGuiSurface->DrawSetColor(Color::Red);
+				g_VGuiSurface->DrawLine(prev_scr_pos.x, prev_scr_pos.y, scr_pos.x, scr_pos.y);
+				//g_Render.Line(prev_scr_pos.x, prev_scr_pos.y, scr_pos.x, scr_pos.y, color);
+				//Render::Get().Render
+			}
+			prev_scr_pos = scr_pos;
+		}
+	}
+	//hue_offset -= 0.5;*/
 }
 
 ImVec2 VGSHelper::GetSize ( std::string text, int size )

@@ -103,6 +103,22 @@ public:
             ShotTracer(g_Saver.LastShotEyePos, p);
         }
 
+
+		if (strstr(event->GetName(), "inferno_startburn"))
+		{
+			
+			Vector position(event->GetFloat("x"), event->GetFloat("y"), event->GetFloat("z"));
+			MovotovInfoStruct temp = { position, g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick + 7.f };
+			g_Saver.MolotovInfo.emplace_back(temp);
+		}
+
+		if (strstr(event->GetName(), "inferno_expire"))
+		{
+			for (int i = 0; i < g_Saver.MolotovInfo.size(); i++)
+				g_Saver.MolotovInfo.erase(g_Saver.MolotovInfo.begin() + i);
+		}
+
+
 		/*if (!strcmp(event->GetName(), "player_footstep"))
 		{
 			g_Logger.Info("VISUAL", "Player footstep triggered");

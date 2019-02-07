@@ -23,7 +23,6 @@ struct StepInfoStruct
 	float SoundTime = 0.f;
 };
 
-// put this in your header
 struct DamageIndicator
 {
 	int iDamage;
@@ -32,6 +31,12 @@ struct DamageIndicator
 	float flLastUpdate;
 	C_BasePlayer* Player;
 	Vector Position;
+};
+
+struct MovotovInfoStruct
+{
+	Vector position;
+	float timeToExpire;
 };
 
 struct BulletTracerInfoStruct
@@ -97,6 +102,7 @@ public:
 
 	std::vector<DamageIndicator> DamageIndicators;
 	std::vector<StepInfoStruct> StepInfo;
+	std::vector<MovotovInfoStruct> MolotovInfo;
 
     RbotShotInfoStruct RbotShotInfo;
 

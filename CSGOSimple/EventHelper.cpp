@@ -5,23 +5,32 @@
 
 void EventHelper::listener::Start()
 {
-    if (!g_GameEvents->AddListener(this, "player_hurt", false))
-    {
-        throw std::exception("Failed to register the event");
-    }
-    if (!g_GameEvents->AddListener(this, "bullet_impact", false))
-    {
-        throw std::exception("Failed to register the event");
-    }
-    if (!g_GameEvents->AddListener(this, "item_purchase", false))
-    {
-        throw std::exception("Failed to register the event");
-    }
+	if (!g_GameEvents->AddListener(this, "player_hurt", false))
+	{
+		throw std::exception("Failed to register the event");
+	}
+	if (!g_GameEvents->AddListener(this, "bullet_impact", false))
+	{
+		throw std::exception("Failed to register the event");
+	}
+	if (!g_GameEvents->AddListener(this, "item_purchase", false))
+	{
+		throw std::exception("Failed to register the event");
+	}
 	if (!g_GameEvents->AddListener(this, "player_footstep", false))
 	{
 		throw std::exception("Failed to register the event");
 	}
+	if (!g_GameEvents->AddListener(this, "inferno_startburn", false))
+	{
+		throw std::exception("Failed to register the event");
+	}
+	if (!g_GameEvents->AddListener(this, "inferno_expire", false))
+	{
+		throw std::exception("Failed to register the event");
+	}
 }
+
 void EventHelper::listener::Stop()
 {
     g_GameEvents->RemoveListener(this);
@@ -39,18 +48,12 @@ int EventHelper::listener::GetEventDebugID(void)
 
 void EventHelper::ShotTracer(Vector shot_pos, Vector hit_pos)
 {
-    /*if (!g_LocalPlayer || !g_Config.GetBool("vis_misc_bullettracer"))
-    {
-        return;
-    }*/
 	if (!g_LocalPlayer || !Settings::Visual::BulletTracers)
 		return;
 
     Color clr = Color(Math::RandomInt(0, 255), Math::RandomInt(0, 255), Math::RandomInt(0, 255));
 
-    // !g_Options.vis_bullet_tracer
-
-    BeamInfo_t beamInfo;
+	BeamInfo_t beamInfo;
     beamInfo.m_nType = TE_BEAMPOINTS;
     beamInfo.m_pszModelName = "sprites/physbeam.vmt";
     beamInfo.m_nModelIndex = -1;
@@ -76,7 +79,5 @@ void EventHelper::ShotTracer(Vector shot_pos, Vector hit_pos)
 
     auto beam = g_RenderBeams->CreateBeamPoints(beamInfo);
     if (beam)
-    {
         g_RenderBeams->DrawBeam(beam);
-    }
 }
