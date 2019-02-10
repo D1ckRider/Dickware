@@ -2,7 +2,6 @@
 #include "Lbot.h"
 #include "helpers\math.hpp"
 #include "Logger.h"
-#include "ConfigSystem.h"
 #include "ConsoleHelper.h"
 #include "helpers\input.hpp"
 #include "RuntimeSaver.h"
@@ -22,12 +21,6 @@ void Lbot::OnCreateMove(CUserCmd* cmd)
         return;
     }
     UpdateWeaponConfig(weapon);
-
-	if (GetAsyncKeyState(VK_DELETE))
-	{
-		g_Logger.Info("WEAPON", "FOV is " + std::to_string(WeaponFov));
-		g_Logger.Info("WEAPON", "WeaponID is " + std::to_string(Settings::Aimbot::GetWeaponType(weapon)));
-	}
 
     std::deque<int> hb_enabled;
 
@@ -109,9 +102,9 @@ int Lbot::GetBestTarget(C_BasePlayer* local, C_BaseCombatWeapon* weapon, CUserCm
     int BestIndex = -1;
     //bool UsingBacktrack = false;
     //LegitTickRecord BestBacktrackTick;
-	bool lbot_backtrack = Settings::Aimbot::Backtrack; //g_Config.GetBool("lbot_backtrack");
-	bool lbot_backtrack_aim = Settings::Aimbot::BacktrackAtAim; //g_Config.GetBool("lbot_backtrack_aim");
-	float lbot_backtrack_ms = Settings::Aimbot::BacktrackTick; //g_Config.GetFloat("lbot_backtrack_ms");
+	bool lbot_backtrack = Settings::Aimbot::Backtrack; 
+	bool lbot_backtrack_aim = Settings::Aimbot::BacktrackAtAim;
+	float lbot_backtrack_ms = Settings::Aimbot::BacktrackTick;
 
     //float flRange = weapon->GetCSWeaponData()->flRange;
 

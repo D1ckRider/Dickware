@@ -208,6 +208,7 @@ namespace Settings
 			bool Enabled;
 			bool GrenadeEnabled;
 			bool BombEnabled;
+			bool DropedWeaponsEnabled;
 			Color BombColor;
 			bool DZEnabled;
 			float DZRange;
@@ -230,6 +231,8 @@ namespace Settings
 		extern bool NoScopeOverlay;
 		extern bool BulletTracers;
 		extern bool NoFlash;
+		extern bool NadeTracerEnabled;
+		extern Color NadeTracerColor;
 		extern bool SpreadCircleEnabled;
 		extern Color SpreadCircleColor;
 		extern bool DamageIndicator;

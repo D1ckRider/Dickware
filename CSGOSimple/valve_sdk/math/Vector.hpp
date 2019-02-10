@@ -41,6 +41,20 @@ public:
 		return Vector(cos(y * (float)M_PI / 180.0f) * cos(x * (float)M_PI / 180.0f), sin(y * (float)M_PI / 180.0f) * cos(x * (float)M_PI / 180.0f), sin(-x * (float)M_PI / 180.0f)).Normalized();
 	}
 
+	inline void MulAdd(const Vector& a, const Vector& b, float scalar)
+	{
+		x = a.x + b.x * scalar;
+		y = a.y + b.y * scalar;
+		z = a.z + b.z * scalar;
+	}
+
+	inline void Mul(float scalar)
+	{
+		x *= scalar;
+		y *= scalar;
+		z *= scalar;
+	}
+
 	inline void VectorSubtract(const Vector& a, const Vector& b, Vector& c)
 	{
 		CHECK_VALID(a);

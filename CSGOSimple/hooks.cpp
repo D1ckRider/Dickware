@@ -34,6 +34,7 @@
 #include "Settings.h"
 #include "features\NightMode.h"
 #include "features\Skinchanger.h"
+#include "features\GrenadeTrajectory.h"
 //#include "Asuswalls.h"
 #include "NoSmoke.h"
 #pragma intrinsic(_ReturnAddress)
@@ -343,6 +344,8 @@ namespace Hooks
             Rbot::Get().CreateMove ( cmd, bSendPacket );
         }
 
+		GrenadeHint::Get().Tick(cmd->buttons);
+
 		if ( !rbot && Settings::Aimbot::Enabled )
         {
             Lbot::Get().OnCreateMove ( cmd );
@@ -454,6 +457,7 @@ namespace Hooks
                 Utils::RankRevealAll();
 
             Render::Get().BeginScene();
+			GrenadeHint::Get().Paint();
 			//if ( g_LocalPlayer && flAngle )
 			//	Visuals::Get().DrawEnemyCircle(flAngle);
         }
@@ -681,6 +685,8 @@ namespace Hooks
 
         if ( !g_EngineClient->IsConnected() || !g_EngineClient->IsInGame() )
             return ofunc ( g_ClientMode, vsView );
+
+		GrenadeHint::Get().View();
 
         if ( g_EngineClient->IsInGame() && vsView )
             Visuals::Get().ThirdPerson();

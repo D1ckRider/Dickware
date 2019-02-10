@@ -46,9 +46,9 @@ public:
 		void Label(std::string text);
         void ComboBox(std::string label, const char* items[], int size, std::string settings_name);
 		void ComboBox(std::string text, const char* items[], int size, int& value);
-		void ComboFilterBox(std::string label, const char* items[], int size, int &value);
         void ComboCheckBox(std::string text, std::string items[], std::string setting_names[], int size);
 		void ComboCheckBox(std::string label, const char* items[], bool* values[], int size);
+		void ComboFilterBox(std::string label, const char* items[], int size, int& value);
         void BeginChild(std::string id, ImVec2 size, bool border = true, ImGuiWindowFlags flags = 0);
         void EndChild();
         void Columns(int count, bool border, char* id = NULL);
@@ -59,7 +59,7 @@ public:
         void SliderFloat(std::string text, std::string settings_name, float min, float max);
 		void SliderFloat(std::string label, float& value, float min, float max);
         void Hotkey(std::string text, std::string settings_name);
-		void Hotkey(std::string label, int& value);
+		void Hotkey(std::string label, int& value, const int& type = 0);
         bool Button(std::string text);
         void Spacing();
 

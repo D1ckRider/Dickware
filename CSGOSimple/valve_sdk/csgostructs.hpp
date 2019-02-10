@@ -142,7 +142,6 @@ public:
         return *(matrix3x4_t*)((uintptr_t)this + _m_rgflCoordinateFrame);
     }
 
-
     bool IsPlayer();
     bool IsWeapon();
     bool IsPlantedC4();
@@ -419,6 +418,7 @@ public:
     bool          HasC4();
     Vector        GetHitboxPos(int hitbox_id);
     mstudiobbox_t* GetHitbox(int hitbox_id);
+	std::string GetName();
     bool          GetHitboxPos(int hitbox, Vector& output);
     void			PrecaceOptimizedHitboxes();
     bool GetOptimizedHitboxPos(int hitbox, Vector& output);
@@ -473,9 +473,9 @@ class CBasePlayerAnimState
 {
 public:
     char pad[4];
-    char bUnknown; //0x4
+    char bUnknown;		//0x4
     char pad2[91];
-    void* pBaseEntity; //0x60
+    void* pBaseEntity;	//0x60
     void* pActiveWeapon; //0x64
     void* pLastActiveWeapon; //0x68
     float m_flLastClientSideAnimationUpdateTime; //0x6C

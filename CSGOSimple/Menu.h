@@ -66,6 +66,12 @@ enum class LbotWeaponsAvailable : int
     SNIPER
 };
 
+enum class HotkeyType : int
+{
+	Hold = 0,
+	Tap = 1
+};
+
 #pragma once
 class Menu : public Singleton<Menu>
 {

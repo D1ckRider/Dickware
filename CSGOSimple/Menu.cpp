@@ -105,7 +105,7 @@ void Menu::RenderRagebot()
 		Components.Label("BAim:");
 		Components.ComboBox("BAim Mode", BaimModes, IM_ARRAYSIZE(BaimModes), Settings::RageBot::BAimMode);
 		Components.Checkbox("Air BAim", Settings::RageBot::AirBAim);
-		Components.Hotkey("Force BAim hotkey", Settings::RageBot::BAimHotkey);
+		Components.Hotkey("Force BAim hotkey", Settings::RageBot::BAimHotkey, (int)HotkeyType::Tap);
 
 		Components.Spacing();
 		Components.Label("Movement:");
@@ -192,7 +192,7 @@ void Menu::RenderRagebot()
 			Components.SliderFloat("Spinbot speed", Settings::RageBot::SpinBotSpeed, -20.f, 20.f);
 			Components.Checkbox("SlideWalk", Settings::RageBot::SlideWalk);
 			Components.Checkbox("Desync", Settings::RageBot::Desync);
-			Components.Hotkey("Desync Hotkey", Settings::RageBot::DesyncFlipHotkey);
+			Components.Hotkey("Desync Hotkey", Settings::RageBot::DesyncFlipHotkey, (int)HotkeyType::Tap);
 
 			//Components.Checkbox("Lby breaker", "rbot_aa_lby_breaker");
 			//Components.Checkbox("Fake lby break", "rbot_aa_fake_lby_breaker");
@@ -208,9 +208,9 @@ void Menu::RenderRagebot()
 			}
 			*/
 			Components.Spacing();
-			Components.Hotkey("Manual AA Right", Settings::RageBot::ManualAARightKey);
-			Components.Hotkey("Manual AA Left", Settings::RageBot::ManualAALeftKey);
-			Components.Hotkey("Manual AA Back", Settings::RageBot::ManualAABackKey);
+			Components.Hotkey("Manual AA Right", Settings::RageBot::ManualAARightKey, (int)HotkeyType::Tap);
+			Components.Hotkey("Manual AA Left", Settings::RageBot::ManualAALeftKey, (int)HotkeyType::Tap);
+			Components.Hotkey("Manual AA Back", Settings::RageBot::ManualAABackKey, (int)HotkeyType::Tap);
 			
 
 			break;
@@ -572,16 +572,16 @@ void Menu::RenderLegitbot()
 
 			Components.Label("Hitboxes:");
 			Components.BeginChild("#hitboxes", ImVec2(0.f, 204.f));
-
-			Components.Checkbox("Head", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxHead);
-			Components.Checkbox("Neck", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxNeck);
-			Components.Checkbox("Chest", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxChest);
-			Components.Checkbox("Pelvis", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxPelvis);
-			Components.Checkbox("Stomach", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxStomach);
-			Components.Checkbox("Arm", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxArm);
-			Components.Checkbox("Leg", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxLeg);
-			Components.Checkbox("Foot", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxFoot);
-
+			{
+				Components.Checkbox("Head", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxHead);
+				Components.Checkbox("Neck", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxNeck);
+				Components.Checkbox("Chest", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxChest);
+				Components.Checkbox("Pelvis", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxPelvis);
+				Components.Checkbox("Stomach", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxStomach);
+				Components.Checkbox("Arm", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxArm);
+				Components.Checkbox("Leg", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxLeg);
+				Components.Checkbox("Foot", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SSG08].HitboxFoot);
+			}
 			Components.EndChild();
 			break;
 		case LbotWeaponsAvailable::SNIPER:
@@ -600,16 +600,17 @@ void Menu::RenderLegitbot()
 
 			Components.Label("Hitboxes:");
 			Components.BeginChild("#hitboxes", ImVec2(0.f, 204.f));
+			{
+				Components.Checkbox("Head", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxHead);
+				Components.Checkbox("Neck", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxNeck);
+				Components.Checkbox("Chest", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxChest);
+				Components.Checkbox("Pelvis", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxPelvis);
+				Components.Checkbox("Stomach", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxStomach);
+				Components.Checkbox("Arm", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxArm);
+				Components.Checkbox("Leg", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxLeg);
+				Components.Checkbox("Foot", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxFoot);
 
-			Components.Checkbox("Head", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxHead);
-			Components.Checkbox("Neck", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxNeck);
-			Components.Checkbox("Chest", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxChest);
-			Components.Checkbox("Pelvis", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxPelvis);
-			Components.Checkbox("Stomach", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxStomach);
-			Components.Checkbox("Arm", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxArm);
-			Components.Checkbox("Leg", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxLeg);
-			Components.Checkbox("Foot", Settings::Aimbot::WeaponAimSetting[WeaponType::WEAPON_SNIPER].HitboxFoot);
-
+			}
 			Components.EndChild();
 			break;
 		}
@@ -721,8 +722,8 @@ void Menu::RenderVisuals()
             Components.Columns ( 3, false );
             Components.Label ( "Thirdperson: " );
 			Components.Spacing();
-			Components.Checkbox("Third Person View",  Settings::Visual::ThirdPersonEnabled);
-			Components.Hotkey("Third Person Hotkey",  Settings::Visual::ThirdPersonHotkey);
+			Components.Checkbox("Enabled: ",  Settings::Visual::ThirdPersonEnabled);
+			Components.Hotkey("Hotkey: ",  Settings::Visual::ThirdPersonHotkey, (int)HotkeyType::Tap);
 
 			Components.NextColumn();
 
@@ -731,6 +732,7 @@ void Menu::RenderVisuals()
 			Components.Checkbox("Enable ",  Settings::Visual::GlobalESP.Enabled);
 			Components.Checkbox("Grenade",  Settings::Visual::GlobalESP.GrenadeEnabled);
 			Components.ColorCheckbox("Bomb", Settings::Visual::GlobalESP.BombEnabled, Settings::Visual::GlobalESP.BombColor);
+			Components.Checkbox("Droped Weapons", Settings::Visual::GlobalESP.DropedWeaponsEnabled);
 			Components.Checkbox("DangerZone item ESP",  Settings::Visual::GlobalESP.DZEnabled);
 			Components.SliderFloat("DangerZone ESP Range",  Settings::Visual::GlobalESP.DZRange, 0.f, 1000.f);
 
@@ -743,6 +745,7 @@ void Menu::RenderVisuals()
 			Components.Checkbox("No Flash",  Settings::Visual::NoFlash);
 			Components.Checkbox("No Smoke",  Settings::Visual::NoSmoke);
 			Components.Checkbox("Night Mode", Settings::Visual::NightMode);
+			Components.ColorCheckbox("Nade Trajectory", Settings::Visual::NadeTracerEnabled, Settings::Visual::NadeTracerColor);
 			Components.ColorCheckbox("Spread Circle", Settings::Visual::SpreadCircleEnabled, Settings::Visual::SpreadCircleColor);
 			Components.ColorCheckbox("Damage Indicators", Settings::Visual::DamageIndicator, Settings::Visual::DamageIndicatorColor);
 			Components.Checkbox("Disable Sniper Zoom",  Settings::Visual::DisableScopeZoom);

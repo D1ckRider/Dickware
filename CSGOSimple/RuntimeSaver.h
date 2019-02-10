@@ -35,8 +35,14 @@ struct DamageIndicator
 
 struct MovotovInfoStruct
 {
-	Vector position;
-	float timeToExpire;
+	Vector Position;
+	float TimeToExpire;
+};
+
+struct SmokeInfoStruct
+{
+	Vector Position;
+	float TimeToExpire;
 };
 
 struct BulletTracerInfoStruct
@@ -103,6 +109,7 @@ public:
 	std::vector<DamageIndicator> DamageIndicators;
 	std::vector<StepInfoStruct> StepInfo;
 	std::vector<MovotovInfoStruct> MolotovInfo;
+	std::vector<SmokeInfoStruct> SmokeInfo;
 
     RbotShotInfoStruct RbotShotInfo;
 

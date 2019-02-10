@@ -144,9 +144,6 @@
     <ClCompile Include="render.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ui.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ConfigSystem.cpp">
       <Filter>Source Files\Config</Filter>
     </ClCompile>
@@ -253,6 +250,12 @@
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="helpers\KitParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui.cpp">
+      <Filter>Source Files\Menu</Filter>
+    </ClCompile>
+    <ClCompile Include="features\GrenadeTrajectory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -485,9 +488,6 @@
     <ClInclude Include="datamap.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ui.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="droid.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -610,6 +610,12 @@
     </ClInclude>
     <ClInclude Include="helpers\KitParser.h">
       <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="ui.hpp">
+      <Filter>Header Files\Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="features\GrenadeTrajectory.h">
+      <Filter>Header Files\Features</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

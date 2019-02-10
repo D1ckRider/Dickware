@@ -410,6 +410,38 @@ mstudiobbox_t* C_BasePlayer::GetHitbox(int hitbox_id)
     return nullptr;
 }
 
+std::string C_BasePlayer::GetName()
+{
+	bool console_safe;
+	// Cleans player's name so we don't get new line memes. Use this everywhere you get the players name.
+	// Also, if you're going to use the console for its command and use the players name, set console_safe.
+	player_info_t pinfo = this->GetPlayerInfo();
+
+	char* pl_name = pinfo.szName;
+	char buf[128];
+	int c = 0;
+
+	for (int i = 0; pl_name[i]; ++i)
+	{
+		if (c >= sizeof(buf) - 1)
+			break;
+
+		switch (pl_name[i])
+		{
+		case '"': if (console_safe) break;
+		case '\\':
+		case ';': if (console_safe) break;
+		case '\n':
+			break;
+		default:
+			buf[c++] = pl_name[i];
+		}
+	}
+
+	buf[c] = '\0';
+	return std::string(buf);
+}
+
 bool C_BasePlayer::GetHitboxPos(int hitbox, Vector& output)
 {
     if (hitbox >= HITBOX_MAX)

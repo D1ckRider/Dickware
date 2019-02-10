@@ -5,7 +5,6 @@
 #include "Resolver.h"
 #include "Logger.h"
 #include "HitPossitionHelper.h"
-#include "ConfigSystem.h"
 #include "RuntimeSaver.h"
 #include "Settings.h"
 #include "Rbot.h"
@@ -53,8 +52,6 @@ public:
 
 			int hurt = event->GetInt("userid");
             int attacker = event->GetInt("attacker");
-			//C_BaseEntity* hurt = (C_BaseEntity*)g_EngineClient->GetPlayerForUserID(event->GetInt("userid"));
-			//C_BaseEntity* attacker = (C_BaseEntity*)g_EngineClient->GetPlayerForUserID(event->GetInt("attacker"));
 
             if (g_EngineClient->GetPlayerForUserID(attacker) == g_EngineClient->GetLocalPlayer())
             {
@@ -62,10 +59,8 @@ public:
 				{
 					DamageIndicator DmgIndicator;
 					DmgIndicator.iDamage = event->GetInt("dmg_health");
-					//DmgIndicator.PlayerID = hurt; //hurt;
 					DmgIndicator.Player = (C_BasePlayer*)g_EntityList->GetClientEntity(g_EngineClient->GetPlayerForUserID(event->GetInt("userid")));
 					DmgIndicator.flEraseTime = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick + 3.f;
-						//g_EngineClient->GetLocalPlayer()->TickBase() * Globals->interval_per_tick + 3.f;
 					DmgIndicator.bInitialized = false;
 
 					g_Saver.DamageIndicators.push_back(DmgIndicator);
@@ -117,18 +112,20 @@ public:
 			for (int i = 0; i < g_Saver.MolotovInfo.size(); i++)
 				g_Saver.MolotovInfo.erase(g_Saver.MolotovInfo.begin() + i);
 		}
-
-
-		/*if (!strcmp(event->GetName(), "player_footstep"))
+		
+		if(strstr(event->GetName(), "smokegrenade_detonate"))
 		{
-			g_Logger.Info("VISUAL", "Player footstep triggered");
-			C_BasePlayer* player = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(g_EngineClient->GetPlayerForUserID(event->GetInt("userid"))));
-			if (!player || player == g_LocalPlayer)
-				return;
 
-			//g_Saver.StepInfo = StepInfoStruct{ event->GetInt("userid"), g_GlobalVars->realtime };
-			//Visuals::Get().RenderSoundESP(player);
-		}*/
+			Vector position(event->GetFloat("x"), event->GetFloat("y"), event->GetFloat("z"));
+			SmokeInfoStruct temp = { position, g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick + 18.f };
+			g_Saver.SmokeInfo.emplace_back(temp);
+		}
+
+		if (strstr(event->GetName(), "smokegrenade_expired"))
+		{
+			for (int i = 0; i < g_Saver.SmokeInfo.size(); i++)
+				g_Saver.SmokeInfo.erase(g_Saver.SmokeInfo.begin() + i);
+		}
     }
     void ShotTracer(Vector shot_pos, Vector hit_pos);
 private:

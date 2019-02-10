@@ -1,34 +1,28 @@
-
 #include "EventHelper.h"
 #include "helpers\math.hpp"
-#include "ConfigSystem.h"
 
 void EventHelper::listener::Start()
 {
 	if (!g_GameEvents->AddListener(this, "player_hurt", false))
-	{
 		throw std::exception("Failed to register the event");
-	}
 	if (!g_GameEvents->AddListener(this, "bullet_impact", false))
-	{
 		throw std::exception("Failed to register the event");
-	}
+
 	if (!g_GameEvents->AddListener(this, "item_purchase", false))
-	{
 		throw std::exception("Failed to register the event");
-	}
+
 	if (!g_GameEvents->AddListener(this, "player_footstep", false))
-	{
 		throw std::exception("Failed to register the event");
-	}
+
 	if (!g_GameEvents->AddListener(this, "inferno_startburn", false))
-	{
 		throw std::exception("Failed to register the event");
-	}
 	if (!g_GameEvents->AddListener(this, "inferno_expire", false))
-	{
 		throw std::exception("Failed to register the event");
-	}
+
+	if (!g_GameEvents->AddListener(this, "smokegrenade_detonate", false))
+		throw std::exception("Failed to register the event");
+	if (!g_GameEvents->AddListener(this, "smokegrenade_expired", false))
+		throw std::exception("Failed to register the event");
 }
 
 void EventHelper::listener::Stop()

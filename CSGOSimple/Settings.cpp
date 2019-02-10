@@ -127,6 +127,7 @@ void Settings::Initialize()
 	Visual::GlobalESP.Enabled = false;
 	Visual::GlobalESP.GrenadeEnabled = false;
 	Visual::GlobalESP.BombEnabled = false;
+	Visual::GlobalESP.DropedWeaponsEnabled = false;
 	Visual::GlobalESP.BombColor = Color::Green;
 	Visual::GlobalESP.DZEnabled = false;
 	Visual::GlobalESP.DZRange = 100.f;
@@ -325,12 +326,15 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "vis_esp_other_grenade_enable", Visual::GlobalESP.GrenadeEnabled);
 	SaveValue(j, "vis_esp_other_bomb_enabled", Visual::GlobalESP.BombEnabled);
 	SaveColorValue(j, "vis_esp_other_bomb_color", Visual::GlobalESP.BombColor);
+	SaveValue(j, "vis_esp_other_weapon_enabled", Visual::GlobalESP.DropedWeaponsEnabled);
 	SaveValue(j, "vis_esp_other_dz_item", Visual::GlobalESP.DZEnabled);
 	SaveValue(j, "vis_esp_other_dz_range", Visual::GlobalESP.DZRange);
 	SaveValue(j, "vis_noscope_overlay", Visual::NoScopeOverlay);
 	SaveValue(j, "vis_bullet_tracers", Visual::BulletTracers);
 	SaveValue(j, "vis_noflash", Visual::NoFlash);
 	SaveValue(j, "vis_nightmode", Visual::NightMode);
+	SaveValue(j, "vis_nadetracer_enabled", Visual::NadeTracerEnabled);
+	SaveColorValue(j, "vis_nadetracer_color", Visual::NadeTracerColor);
 	SaveValue(j, "vis_spread_cirlce_enabled", Visual::SpreadCircleEnabled);
 	SaveColorValue(j, "vis_spread_circle_color", Visual::SpreadCircleColor);
 	SaveValue(j, "vis_damage_ind_enabled", Visual::DamageIndicator);
@@ -517,12 +521,15 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "vis_esp_other_grenade_enable", 	Visual::GlobalESP.GrenadeEnabled);
 	LoadValue(j, "vis_esp_other_bomb_enabled", 	Visual::GlobalESP.BombEnabled);
 	LoadColorValue(j, "vis_esp_other_bomb_color", Visual::GlobalESP.BombColor);
+	LoadValue(j, "vis_esp_other_weapon_enabled", Visual::GlobalESP.DropedWeaponsEnabled);
 	LoadValue(j, "vis_esp_other_dz_item", 	Visual::GlobalESP.DZEnabled);
 	LoadValue(j, "vis_esp_other_dz_range", 	Visual::GlobalESP.DZRange);
 	LoadValue(j, "vis_noscope_overlay", 	Visual::NoScopeOverlay);
 	LoadValue(j, "vis_bullet_tracers", 	Visual::BulletTracers);
 	LoadValue(j, "vis_noflash", 	Visual::NoFlash);
 	LoadValue(j, "vis_nightmode", Visual::NightMode);
+	LoadValue(j, "vis_nadetracer_enabled", Visual::NadeTracerEnabled);
+	LoadColorValue(j, "vis_nadetracer_color", Visual::NadeTracerColor);
 	LoadValue(j, "vis_spread_cirlce_enabled", 	Visual::SpreadCircleEnabled);
 	LoadColorValue(j, "vis_spread_circle_color", Visual::SpreadCircleColor);
 	LoadValue(j, "vis_damage_ind_enabled", Visual::DamageIndicator);
@@ -713,6 +720,8 @@ void Settings::ResetVisuals()
 	Visual::NoScopeOverlay = false;
 	Visual::BulletTracers = false;
 	Visual::NoFlash = false;
+	Visual::NadeTracerEnabled = false;
+	Visual::NadeTracerColor = Color::Red;
 	Visual::SpreadCircleEnabled = false;
 	Visual::SpreadCircleColor = Color::Blue;
 	Visual::DamageIndicator = false;
@@ -784,6 +793,7 @@ void Settings::ResetVisuals()
 	Visual::GlobalESP.GrenadeEnabled = false;
 	Visual::GlobalESP.BombEnabled = false;
 	Visual::GlobalESP.BombColor = Color::Green;
+	Visual::GlobalESP.Enabled = false;
 	Visual::GlobalESP.DZEnabled = false;
 	Visual::GlobalESP.DZRange = 100.f;
 }
@@ -977,6 +987,8 @@ namespace Settings::Visual
 	bool NoScopeOverlay = false;
 	bool BulletTracers = false;
 	bool NoFlash = false;
+	bool NadeTracerEnabled = false;
+	Color NadeTracerColor = Color::Red;
 	bool SpreadCircleEnabled = false;
 	Color SpreadCircleColor = Color::Blue;
 	bool DamageIndicator = false;

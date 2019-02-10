@@ -388,27 +388,29 @@ bool AntiAim::FreestandingLbyBreak ( float& ang )
     return false;
 }
 
+// TODO: Fix this finally
 float AntiAim::GetMaxDesyncYaw()
 {
     //g_LocalPlayer->GetBasePlayerAnimState();
    // auto animstate = uintptr_t(this->GetBasePlayerAnimState());
-	auto animstate = uintptr_t(g_LocalPlayer->GetBasePlayerAnimState());
+	//auto animstate = uintptr_t(g_LocalPlayer->GetBasePlayerAnimState());
+	auto animstate = g_LocalPlayer->GetBasePlayerAnimState();
     //float rate = 180;
-    float duckammount = *(float *)(animstate + 0xA4);
-    float speedfraction = std::max(0.f, std::min(*(float *)(animstate + 0xF8), 1.f));
+    //float duckammount = *(float *)(animstate + 0xA4);
+	float duckammount = animstate->m_fDuckAmount;
+    float speedfraction = std::max(0.f, std::min(animstate->m_flFeetSpeedForwardsOrSideWays, 1.f));
 
-    float speedfactor = std::max(0.f, std::max(1.f, *(float *)(animstate + 0xFC)));
+    float speedfactor = std::max(0.f, std::max(1.f, animstate->m_flFeetSpeedUnknownForwardOrSideways));
 
-    float unk1 = ((*reinterpret_cast<float*> (animstate + 0x11C) * -0.30000001) - 0.19999999) * speedfraction;
+    float unk1 = ((animstate->m_flStopToFullRunningFraction * -0.30000001) - 0.19999999) * speedfraction;
     float unk2 = unk1 + 1.f;
     float unk3;
 
-    if (duckammount > 0) 
-	{
+    if (duckammount > 0)
     	unk2 += +((duckammount * speedfactor) * (0.5f - unk2));
-    }
 
-    unk3 = *(float *)(animstate + 0x334) * unk2;
+    //unk3 = *(float *)(animstate + 0x334) * unk2;
+	//unk3 = dynamic_cast<float>(&animstate + 0x334) * unk2;
 
     return unk3;
 }
@@ -635,11 +637,13 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
 
         static QAngle LastRealAngle = QAngle ( 0, 0, 0 );
         //if (!g_Saver.FakelagCurrentlyEnabled) bSendPacket = cmd->tick_count % 2;
+		auto animstate = g_LocalPlayer->GetBasePlayerAnimState();
 
-        if ( !bSendPacket && ! ( cmd->buttons & IN_ATTACK ) )
+        if ( !bSendPacket && !( cmd->buttons & IN_ATTACK ) )
         {
             //static bool bFlip = false;
-            cmd->viewangles += DesyncFlip ? 58.f : -58.f;
+			cmd->viewangles += DesyncFlip ? 58.f : -58.f;
+			//animstate->m_flGoalFeetYaw += 58.f;
 			//cmd->viewangles += 58.f;
 			g_Saver.AADesyncAngle = cmd->viewangles;
         }

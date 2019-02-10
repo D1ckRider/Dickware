@@ -2,6 +2,7 @@
 #include <algorithm>
 
 #include "visuals.hpp"
+#include "../valve_sdk/sdk.hpp"
 
 //#include "../options.hpp"
 #include "../Settings.h"
@@ -224,6 +225,62 @@ void Visuals::Player::RenderLbyUpdateBar()
 //--------------------------------------------------------------------------------
 void Visuals::Player::RenderWeaponName()
 {
+	std::map<int, wchar_t> weapon_icons =
+	{
+		{ ItemDefinitionIndex::WEAPON_MP9, 'O' },
+		{ ItemDefinitionIndex::WEAPON_UMP45, 'K' },
+		{ ItemDefinitionIndex::WEAPON_TASER, 'h' },
+		{ ItemDefinitionIndex::WEAPON_NOVA, 'e' },
+		{ ItemDefinitionIndex::WEAPON_KNIFE_TACTICAL, 'E'},
+		{ ItemDefinitionIndex::WEAPON_P90, 'P'},
+		{ ItemDefinitionIndex::WEAPON_HKP2000, 'E'},
+		{ ItemDefinitionIndex::WEAPON_REVOLVER, 'J'},
+		{ ItemDefinitionIndex::WEAPON_MAG7, 'd'},
+		{ ItemDefinitionIndex::WEAPON_SAWEDOFF, 'c'},
+		{ ItemDefinitionIndex::WEAPON_SCAR20, 'Y'},
+		{ ItemDefinitionIndex::WEAPON_SG556, 'V'},
+		{ ItemDefinitionIndex::WEAPON_XM1014, 'b'},
+		{ ItemDefinitionIndex::WEAPON_USP_SILENCER, 'G'},
+		{ ItemDefinitionIndex::WEAPON_MOLOTOV, 'l'},
+		{ ItemDefinitionIndex::WEAPON_MP7, 'N'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_PUSH, '9'},
+		{ ItemDefinitionIndex::WEAPON_M4A1, 'S'},
+		{ ItemDefinitionIndex::WEAPON_NEGEV, 'F'},
+		{ ItemDefinitionIndex::WEAPON_M4A1_SILENCER, 'T'},
+		{ ItemDefinitionIndex::WEAPON_MAC10, 'K'},
+		{ ItemDefinitionIndex::WEAPON_TEC9, 'H'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_T, '['},
+		{ ItemDefinitionIndex::WEAPON_SSG08, 'a'},
+		{ ItemDefinitionIndex::WEAPON_M249, 'g'},
+		{ ItemDefinitionIndex::WEAPON_SMOKEGRENADE, 'k'},
+		{ ItemDefinitionIndex::WEAPON_FAMAS, 'r'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_GUT, '3'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_FALCHION, '2'},
+		{ ItemDefinitionIndex::WEAPON_FLASHBANG, 'i'},
+		{ ItemDefinitionIndex::WEAPON_AWP, 'Z'},
+		{ ItemDefinitionIndex::WEAPON_G3SG1, 'X'},
+		{ ItemDefinitionIndex::WEAPON_GALILAR, 'Q'},
+		{ ItemDefinitionIndex::WEAPON_GLOCK, 'D'},
+		{ ItemDefinitionIndex::WEAPON_DEAGLE, 'A'},
+		{ ItemDefinitionIndex::WEAPON_HEGRENADE, 'j'},
+		{ ItemDefinitionIndex::WEAPON_P250,'F'},
+		{ ItemDefinitionIndex::WEAPON_INCGRENADE, 'n'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_M9_BAYONET, '5'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_KARAMBIT, '4'},
+		{ ItemDefinitionIndex::WEAPON_DECOY, 'M'},
+		{ ItemDefinitionIndex::WEAPON_ELITE, 'B'},
+		{ ItemDefinitionIndex::WEAPON_AK47, 'W'},
+		//{ItemDefinitionIndex::WEAPON_KNIFE_BAY, 'r'},
+		{ ItemDefinitionIndex::WEAPON_FIVESEVEN, 'C'},
+		{ ItemDefinitionIndex::WEAPON_BIZON, 'M'},
+		{ ItemDefinitionIndex::WEAPON_CZ75A, 'I'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_FLIP, 'v'},
+		{ ItemDefinitionIndex::WEAPON_AUG, 'U'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_BUTTERFLY, '8'},
+		{ ItemDefinitionIndex::WEAPON_C4, 'O'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE, ']'}
+	};
+
     auto weapon = ctx.pl->m_hActiveWeapon().Get();
 
     if ( !weapon )
@@ -234,8 +291,10 @@ void Visuals::Player::RenderWeaponName()
     //Render::Get().RenderText(text, ctx.feet_pos.x, ctx.feet_pos.y, 14.f, ctx.clr, true);
     //Render::Get().RenderText(text, ctx.bbox.right + 4.f, ctx.head_pos.y - sz.y + TextHeight, 14.f, ctx.clr);
     //VGSHelper::Get().DrawText ( text, ctx.bbox.right + 2.f + ctx.PosHelper.right, ctx.head_pos.y - sz.y + TextHeight, ctx.WeaponClr, 12 );
-    VGSHelper::Get().DrawText ( text, ctx.bbox.right + 2.f + ctx.PosHelper.right, ctx.head_pos.y - sz.y + TextHeight, ctx.WeaponClr, 12 );
-    TextHeight += 12.f;
+    //VGSHelper::Get().DrawText ( text, ctx.bbox.right + 2.f + ctx.PosHelper.right, ctx.head_pos.y - sz.y + TextHeight, ctx.WeaponClr, 12 );
+
+	VGSHelper::Get().DrawIcon((wchar_t)weapon_icons[weapon->GetItemDefinitionIndex()], ctx.bbox.right + 2.f + ctx.PosHelper.right, ctx.head_pos.y - 500 + TextHeight, Color::White);
+	TextHeight += 12.f;
 }
 void Visuals::Player::DrawPlayerPOV()
 {
@@ -382,6 +441,7 @@ void Visuals::Player::DrawPlayerDebugInfo()
     VGSHelper::Get().DrawText ( t4, ctx.bbox.right + 48.f, ctx.head_pos.y + 42.f, Color::White );
     VGSHelper::Get().DrawText ( t5, ctx.bbox.right + 48.f, ctx.head_pos.y + 56.f, Color::White );
 }
+
 void Visuals::Player::RenderLine ( DrawSideModes mode, Color color, float percent )
 {
     float box_h = ( float ) fabs ( ctx.bbox.bottom - ctx.bbox.top );
@@ -491,6 +551,62 @@ void Visuals::RenderWeapon ( C_BaseCombatWeapon* ent )
         return name;
     };
 
+	std::map<int, wchar_t> weapon_icons =
+	{
+		{ ItemDefinitionIndex::WEAPON_MP9, 'O' },
+		{ ItemDefinitionIndex::WEAPON_UMP45, 'K' },
+		{ ItemDefinitionIndex::WEAPON_TASER, 'h' },
+		{ ItemDefinitionIndex::WEAPON_NOVA, 'e' },
+		{ ItemDefinitionIndex::WEAPON_KNIFE_TACTICAL, 'E'},
+		{ ItemDefinitionIndex::WEAPON_P90, 'P'},
+		{ ItemDefinitionIndex::WEAPON_HKP2000, 'E'},
+		{ ItemDefinitionIndex::WEAPON_REVOLVER, 'J'},
+		{ ItemDefinitionIndex::WEAPON_MAG7, 'd'},
+		{ ItemDefinitionIndex::WEAPON_SAWEDOFF, 'c'},
+		{ ItemDefinitionIndex::WEAPON_SCAR20, 'Y'},
+		{ ItemDefinitionIndex::WEAPON_SG556, 'V'},
+		{ ItemDefinitionIndex::WEAPON_XM1014, 'b'},
+		{ ItemDefinitionIndex::WEAPON_USP_SILENCER, 'G'},
+		{ ItemDefinitionIndex::WEAPON_MOLOTOV, 'l'},
+		{ ItemDefinitionIndex::WEAPON_MP7, 'N'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_PUSH, '9'},
+		{ ItemDefinitionIndex::WEAPON_M4A1, 'S'},
+		{ ItemDefinitionIndex::WEAPON_NEGEV, 'F'},
+		{ ItemDefinitionIndex::WEAPON_M4A1_SILENCER, 'T'},
+		{ ItemDefinitionIndex::WEAPON_MAC10, 'K'},
+		{ ItemDefinitionIndex::WEAPON_TEC9, 'H'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_T, '['},
+		{ ItemDefinitionIndex::WEAPON_SSG08, 'a'},
+		{ ItemDefinitionIndex::WEAPON_M249, 'g'},
+		{ ItemDefinitionIndex::WEAPON_SMOKEGRENADE, 'k'},
+		{ ItemDefinitionIndex::WEAPON_FAMAS, 'r'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_GUT, '3'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_FALCHION, '2'},
+		{ ItemDefinitionIndex::WEAPON_FLASHBANG, 'i'},
+		{ ItemDefinitionIndex::WEAPON_AWP, 'Z'},
+		{ ItemDefinitionIndex::WEAPON_G3SG1, 'X'},
+		{ ItemDefinitionIndex::WEAPON_GALILAR, 'Q'},
+		{ ItemDefinitionIndex::WEAPON_GLOCK, 'D'},
+		{ ItemDefinitionIndex::WEAPON_DEAGLE, 'A'},
+		{ ItemDefinitionIndex::WEAPON_HEGRENADE, 'j'},
+		{ ItemDefinitionIndex::WEAPON_P250,'F'},
+		{ ItemDefinitionIndex::WEAPON_INCGRENADE, 'n'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_M9_BAYONET, '5'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_KARAMBIT, '4'},
+		{ ItemDefinitionIndex::WEAPON_DECOY, 'M'},
+		{ ItemDefinitionIndex::WEAPON_ELITE, 'B'},
+		{ ItemDefinitionIndex::WEAPON_AK47, 'W'},
+		//{ItemDefinitionIndex::WEAPON_KNIFE_BAY, 'r'},
+		{ ItemDefinitionIndex::WEAPON_FIVESEVEN, 'C'},
+		{ ItemDefinitionIndex::WEAPON_BIZON, 'M'},
+		{ ItemDefinitionIndex::WEAPON_CZ75A, 'I'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_FLIP, 'v'},
+		{ ItemDefinitionIndex::WEAPON_AUG, 'U'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE_BUTTERFLY, '8'},
+		{ ItemDefinitionIndex::WEAPON_C4, 'O'},
+		{ ItemDefinitionIndex::WEAPON_KNIFE, ']'}
+	};
+
     // We don't want to Render weapons that are being held
     if ( ent->m_hOwnerEntity().IsValid() )
         return;
@@ -500,20 +616,20 @@ void Visuals::RenderWeapon ( C_BaseCombatWeapon* ent )
     if ( bbox.right == 0 || bbox.bottom == 0 )
         return;
 
-    Color clr = Color::White;//g_Config.GetColor("color_esp_weapons");
+    Color clr = Color::White; //g_Config.GetColor("color_esp_weapons");
 
     //Render::Get().RenderBox(bbox, clr);
 
-    VGSHelper::Get().DrawBox ( bbox.left, bbox.top, bbox.right, bbox.bottom, clr );
+    //VGSHelper::Get().DrawBox ( bbox.left, bbox.top, bbox.right, bbox.bottom, clr );
 
     auto name = clean_item_name ( ent->GetClientClass()->m_pNetworkName );
 
     auto sz = g_pDefaultFont->CalcTextSizeA ( 12.f, FLT_MAX, 0.0f, name );
     int w = bbox.right - bbox.left;
 
-
-    VGSHelper::Get().DrawText ( name, ( bbox.left + w * 0.5f ) - sz.x * 0.5f, bbox.bottom + 1, clr, 12 );
-    //Render::Get().RenderText(name, ImVec2((bbox.left + w * 0.5f) - sz.x * 0.5f, bbox.bottom + 1), 12.f, clr);
+    //VGSHelper::Get().DrawText ( name, ( bbox.left + w * 0.5f ) - sz.x * 0.5f, bbox.bottom + 1, clr, 12 );
+	VGSHelper::Get().DrawIcon((wchar_t)weapon_icons[ent->GetItemDefinitionIndex()], (bbox.left + w * 0.5f) - sz.x * 0.5f, bbox.bottom + 1, clr);
+	//Render::Get().RenderText(name, ImVec2((bbox.left + w * 0.5f) - sz.x * 0.5f, bbox.bottom + 1), 12.f, clr);
 }
 //--------------------------------------------------------------------------------
 void Visuals::RenderDefuseKit ( C_BaseEntity* ent )
@@ -526,7 +642,7 @@ void Visuals::RenderDefuseKit ( C_BaseEntity* ent )
     if ( bbox.right == 0 || bbox.bottom == 0 )
         return;
 
-    Color clr = g_Config.GetColor ( "color_esp_defuse" );
+	Color clr = Color::White; //g_Config.GetColor ( "color_esp_defuse" );
     //Render::Get().RenderBox(bbox, clr);
     VGSHelper::Get().DrawBox ( bbox.left, bbox.top, bbox.right, bbox.bottom, clr );
 
@@ -563,35 +679,23 @@ void Visuals::RenderPlantedC4 ( C_BaseEntity* ent )
 
 void Visuals::RenderSoundESP()
 {
-	if (!g_Saver.StepInfo.empty())
+	/*CUtlVector<SndInfo_t> sndList;
+	sndList.RemoveAll();
+	g_EngineSound->GetActiveSounds(sndList); // can be crashed if your call in dx thread
+
+	for (int i = 0; i < sndList.Count(); i++)
 	{
-		for (size_t i = 0; i < g_Saver.StepInfo.size(); i++)
-		{
-			if (g_GlobalVars->realtime - g_Saver.StepInfo[i].SoundTime < 1.f)
-			{
-				Vector pos;
-				auto sz = g_pDefaultFont->CalcTextSizeA(12.f, FLT_MAX, 0.0f, "Step");
-				Math::WorldToScreen(g_Saver.StepInfo[i].Origin, pos);
+		if (!sndList[i].m_pOrigin)
+			continue;
 
-				VGSHelper::Get().DrawText("Step", pos.x - sz.x * 0.5f, pos.y, Color::White, 12);
-			}
-			/*else
-			{
-				g_Saver.StepInfo.erase(g_Saver.StepInfo.begin() + i);
-			}*/
-		}
-	}
+		C_BasePlayer* pTarget = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(sndList[i].m_nSoundSource));
 
-	/*C_BaseEntity* ent2 = static_cast<C_BaseEntity*>(g_EntityList->GetClientEntity(g_Saver.StepInfo.UserID));
-	if (ent != ent2 || g_Saver.StepInfo.Time > .5f)
-		return;
-	Vector pos;
-	//auto bbox = GetBBox(ent->GetRenderOrigin);
-	auto sz = g_pDefaultFont->CalcTextSizeA(12.f, FLT_MAX, 0.0f, "Step");
-	//int w = bbox.right - bbox.left;
-	Math::WorldToScreen(ent->GetRenderOrigin(), pos);
+			if (static_cast<C_BasePlayer*>(g_LocalPlayer) == pTarget)
+				continue;
 
-	VGSHelper::Get().DrawText("Step", pos.x - sz.x * 0.5f, pos.y, Color::White, 12);*/
+		//Engine::Renderer::Draw::DrawWaves(*sndList[i].m_pOrigin, 20, false, Color(255, 255, 255, 255));
+	}*/
+
 }
 
 void Visuals::DrawEnemyCircle()
@@ -653,11 +757,13 @@ void Visuals::DrawEnemyCircle()
 }
 
 
+
 void Visuals::DrawGrenade ( C_BaseEntity* ent )
 {
     ClassId id = ent->GetClientClass()->m_ClassID;
     Vector vGrenadePos2D;
     Vector vGrenadePos3D = ent->m_vecOrigin();
+
 
     if ( !Math::WorldToScreen ( vGrenadePos3D, vGrenadePos2D ) )
         return;
@@ -665,8 +771,8 @@ void Visuals::DrawGrenade ( C_BaseEntity* ent )
     switch ( id )
     {
         case ClassId::CSmokeGrenadeProjectile:
-            VGSHelper::Get().DrawText ( "smoke", vGrenadePos2D.x, vGrenadePos2D.y, Color::White, 12 );
-            break;
+			VGSHelper::Get().DrawIcon((wchar_t)'k', vGrenadePos2D.x, vGrenadePos2D.y, Color::White);
+			break;
 
         case ClassId::CBaseCSGrenadeProjectile:
         {
@@ -690,32 +796,45 @@ void Visuals::DrawGrenade ( C_BaseEntity* ent )
 
             if ( name.find ( "incendiarygrenade" ) != std::string::npos || name.find ( "fraggrenade" ) != std::string::npos )
             {
-                VGSHelper::Get().DrawText ( "frag", vGrenadePos2D.x, vGrenadePos2D.y, Color::Red, 12 );
-                return;
+                //VGSHelper::Get().DrawText ( "frag", vGrenadePos2D.x, vGrenadePos2D.y, Color::Red, 12 );
+				VGSHelper::Get().DrawIcon((wchar_t)'n', vGrenadePos2D.x, vGrenadePos2D.y, Color::White);
+				return;
             }
 
-            VGSHelper::Get().DrawText ( "flash", vGrenadePos2D.x, vGrenadePos2D.y, Color::White, 12 );
+			VGSHelper::Get().DrawIcon((wchar_t)'i', vGrenadePos2D.x, vGrenadePos2D.y, Color::White);
+            //VGSHelper::Get().DrawText ( "flash", vGrenadePos2D.x, vGrenadePos2D.y, Color::White, 12 );
             break;
         }
 
         case ClassId::CMolotovProjectile:
-            VGSHelper::Get().DrawText ( "molo", vGrenadePos2D.x, vGrenadePos2D.y, Color::Red, 12 );
+            //VGSHelper::Get().DrawText ( "molo", vGrenadePos2D.x, vGrenadePos2D.y, Color::Red, 12 );
+			VGSHelper::Get().DrawIcon((wchar_t)'l', vGrenadePos2D.x, vGrenadePos2D.y, Color::White);
             break;
 
         case ClassId::CDecoyProjectile:
-            VGSHelper::Get().DrawText ( "decoy", vGrenadePos2D.x, vGrenadePos2D.y, Color::White, 12 );
-            break;
+            //VGSHelper::Get().DrawText ( "decoy", vGrenadePos2D.x, vGrenadePos2D.y, Color::White, 12 );
+			VGSHelper::Get().DrawIcon((wchar_t)'m', vGrenadePos2D.x, vGrenadePos2D.y, Color::White);
+			break;
     }
 
 	for (int i = 0; i < g_Saver.MolotovInfo.size(); i++)
 	{
 		float CurrentTime = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
-		//Render::Get().RenderCircle3D(g_Saver.MolotovInfo[i].position, 32.f, 100.f, Color::Red);
-		VGSHelper::Get().Draw3DCircle(g_Saver.MolotovInfo[i].position, 150.f, 15);
+		VGSHelper::Get().Draw3DCircle(g_Saver.MolotovInfo[i].Position, 150.f, 33, Color::Red);
 
 		Vector screen;
-		const std::string to_render = "fire: " + std::to_string(g_Saver.MolotovInfo[i].timeToExpire - CurrentTime); //hdr->szName;
-		if (Math::WorldToScreen(g_Saver.MolotovInfo[i].position, screen))
+		const std::string to_render = "time: " + std::to_string(g_Saver.MolotovInfo[i].TimeToExpire - CurrentTime); //hdr->szName;
+		if (Math::WorldToScreen(g_Saver.MolotovInfo[i].Position, screen))
+			VGSHelper::Get().DrawText(to_render, screen.x, screen.y, Color::Red, 12);
+	}
+
+	for (int i = 0; i < g_Saver.SmokeInfo.size(); i++)
+	{
+		float CurrentTime = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
+
+		Vector screen;
+		const std::string to_render = "smoke: " + std::to_string(g_Saver.SmokeInfo[i].TimeToExpire - CurrentTime); //hdr->szName;
+		if (Math::WorldToScreen(g_Saver.SmokeInfo[i].Position, screen))
 			VGSHelper::Get().DrawText(to_render, screen.x, screen.y, Color::White, 12);
 	}
 
@@ -1205,8 +1324,8 @@ void Visuals::AddToDrawList()
     //bool esp_outline = g_Config.GetBool("esp_misc_outline");
 	bool rbot_resolver = Settings::RageBot::Resolver; 
 
-    bool esp_dropped_weapons = g_Config.GetBool ( "esp_dropped_weapons" );
-    bool esp_planted_c4 = g_Config.GetBool ( "esp_planted_c4" );
+	bool esp_dropped_weapons = Settings::Visual::GlobalESP.DropedWeaponsEnabled;
+	bool esp_planted_c4 = Settings::Visual::GlobalESP.BombEnabled;
 
     for ( auto i = 1; i <= g_EntityList->GetHighestEntityIndex(); ++i )
     {
@@ -1358,6 +1477,9 @@ void VGSHelper::Init()
         g_VGuiSurface->SetFontGlyphSet ( fonts[size], "Sans-serif", size, 700, 0, 0, FONTFLAG_DROPSHADOW );
     }
 
+	WeaponFont = g_VGuiSurface->CreateFont_();
+	g_VGuiSurface->SetFontGlyphSet(WeaponFont, "AstriumWep", 30, 700, 0, 0, FONTFLAG_ANTIALIAS);
+
     Inited = true;
 }
 
@@ -1497,7 +1619,7 @@ void VGSHelper::DrawFilledCircle(float x, float y, float r, int seg, Color clr)
 	//g_pSurface->DrawPolyLine(pointsx.data(), pointsy.data(), points); // only if you want en extra outline
 }
 
-void VGSHelper::Draw3DCircle(Vector position, float radius, int seg)
+void VGSHelper::Draw3DCircle(Vector position, float radius, int seg, Color clr)
 {
 	Vector prev_scr_pos{ -1, -1, -1 };
 	Vector scr_pos;
@@ -1523,19 +1645,20 @@ void VGSHelper::Draw3DCircle(Vector position, float radius, int seg)
 		{
 			if (prev_scr_pos != Vector{ -1, -1, -1 })
 			{
-				//int hue = RAD2DEG(rotation) + hue_offset;
-
-				//Color color = Color::FromHSB(1, hue / 360.f, 1);
-
-				g_VGuiSurface->DrawSetColor(Color::Red);
+				g_VGuiSurface->DrawSetColor(clr);
 				g_VGuiSurface->DrawLine(prev_scr_pos.x, prev_scr_pos.y, scr_pos.x, scr_pos.y);
-				//g_Render.Line(prev_scr_pos.x, prev_scr_pos.y, scr_pos.x, scr_pos.y, color);
-				//Render::Get().Render
 			}
 			prev_scr_pos = scr_pos;
 		}
 	}
-	//hue_offset -= 0.5;*/
+}
+
+void VGSHelper::DrawIcon(wchar_t icon, float x, float y, Color clr, int size)
+{
+	g_VGuiSurface->DrawSetTextColor(clr);
+	g_VGuiSurface->DrawSetTextPos(x, y);
+	g_VGuiSurface->DrawSetTextFont(WeaponFont);
+	g_VGuiSurface->DrawPrintText(&icon, 1);
 }
 
 ImVec2 VGSHelper::GetSize ( std::string text, int size )

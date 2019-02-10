@@ -135,8 +135,8 @@ void ImGui::EndGroupBox()
 const char* const KeyNames[] =
 {
     "Unknown",
-    "VK_LBUTTON",
-    "VK_RBUTTON",
+    "MOUSE 1",
+    "MOUSE 2",
     "VK_CANCEL",
     "VK_MBUTTON",
     "VK_XBUTTON1",
@@ -308,7 +308,7 @@ static bool IsKeyPressedMap(ImGuiKey key, bool repeat = true)
     return (key_index >= 0) ? ImGui::IsKeyPressed(key_index, repeat) : false;
 }
 
-bool ImGui::Hotkey(const char* label, int* k, const ImVec2& size_arg)
+bool ImGui::Hotkey(const char* label, int* k, const int &type, const ImVec2& size_arg)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems)
@@ -425,22 +425,31 @@ bool ImGui::Hotkey(const char* label, int* k, const ImVec2& size_arg)
     // Render
     // Select which buffer we are going to display. When ImGuiInputTextFlags_NoLiveEdit is Set 'buf' might still be the old value. We Set buf to NULL to prevent accidental usage from now on.
 
-    char buf_display[64] = "None";
+	char buf_display[64] = "None";
+	char buf_type[5];
+	switch (type)
+	{
+	case 0:
+		strcpy_s(buf_type, "Hold");
+		break;
+	case 1:
+		strcpy_s(buf_type, "Tap");
+		break;
+	default:
+		break;
+	}
 
     ImGui::RenderFrame(frame_bb.Min, frame_bb.Max, ImGui::GetColorU32(ImVec4(0.20f, 0.25f, 0.30f, 1.0f)), true, style.FrameRounding);
 
     if (*k != 0 && g.ActiveId != id)
-    {
         strcpy_s(buf_display, KeyNames[*k]);
-    }
     else if (g.ActiveId == id)
-    {
         strcpy_s(buf_display, "<Press a key>");
-    }
 
     const ImRect clip_rect(frame_bb.Min.x, frame_bb.Min.y, frame_bb.Min.x + size.x, frame_bb.Min.y + size.y); // Not using frame_bb.Max because we have adjusted size
     ImVec2 render_pos = frame_bb.Min + style.FramePadding;
     ImGui::RenderTextClipped(frame_bb.Min + style.FramePadding, frame_bb.Max - style.FramePadding, buf_display, NULL, NULL, style.ButtonTextAlign, &clip_rect);
+	ImGui::RenderTextClipped(frame_bb.Min + style.FramePadding, frame_bb.Max - style.FramePadding, buf_type, NULL, NULL, ImVec2(0.95f, 0.f), &clip_rect);
     //RenderTextClipped(frame_bb.Min + style.FramePadding, frame_bb.Max - style.FramePadding, buf_display, NULL, NULL, GetColorU32(ImGuiCol_Text), style.ButtonTextAlign, &clip_rect);
     //draw_window->DrawList->AddText(g.Font, g.FontSize, render_pos, GetColorU32(ImGuiCol_Text), buf_display, NULL, 0.0f, &clip_rect);
 
