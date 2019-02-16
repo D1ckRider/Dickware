@@ -239,6 +239,7 @@ namespace Settings
 		extern Color DamageIndicatorColor;
 		extern bool DisableScopeZoom;
 		extern bool NightMode;
+		extern bool DisablePP;
 		extern int ViewModelFOV;
 		extern int FOV;
 		extern bool NoSmoke;

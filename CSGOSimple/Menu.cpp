@@ -744,6 +744,7 @@ void Menu::RenderVisuals()
 			Components.Checkbox("Bullet Tracers",  Settings::Visual::BulletTracers);
 			Components.Checkbox("No Flash",  Settings::Visual::NoFlash);
 			Components.Checkbox("No Smoke",  Settings::Visual::NoSmoke);
+			Components.Checkbox("Disable Post-processing", Settings::Visual::DisablePP);
 			Components.Checkbox("Night Mode", Settings::Visual::NightMode);
 			Components.ColorCheckbox("Nade Trajectory", Settings::Visual::NadeTracerEnabled, Settings::Visual::NadeTracerColor);
 			Components.ColorCheckbox("Spread Circle", Settings::Visual::SpreadCircleEnabled, Settings::Visual::SpreadCircleColor);

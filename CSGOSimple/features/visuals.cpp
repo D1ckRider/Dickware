@@ -526,12 +526,14 @@ void Visuals::Player::RenderResolverInfo()
 void Visuals::RenderCrosshair()
 {
     int w, h;
+	if (!g_LocalPlayer->m_hActiveWeapon()->IsSniper())
+		return;
 
     g_EngineClient->GetScreenSize ( w, h );
 
     int cx = w / 2;
     int cy = h / 2;
-    Color clr = g_Config.GetColor ( "color_esp_crosshair" );
+	Color clr = Color::Red; //g_Config.GetColor ( "color_esp_crosshair" );
     VGSHelper::Get().DrawLine ( cx - 5, cy, cx + 5, cy, clr );
     VGSHelper::Get().DrawLine ( cx, cy - 5, cx, cy + 5, clr );
 }
@@ -1033,6 +1035,21 @@ void Visuals::BAimIndicator()
 
 }
 
+void Visuals::DesyncIndicator()
+{
+	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
+		return;
+
+	Color clr = Color::Red;
+	int x, y;
+	g_EngineClient->GetScreenSize(x, y);
+
+	std::string text = "Desync: " + std::to_string(g_LocalPlayer->GetMaxDesyncAngle());
+	ImVec2 t = g_pDefaultFont->CalcTextSizeA(34.f, FLT_MAX, 0.0f, text.data());
+
+	Render::Get().RenderTextNoOutline(text, ImVec2(10, y - 100.f - CurrentIndicatorHeight), 34.f, clr);
+}
+
 void Visuals::AutowallCrosshair()
 {
     /*
@@ -1442,6 +1459,7 @@ void Visuals::AddToDrawList()
         LbyIndicator();
         PingIndicator();
 		BAimIndicator();
+		DesyncIndicator();
 
         if ( g_Config.GetInt ( "misc_fakelag_mode" ) == 1 )
             LCIndicator();
@@ -1450,7 +1468,7 @@ void Visuals::AddToDrawList()
     if ( g_Config.GetBool ( "vis_misc_autowall_crosshair" ) )
         AutowallCrosshair();
 
-	if (Settings::RageBot::Enabled)
+	if (Settings::RageBot::Enabled && Settings::RageBot::EnabledAA)
 		ManualAAIndicator();
 
 	if ( Settings::Visual::SpreadCircleEnabled )
@@ -1465,7 +1483,7 @@ void Visuals::AddToDrawList()
 		RenderDamageIndicators();
 
     CurrentIndicatorHeight = 0.f;
-    //if (g_Config.GetBool("esp_crosshair"))
+    //if (g_LocalPlayer)
     //	RenderCrosshair();
 }
 
@@ -1478,7 +1496,7 @@ void VGSHelper::Init()
     }
 
 	WeaponFont = g_VGuiSurface->CreateFont_();
-	g_VGuiSurface->SetFontGlyphSet(WeaponFont, "AstriumWep", 30, 700, 0, 0, FONTFLAG_ANTIALIAS);
+	g_VGuiSurface->SetFontGlyphSet(WeaponFont, "undefeated", 30, 700, 0, 0, FONTFLAG_ANTIALIAS);
 
     Inited = true;
 }

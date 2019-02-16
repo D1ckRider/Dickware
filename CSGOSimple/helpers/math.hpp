@@ -24,6 +24,28 @@ namespace Math
 		i >>= 1;
 		return *(float*)&i;
 	}
+
+	inline float NormalizeAngle(float flAng)
+	{
+		// rotate left by 180 degrees
+		flAng = flAng + 180.0f;
+
+		// normalize to -360..360 degrees
+		flAng = fmod(flAng, 360.0f);
+		if (flAng != flAng) // http://stackoverflow.com/a/570694
+			// edge case error handling
+			flAng = 0.0f;
+
+		// rotate negative angles left by 360 degrees to get the positive equivalent
+		if (flAng < 0.0f)
+			flAng += 360.0f;
+
+		// rotate right by 180 degrees
+		flAng -= 180.0f;
+
+		return flAng;
+	}
+
 	float VectorDistance(const Vector& v1, const Vector& v2);
 	QAngle CalcAngle(const Vector& src, const Vector& dst);
 	Vector CalcAngleV(const Vector& src, const Vector& dst);
@@ -51,6 +73,7 @@ namespace Math
 		}
 		vec[2] = 0.f;
 	}
+	
 	void inline SinCos(float x, float* s, float* c)
 	{
 		__asm

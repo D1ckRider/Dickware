@@ -333,6 +333,7 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "vis_bullet_tracers", Visual::BulletTracers);
 	SaveValue(j, "vis_noflash", Visual::NoFlash);
 	SaveValue(j, "vis_nightmode", Visual::NightMode);
+	SaveValue(j, "vis_disabe_pp", Visual::DisablePP);
 	SaveValue(j, "vis_nadetracer_enabled", Visual::NadeTracerEnabled);
 	SaveColorValue(j, "vis_nadetracer_color", Visual::NadeTracerColor);
 	SaveValue(j, "vis_spread_cirlce_enabled", Visual::SpreadCircleEnabled);
@@ -527,6 +528,7 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "vis_noscope_overlay", 	Visual::NoScopeOverlay);
 	LoadValue(j, "vis_bullet_tracers", 	Visual::BulletTracers);
 	LoadValue(j, "vis_noflash", 	Visual::NoFlash);
+	LoadValue(j, "vis_disabe_pp", Visual::DisablePP);
 	LoadValue(j, "vis_nightmode", Visual::NightMode);
 	LoadValue(j, "vis_nadetracer_enabled", Visual::NadeTracerEnabled);
 	LoadColorValue(j, "vis_nadetracer_color", Visual::NadeTracerColor);
@@ -561,11 +563,11 @@ void Settings::LoadSettings(std::string fileName)
 void Settings::SaveSkinsSettings()
 {
 	std::string fileName = AppDataFolder + "skins";
-	
+
 	std::ofstream o(fileName);
 	json j;
 
-	/*int i = 0;
+	int i = 0;
 	for (auto lt : Skins::m_items)
 	{
 		SaveNestedValue(j, std::to_string(i), "id", lt.first);
@@ -583,24 +585,48 @@ void Settings::SaveSkinsSettings()
 		SaveNestedValue(j, std::to_string(i), "custom_name", lt.second.custom_name);
 		i++;
 	}
+	SaveValue(j, "items", i);
 
-	o << std::setw(4) << j << std::endl;*/
+	o << std::setw(4) << j << std::endl;
+
 }
 
 void Settings::LoadSkinsSettings()
 {
 	std::string fileName = AppDataFolder + "skins";
 
-	/*std::ifstream i(fileName);
-	json j;
-	i >> j;*/
+	std::ifstream i(fileName);
 
-	/*try
+	try
 	{
-		auto ifile = std::ifstream(fileName);
-		if (ifile.good())
+		//auto ifile = std::ifstream(fileName);
+		if (i.good())
 		{
-			Skins::m_items = json::parse(ifile).get<std::vector<item_setting>>();
+			json j;
+			i >> j;
+			int id;
+			int items;
+			LoadValue(j, "items", items);
+			item_setting temp_settings;
+			for (int i = 0; i < items; i++)
+			{
+				LoadNestedValue(j, std::to_string(i), "id", id);
+				//LoadNestedValue(j, std::to_string(i), "item_name", temp_settings.name);
+				LoadNestedValue(j, std::to_string(i), "enabled", temp_settings.enabled);
+				LoadNestedValue(j, std::to_string(i), "definition_vector_index", temp_settings.definition_vector_index);
+				LoadNestedValue(j, std::to_string(i), "definition_index", temp_settings.definition_index);
+				LoadNestedValue(j, std::to_string(i), "paint_kit_vector_index", temp_settings.paint_kit_vector_index);
+				LoadNestedValue(j, std::to_string(i), "paint_kit_index", temp_settings.paint_kit_index);
+				LoadNestedValue(j, std::to_string(i), "definition_override_vector_index", temp_settings.definition_override_vector_index);
+				LoadNestedValue(j, std::to_string(i), "definition_override_index", temp_settings.definition_override_index);
+				LoadNestedValue(j, std::to_string(i), "seed", temp_settings.seed);
+				LoadNestedValue(j, std::to_string(i), "stat_trak", temp_settings.stat_trak);
+				LoadNestedValue(j, std::to_string(i), "wear", temp_settings.wear);
+				Skins::m_items.insert({ id, temp_settings });
+				//LoadNestedValue(j, std::to_string(i), "custom_name", temp_settings.custom_name);
+			}
+
+			//Skins::m_items = json::parse(ifile).get<std::vector<item_setting>>();
 			g_ClientState->ForceFullUpdate();
 		}
 	}
@@ -609,7 +635,6 @@ void Settings::LoadSkinsSettings()
 		// Config file doesn't exists or is malformed, just ignore it
 		// This will probably crash if you use a manual mapper that doesnt do proper exception handling
 	}
-	*/
 }
 
 void Settings::ResetRagebot()
@@ -729,6 +754,7 @@ void Settings::ResetVisuals()
 	Visual::DisableScopeZoom = false;
 	Visual::ViewModelFOV = 80;
 	Visual::FOV = 80;
+	Visual::DisablePP = false;
 	Visual::NightMode = false;
 	Visual::NoSmoke = false;
 	Visual::Hitmarker = false;
@@ -998,6 +1024,7 @@ namespace Settings::Visual
 	int FOV = 80;
 	bool NoSmoke = false;
 	bool NightMode = false;
+	bool DisablePP = false;
 	bool Hitmarker = false;
 	bool HitmarkerSound = false;
 	int RagdollForce = 0;

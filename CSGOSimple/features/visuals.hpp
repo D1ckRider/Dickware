@@ -90,7 +90,6 @@ public:
 	void RenderPlantedC4(C_BaseEntity* ent);
 	void RenderSoundESP();
 	void DrawEnemyCircle();
-	//void RenderBullettracers();
 	void DrawGrenade(C_BaseEntity* ent);
 	void DrawDangerzoneItem(C_BaseEntity* ent, float maxRange);
 	void ThirdPerson();
@@ -100,6 +99,7 @@ public:
 	void PingIndicator();
 	void LCIndicator();
 	void BAimIndicator();
+	void DesyncIndicator();
 
 	void AutowallCrosshair();
 	void RenderDamageIndicators();

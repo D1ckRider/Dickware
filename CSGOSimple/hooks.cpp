@@ -437,6 +437,9 @@ namespace Hooks
         if ( g_Unload )
             return;
 
+		static bool* s_bOverridePostProcessingDisable = *(bool**)(Utils::PatternScan(GetModuleHandleW(L"client_panorama.dll"), "80 3D ? ? ? ? ? 53 56 57 0F 85") + 0x2);
+		*s_bOverridePostProcessingDisable = Settings::Visual::DisablePP;
+
         if ( !panelId )
         {
             const auto panelName = g_VGuiPanel->GetName ( panel );

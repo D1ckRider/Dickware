@@ -84,6 +84,9 @@ int AntiAim::GetFPS()
 
 void AntiAim::SlideWalk ( CUserCmd* cmd )
 {
+	if (g_LocalPlayer->m_nMoveType() == MOVETYPE_LADDER)
+		return;
+
     if ( cmd->forwardmove > 0 )
     {
         cmd->buttons |= IN_BACK;
@@ -404,7 +407,7 @@ float AntiAim::GetMaxDesyncYaw()
 
     float unk1 = ((animstate->m_flStopToFullRunningFraction * -0.30000001) - 0.19999999) * speedfraction;
     float unk2 = unk1 + 1.f;
-    float unk3;
+    //float unk3;
 
     if (duckammount > 0)
     	unk2 += +((duckammount * speedfactor) * (0.5f - unk2));
@@ -412,7 +415,7 @@ float AntiAim::GetMaxDesyncYaw()
     //unk3 = *(float *)(animstate + 0x334) * unk2;
 	//unk3 = dynamic_cast<float>(&animstate + 0x334) * unk2;
 
-    return unk3;
+    return *(float*)((uintptr_t)animstate + 0x334) * unk2;
 }
 
 void AntiAim::LbyBreakerPrediction ( CUserCmd* cmd, bool& bSendPacket )
@@ -637,14 +640,26 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
 
         static QAngle LastRealAngle = QAngle ( 0, 0, 0 );
         //if (!g_Saver.FakelagCurrentlyEnabled) bSendPacket = cmd->tick_count % 2;
+
 		auto animstate = g_LocalPlayer->GetBasePlayerAnimState();
+		static bool b_switch = false;
+		float feet_yaw = animstate->m_flGoalFeetYaw;
+		float feet_delta = Math::NormalizeAngle(cmd->viewangles.yaw - feet_yaw);
+		float fake_yaw;
+		float desync_delta = g_LocalPlayer->GetMaxDesyncAngle(); //GetMaxDesyncYaw();
+		float delta = std::clamp(Math::NormalizeAngle(desync_delta - feet_delta), -desync_delta, desync_delta);
+		float negative_delta = std::clamp(Math::NormalizeAngle(desync_delta + feet_delta), -desync_delta, desync_delta);
+		bool c_switch = fabsf(negative_delta) > fabsf(delta);
+
+		if (fabsf(feet_delta) > 20.f)
+			b_switch = !c_switch;
+
+		b_switch ? fake_yaw = cmd->viewangles.yaw - negative_delta : fake_yaw = cmd->viewangles.yaw + delta;
+
 
         if ( !bSendPacket && !( cmd->buttons & IN_ATTACK ) )
         {
-            //static bool bFlip = false;
-			cmd->viewangles += DesyncFlip ? 58.f : -58.f;
-			//animstate->m_flGoalFeetYaw += 58.f;
-			//cmd->viewangles += 58.f;
+			cmd->viewangles += fake_yaw;
 			g_Saver.AADesyncAngle = cmd->viewangles;
         }
 

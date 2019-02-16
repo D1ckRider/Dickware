@@ -368,6 +368,8 @@ public:
         return *(std::array<float, 24>*)((uintptr_t)this + _m_flPoseParameter);
     }
 
+	float GetMaxDesyncAngle();
+	
 
     PNETVAR(CHandle<C_BaseCombatWeapon>, m_hMyWeapons, "DT_BaseCombatCharacter", "m_hMyWeapons");
     PNETVAR(CHandle<C_BaseAttributableItem>, m_hMyWearables, "DT_BaseCombatCharacter", "m_hMyWearables");

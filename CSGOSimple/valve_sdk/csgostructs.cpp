@@ -213,6 +213,25 @@ bool* C_BaseCombatWeapon::m_bCustomMaterialInitialized()
     return (bool*)((uintptr_t)this + currentCommand);
 }
 
+float C_BasePlayer::GetMaxDesyncAngle()
+{
+	{
+		auto animstate = this->GetBasePlayerAnimState();
+		float duckammount = animstate->m_fDuckAmount;
+		float speedfraction = std::max(0.f, std::min(animstate->m_flFeetSpeedForwardsOrSideWays, 1.f));
+
+		float speedfactor = std::max(0.f, std::max(1.f, animstate->m_flFeetSpeedUnknownForwardOrSideways));
+
+		float unk1 = ((animstate->m_flStopToFullRunningFraction * -0.30000001) - 0.19999999) * speedfraction;
+		float unk2 = unk1 + 1.f;
+
+		if (duckammount > 0)
+			unk2 += +((duckammount * speedfactor) * (0.5f - unk2));
+
+		return *(float*)((uintptr_t)animstate + 0x334) * unk2;
+	}
+}
+
 CUserCmd*& C_BasePlayer::m_pCurrentCommand()
 {
     static auto currentCommand = *(uint32_t*)(Utils::PatternScan(GetModuleHandleW(L"client_panorama.dll"), "89 BE ? ? ? ? E8 ? ? ? ? 85 FF") + 2);
@@ -260,7 +279,7 @@ int C_BasePlayer::GetSequenceActivity(int sequence)
 
 CBasePlayerAnimState* C_BasePlayer::GetBasePlayerAnimState()
 {
-    return *(CBasePlayerAnimState**)((DWORD)this + 0x38A0);
+    return *(CBasePlayerAnimState**)((DWORD)this + 0x3900);
 }
 
 
