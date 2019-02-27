@@ -50,10 +50,11 @@ private:
     float Simtimes[128];
 
 
-	void FakeDuck ( CUserCmd* cmd, bool &bSendPackets);
-    void AutoStop ( CUserCmd* cmd );
+	void FakeDuck	( CUserCmd* cmd, bool &bSendPackets);
+	void FakeDuck	( CUserCmd* cmd );
+    void AutoStop	( CUserCmd* cmd );
     void AutoCrouch ( CUserCmd* cmd );
-	void SlowWalk ( CUserCmd* cmd, float speed );
+	void SlowWalk	( CUserCmd* cmd, float speed );
 
     CUserCmd* CurrentCmd = nullptr;
 

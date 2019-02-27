@@ -1,5 +1,6 @@
 
 #include "valve_sdk/csgostructs.hpp"
+#include <Windows.h>
 
 #pragma once
 
@@ -19,8 +20,10 @@ struct ImpactInfoStruct
 
 struct StepInfoStruct
 {
-	Vector Origin = Vector(0, 0, 0);
-	float SoundTime = 0.f;
+	Vector Origin = Vector(0,0,0);
+	float Time = 0.f;
+	float Radius = 0.f;
+	int EntityIndex = -1;
 };
 
 struct DamageIndicator
@@ -105,6 +108,7 @@ public:
     bool LCbroken = false;
 
     HitmarkerInfoStruct HitmarkerInfo;
+	HMODULE csgo;
 
 	std::vector<DamageIndicator> DamageIndicators;
 	std::vector<StepInfoStruct> StepInfo;

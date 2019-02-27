@@ -224,7 +224,7 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "rbot_slowwalk", RageBot::SlowWalk);
 	SaveValue(j, "rbot_slowwalk_hotkey", RageBot::SlowWalkHotkey);
 	SaveValue(j, "rbot_fakeduck", RageBot::FakeDuck);
-	//SaveValue(j, "rbot_fakeduck_hotkey", RageBot::FakeDuckHotkey);
+	SaveValue(j, "rbot_fakeduck_hotkey", RageBot::FakeDuckHotkey);
 	SaveValue(j, "rbot_slowwalk_speed", RageBot::SlowWalkMod);
 
 	SaveValue(j, "rbot_fakelag_prediction", RageBot::FakelagPrediction);
@@ -419,7 +419,7 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "rbot_autocrouch", 	RageBot::AutoCrouch);
 	LoadValue(j, "rbot_slowwalk", 	RageBot::SlowWalk);
 	LoadValue(j, "rbot_slowwalk_hotkey", 	RageBot::SlowWalkHotkey);
-	//LoadValue(j, "rbot_fakeduck_hotkey", RageBot::FakeDuckHotkey);
+	LoadValue(j, "rbot_fakeduck_hotkey", RageBot::FakeDuckHotkey);
 	LoadValue(j, "rbot_slowwalk_speed", RageBot::SlowWalkMod);
 	LoadValue(j, "rbot_fakeduck", RageBot::FakeDuck);
 
@@ -661,7 +661,7 @@ void Settings::ResetRagebot()
 	RageBot::SlowWalk = false;
 	RageBot::SlowWalkHotkey = 0x0;
 	RageBot::FakeDuck = false;
-	//RageBot::FakeDuckHotkey = 0x0;
+	RageBot::FakeDuckHotkey = 0x0;
 	RageBot::SlowWalkMod = .0f;
 
 	RageBot::FakelagPrediction = false;
@@ -920,7 +920,7 @@ namespace Settings::RageBot
 	bool AutoCrouch = false;
 	bool SlowWalk = false;
 	int SlowWalkHotkey = 0x0;
-	//int FakeDuckHotkey = 0x0;
+	int FakeDuckHotkey = 0x0;
 	bool FakeDuck = false;
 	float SlowWalkMod = .0f; 
 

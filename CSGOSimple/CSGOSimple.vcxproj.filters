@@ -9,10 +9,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Header Files\SDK">
       <UniqueIdentifier>{532bd2d3-56d4-4b80-9705-133b9cef34df}</UniqueIdentifier>
     </Filter>
@@ -64,8 +60,14 @@
     <Filter Include="Source Files\Utils">
       <UniqueIdentifier>{abeeac52-f8d1-4290-99c4-401f590987dc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Helpers\DynSkin">
-      <UniqueIdentifier>{ad110c8d-015e-4937-ac0f-33d90ec463fd}</UniqueIdentifier>
+    <Filter Include="Source Files\Depenedcies">
+      <UniqueIdentifier>{e9f3a5f0-6f95-434c-bfee-46154193652b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Depenedcies">
+      <UniqueIdentifier>{65546513-accd-43fb-b139-4ca7026e4efb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{ab7af5b8-751e-4bee-8303-61f6eebe84c8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -257,6 +259,12 @@
     </ClCompile>
     <ClCompile Include="features\GrenadeTrajectory.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="definitions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Deps\lodepng.cpp">
+      <Filter>Source Files\Depenedcies</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -578,9 +586,6 @@
     <ClInclude Include="definitions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="json.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Settings.h">
       <Filter>Header Files\Settings</Filter>
     </ClInclude>
@@ -595,9 +600,6 @@
     </ClInclude>
     <ClInclude Include="features\Skinchanger.h">
       <Filter>Header Files\Features</Filter>
-    </ClInclude>
-    <ClInclude Include="helpers\DynSkin.h">
-      <Filter>Header Files\Helpers\DynSkin</Filter>
     </ClInclude>
     <ClInclude Include="features\TriggerBot.h">
       <Filter>Header Files\Features</Filter>
@@ -617,5 +619,42 @@
     <ClInclude Include="features\GrenadeTrajectory.h">
       <Filter>Header Files\Features</Filter>
     </ClInclude>
+    <ClInclude Include="json.hpp">
+      <Filter>Header Files\Depenedcies</Filter>
+    </ClInclude>
+    <ClInclude Include="Deps\lodepng.h">
+      <Filter>Header Files\Depenedcies</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers\C_Texture.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\AA_D_S.png">
+      <Filter>Resource</Filter>
+    </Image>
+    <Image Include="Textures\AA_D_US.png">
+      <Filter>Resource</Filter>
+    </Image>
+    <Image Include="Textures\AA_L_S.png">
+      <Filter>Resource</Filter>
+    </Image>
+    <Image Include="Textures\AA_L_US.png">
+      <Filter>Resource</Filter>
+    </Image>
+    <Image Include="Textures\AA_R_S.png">
+      <Filter>Resource</Filter>
+    </Image>
+    <Image Include="Textures\AA_R_US.png">
+      <Filter>Resource</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="cheat.rc">
+      <Filter>Resource</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

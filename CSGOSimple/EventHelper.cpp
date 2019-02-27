@@ -23,6 +23,9 @@ void EventHelper::listener::Start()
 		throw std::exception("Failed to register the event");
 	if (!g_GameEvents->AddListener(this, "smokegrenade_expired", false))
 		throw std::exception("Failed to register the event");
+
+	if (!g_GameEvents->AddListener(this, "round_end", false))
+		throw std::exception("Failed to register the event");
 }
 
 void EventHelper::listener::Stop()

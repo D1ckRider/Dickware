@@ -105,6 +105,8 @@
     <ClCompile Include="ClantagChanger.cpp" />
     <ClCompile Include="ConfigSystem.cpp" />
     <ClCompile Include="ConsoleHelper.cpp" />
+    <ClCompile Include="definitions.cpp" />
+    <ClCompile Include="Deps\lodepng.cpp" />
     <ClCompile Include="EnginePrediction.cpp" />
     <ClCompile Include="EventHelper.cpp" />
     <ClCompile Include="Fakelag.cpp" />
@@ -172,6 +174,7 @@
     <ClInclude Include="ConsoleHelper.h" />
     <ClInclude Include="datamap.hpp" />
     <ClInclude Include="definitions.h" />
+    <ClInclude Include="Deps\lodepng.h" />
     <ClInclude Include="droid.hpp" />
     <ClInclude Include="EnginePrediction.h" />
     <ClInclude Include="EventHelper.h" />
@@ -185,7 +188,7 @@
     <ClInclude Include="features\TriggerBot.h" />
     <ClInclude Include="features\visuals.hpp" />
     <ClInclude Include="FontManager.h" />
-    <ClInclude Include="helpers\DynSkin.h" />
+    <ClInclude Include="helpers\C_Texture.h" />
     <ClInclude Include="helpers\input.hpp" />
     <ClInclude Include="helpers\ItemDefinitions.h" />
     <ClInclude Include="helpers\KitParser.h" />
@@ -215,6 +218,7 @@
     <ClInclude Include="Rbot.h" />
     <ClInclude Include="render.hpp" />
     <ClInclude Include="Resolver.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="RuntimeSaver.h" />
     <ClInclude Include="Settings.h" />
     <ClInclude Include="singleton.hpp" />
@@ -281,6 +285,17 @@
     <ClInclude Include="valve_sdk\misc\UtlVector.hpp" />
     <ClInclude Include="valve_sdk\misc\vfunc.hpp" />
     <ClInclude Include="valve_sdk\netvars.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="cheat.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Textures\AA_D_S.png" />
+    <Image Include="Textures\AA_D_US.png" />
+    <Image Include="Textures\AA_L_S.png" />
+    <Image Include="Textures\AA_L_US.png" />
+    <Image Include="Textures\AA_R_S.png" />
+    <Image Include="Textures\AA_R_US.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

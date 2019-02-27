@@ -1,4 +1,4 @@
-
+﻿
 #include "Lbot.h"
 #include "helpers\math.hpp"
 #include "Logger.h"
@@ -56,12 +56,13 @@ void Lbot::OnCreateMove(CUserCmd* cmd)
 		if (weapon->IsPistol() && WeaponAutopistol)
 			AutoPistol(cmd);
 
+	//StandaloneRCS(cmd);
     if (WeaponRcs)
-        ResetRecoil(cmd);
+		ResetRecoil(cmd);
     if (WeaponFov != 0.f)
         DoAimbot(cmd, local, weapon);
     if (WeaponRcs)
-        RemoveRecoil(local, cmd);
+		RemoveRecoil(local, cmd);
 
     //Math::NormalizeAngles(cmd->viewangles);
 
@@ -193,7 +194,7 @@ int Lbot::GetBestTarget(C_BasePlayer* local, C_BaseCombatWeapon* weapon, CUserCm
             {
                 continue;
             }
-            if (!local->CanSeePlayer(local, pos))
+            if (!local->CanSeePlayer(local, pos, true))
             {
                 continue;
             }
@@ -266,7 +267,7 @@ int Lbot::GetBestTarget(C_BasePlayer* local, C_BaseCombatWeapon* weapon, CUserCm
                             break;
                     }
 
-                    if (!local->CanSeePlayer(local, record->hitboxes[hitbox]))
+                    if (!local->CanSeePlayer(local, record->hitboxes[hitbox], true))
                     {
                         continue;
                     }
@@ -295,13 +296,13 @@ int Lbot::GetBestTarget(C_BasePlayer* local, C_BaseCombatWeapon* weapon, CUserCm
 
 void Lbot::ResetRecoil(CUserCmd* cmd)
 {
-    cmd->viewangles += LastAimpunchRemove;
+	cmd->viewangles += LastAimpunchRemove;
 }
 
 void Lbot::AutoPistol(CUserCmd * cmd)
 {
-	float NextAttack = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack();//m_pLocal->m_pWeaponEntity->GetNextPrimaryAttack();
-	float Tick = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick; //g_Lo->m_pEntity->GetTickBase() * g_GlobalVars->interval_per_tick;
+	float NextAttack = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack();
+	float Tick = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick; 
 
 	if (NextAttack < Tick)
 		return;
@@ -314,14 +315,14 @@ void Lbot::AutoPistol(CUserCmd * cmd)
 
 void Lbot::RemoveRecoil(C_BasePlayer* local, CUserCmd* cmd)
 {
-    //LastAimpunchRemove
-    QAngle odata = local->m_aimPunchAngle();
-    QAngle data = (odata + LastAimpunch);
-    LastAimpunch = odata;
-    data.pitch *= WeaponRecoilY;
-    data.yaw *= WeaponRecoilX;
-    cmd->viewangles -= data;
-    LastAimpunchRemove = data;
+	QAngle AimPunch = local->m_aimPunchAngle();
+	QAngle FinalViewAngle = (AimPunch + LastAimpunch);
+	LastAimpunch = AimPunch;
+	AimPunch.pitch *= WeaponRecoilY;
+	AimPunch.yaw *= WeaponRecoilX;
+	//Math::NormalizeAngles(AimPunch);
+	cmd->viewangles -= FinalViewAngle;
+	LastAimpunchRemove = FinalViewAngle;
 }
 
 void Lbot::DoAimbot(CUserCmd* cmd, C_BasePlayer* local, C_BaseCombatWeapon* weapon)
@@ -347,6 +348,10 @@ void Lbot::DoAimbot(CUserCmd* cmd, C_BasePlayer* local, C_BaseCombatWeapon* weap
         EntityFoundTime = g_GlobalVars->curtime;
         return;
     }
+
+	//auto TargetEntity = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(Target));
+	//if (g_LocalPlayer->CanSeePlayer(g_LocalPlayer, TargetEntity->GetRenderOrigin()))
+	//	return;
 
     if (LastEntity != Target)
     {

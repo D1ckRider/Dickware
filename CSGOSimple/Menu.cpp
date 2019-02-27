@@ -14,6 +14,9 @@ using WeaponType = Settings::WeaponType;
 using HitboxType = Settings::HitboxType;
 using AntiAimState = Settings::RageBot::AntiAimType;
 
+const std::string Version = "190217.01";
+std::string CurrentConfig = "None";
+
 ImFont* IconsFont;
 Menu::Menu()
 {
@@ -35,7 +38,7 @@ void Menu::Render()
     if ( !Loaded || g_Unload )
         return;
 
-    Components.StartWindow ( "DickWare", ImVec2 ( 860, 500 ), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize );
+	Components.StartWindow("DickWare", ImVec2(880, 515), ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar);
     static char* NavBarItems[] = { "s", "o", "t", "u", "4", "v" };
     static char* NavBarItemsText[] = { "ragebot", "legitbot", "visuals", "misc", "skinchanger", "settings" };
     static int NavBarSelected = 0;
@@ -66,12 +69,19 @@ void Menu::Render()
             break;
     }
 
+	Components.Columns(3, false);
+	Components.Label("DickWare Beta | Version: " + Version);
+	Components.NextColumn();
+	Components.Label("Current Config: " + CurrentConfig);
+	Components.NextColumn();
+	//Components.Label("Time: ");
+
     Components.EndWindow();
 }
 
 void Menu::RenderRagebot()
 {
-    Components.BeginChild ( "#ragebot", ImVec2 ( 0, 0 ) );
+    Components.BeginChild ( "#ragebot", ImVec2 ( 0, 450 ) );
 
 	//Components.Label("Ragebot");
 	Components.Checkbox(" Ragebot", Settings::RageBot::Enabled);
@@ -113,7 +123,7 @@ void Menu::RenderRagebot()
 		Components.Hotkey("Slow Walk Hotkey", Settings::RageBot::SlowWalkHotkey);
 		Components.SliderFloat("Slow Walk Speed", Settings::RageBot::SlowWalkMod, 0.f, 1.f);
 		Components.Checkbox("Fake Duck", Settings::RageBot::FakeDuck);
-		//Components.Hotkey("FakeDuck Hotkey", Settings::RageBot::FakeDuckHotkey);
+		Components.Hotkey("FakeDuck Hotkey", Settings::RageBot::FakeDuckHotkey);
 		Components.Checkbox("Auto Scope", Settings::RageBot::AutoScope);
 		Components.Checkbox("Auto Stop", Settings::RageBot::AutoStop);
 		Components.Checkbox("Auto Crouch", Settings::RageBot::AutoCrouch);
@@ -351,7 +361,7 @@ void Menu::RenderRagebot()
 
 void Menu::RenderLegitbot()
 {
-    Components.BeginChild ( "#lbot", ImVec2 ( 0, 0 ) );
+    Components.BeginChild ( "#lbot", ImVec2 ( 0, 450) );
 
     //Components.Label ( "AimBot" );
 	
@@ -638,7 +648,7 @@ void Menu::RenderLegitbot()
 
 void Menu::RenderVisuals()
 {
-    Components.BeginChild ( "#visuals", ImVec2 ( 0, 0 ) );
+    Components.BeginChild ( "#visuals", ImVec2 ( 0, 450) );
 
     Components.Label ( "Visuals" );
     static char* VisualsCategories[] = { "local", "enemy", "team", "misc", "globals" };
@@ -783,7 +793,7 @@ void Menu::RenderVisuals()
 
 void Menu::RenderMisc()
 {
-    Components.BeginChild ( "#misc", ImVec2 ( 0, 0 ) );
+    Components.BeginChild ( "#misc", ImVec2 ( 0, 450 ) );
 
     Components.Label ( "Misc" );
 
@@ -833,7 +843,7 @@ void Menu::RenderMisc()
 
 void Menu::RenderSkinchanger()
  {
-	Components.BeginChild("#skinchanger", ImVec2(0, 0));
+	Components.BeginChild("#skinchanger", ImVec2(0, 450));
 
 	Components.Label("Skinchanger");
 
@@ -930,7 +940,7 @@ void Menu::RenderSkinchanger()
 
 void Menu::RenderSettings()
 {
-    Components.BeginChild ( "#settings", ImVec2 ( 0, 0 ) );
+    Components.BeginChild ( "#settings", ImVec2 ( 0, 450) );
 
     Components.Label ( "Settings" );
     Components.Spacing();
@@ -961,13 +971,19 @@ void Menu::RenderSettings()
 	if ( Components.Button("Create") && str0 != "" )
 		Settings::CreateConfig(str0);
 
-	if ( Components.Button("Save") )
+	if (Components.Button("Save") && Selected != -1)
+	{
 		Settings::SaveSettings(Settings::Configs[Selected]);
+		CurrentConfig = Settings::Configs[Selected];
+	}
 
-    Components.SameLine();
+	Components.SameLine();
 
-	if ( Components.Button("Load") )
+	if (Components.Button("Load") && Selected != -1)
+	{
 		Settings::LoadSettings(Settings::Configs[Selected]);
+		CurrentConfig = Settings::Configs[Selected];
+	}
 
 	if ( Components.Button("Refresh") )
 		Settings::RefreshConfigList();

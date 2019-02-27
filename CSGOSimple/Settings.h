@@ -129,6 +129,7 @@ namespace Settings
 		extern int SlowWalkHotkey;
 		extern float SlowWalkMod;
 		extern bool FakeDuck;
+		extern int FakeDuckHotkey;
 		extern float SlowWalkMod;
 
 		extern bool FakelagPrediction;

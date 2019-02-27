@@ -57,6 +57,8 @@ namespace Hooks
 
 	float flAngle = 0.f;
 
+	CUtlVector<SndInfo_t> sndList;
+
     void Initialize()
     {
         g_Logger.Clear();
@@ -611,13 +613,44 @@ namespace Hooks
             }
 
             case FRAME_NET_UPDATE_END:
+				// add Sound ESP check
+				/*if (true)
+				{
+					sndList.RemoveAll();
+					g_EngineSound->GetActiveSounds(sndList);
+					for (size_t i = 0; i < sndList.Count(); i++)
+					{
+						SndInfo_t snd = sndList.Element(i);
+						if (snd.m_nSoundSource)
+						{
+							C_BaseEntity* ent = static_cast<C_BaseEntity*>(g_EntityList->GetClientEntity(snd.m_nSoundSource));
+
+							if (!ent || ent->IsDormant())
+								continue;
+
+							if (ent == g_LocalPlayer)
+								continue;
+
+							if (snd.m_nChannel == 4)
+							{
+								if (snd.m_nGuid)
+								{
+									if (snd.m_bUpdatePositions)
+									{
+										g_Saver.StepInfo.push_back(StepInfoStruct{ *snd.m_pOrigin, g_GlobalVars->curtime + 1, 15, snd.m_nSoundSource });
+									}
+								}
+							}
+						}
+					}
+				}*/
                 break;
 
             case FRAME_RENDER_START:
             {
                 if ( !g_Unload )
                 {
-					UpdateSpoofer();
+					//UpdateSpoofer();
 					bool rbot = Settings::RageBot::Enabled;
 
 					if ( rbot && Settings::RageBot::EnabledAA && Settings::Visual::ThirdPersonEnabled )
@@ -660,7 +693,6 @@ namespace Hooks
                         }
                         else
                             entity->m_bClientSideAnimation() = true;
-
                     }
 
                     g_GlobalVars->curtime = old_curtime;
@@ -671,7 +703,6 @@ namespace Hooks
             }
 
             case FRAME_RENDER_END:
-				// Add check
 				if (Settings::Visual::NightMode)
 					NightMode::Get().Apply(false);
 				else
@@ -875,7 +906,8 @@ namespace Hooks
 				return sequence + 2;
 			}
 		}
-		else if (strstr(model, "models/weapons/v_knife_survival_bowie.mdl")) {
+		else if (strstr(model, "models/weapons/v_knife_survival_bowie.mdl")) 
+		{
 			switch (sequence)
 			{
 			case SEQUENCE_DEFAULT_DRAW:
@@ -887,9 +919,40 @@ namespace Hooks
 				return sequence - 1;
 			}
 		}
-		else {
-			return sequence;
+		else if (strstr(model, "models/weapons/v_knife_ursus.mdl"))
+		{
+			switch (sequence)
+			{
+			case SEQUENCE_DEFAULT_DRAW:
+				return random_sequence(SEQUENCE_BUTTERFLY_DRAW, SEQUENCE_BUTTERFLY_DRAW2);
+				break;
+			case SEQUENCE_DEFAULT_LOOKAT01:
+				return random_sequence(SEQUENCE_BUTTERFLY_LOOKAT01, 14);
+				break;
+			default:
+				return sequence + 1;
+			}
 		}
+		else if (strstr(model, "models/weapons/v_knife_stiletto.mdl"))
+		{
+			switch (sequence)
+			{
+			case SEQUENCE_DEFAULT_LOOKAT01:
+				return random_sequence(12, 13);
+				break;
+			}
+		}
+		else if (strstr(model, "models/weapons/v_knife_widowmaker.mdl"))
+		{
+			switch (sequence)
+			{
+			case SEQUENCE_DEFAULT_LOOKAT01:
+				return random_sequence(14, 15);
+				break;
+			}
+		}
+		else
+			return sequence;
 	}
 
 	void hkRecvProxy(const CRecvProxyData* pData, void* entity, void* output)

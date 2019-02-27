@@ -75,4 +75,6 @@ namespace Utils {
      *
      */
     void RankRevealAll();
+
+	bool LineThroughSmoke(Vector vecStart, Vector vecEnd);
 }

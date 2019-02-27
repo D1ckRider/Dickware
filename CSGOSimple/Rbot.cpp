@@ -66,8 +66,8 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 34);
 
-	if(Settings::RageBot::FakeDuck)
-		FakeDuck(cmd, bSendPacket);
+	if (Settings::RageBot::FakeDuck && InputSys::Get().IsKeyDown(Settings::RageBot::FakeDuckHotkey))
+		FakeDuck(cmd);
 
 
 	//Console.WriteLine(g_GlobalVars->curtime - weapon->m_flNextPrimaryAttack());
@@ -330,28 +330,22 @@ void Rbot::FakeDuck(CUserCmd * cmd, bool &bSendPackets)
 		else 
 			cmd->buttons &= ~IN_DUCK;
 	}
+}
 
-	/*bool do_once = false, _do;
-	int limit = Settings::RageBot::AntiAimSettings[0].FakelagTicks / 2;
-	_do = g_ClientState->chokedcommands > limit;
+void Rbot::FakeDuck(CUserCmd * cmd)
+{
+	int fakelag_limit = Settings::RageBot::AntiAimSettings[0].FakelagTicks;
+	int choked_goal = fakelag_limit / 2;
+	bool should_crouch = g_ClientState->chokedcommands >= choked_goal;
 
-	if (!GetAsyncKeyState(VK_LCONTROL) && do_once)
-		cmd->buttons |= IN_DUCK;
-		//g_EngineClient->ExecuteClientCmd("-duck");
-	if (GetAsyncKeyState(VK_LCONTROL))
+	if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 	{
-		do_once = true;
-		if (_do)
-		{
+		cmd->buttons |= IN_BULLRUSH;
+		if (should_crouch)
 			cmd->buttons |= IN_DUCK;
-			//g_EngineClient->ExecuteClientCmd("-duck");
-			bSendPackets = true;
-		}
 		else
 			cmd->buttons &= ~IN_DUCK;
-			//g_EngineClient->ExecuteClientCmd("+duck");
-	}*/
-	
+	}
 }
 
 void Rbot::AutoStop ( CUserCmd* cmd )

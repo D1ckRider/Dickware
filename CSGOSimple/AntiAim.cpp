@@ -659,7 +659,7 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
 
         if ( !bSendPacket && !( cmd->buttons & IN_ATTACK ) )
         {
-			cmd->viewangles += fake_yaw;
+			cmd->viewangles.yaw += g_LocalPlayer->GetMaxDesyncAngle(); //fake_yaw;
 			g_Saver.AADesyncAngle = cmd->viewangles;
         }
 

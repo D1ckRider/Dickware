@@ -93,6 +93,7 @@ public:
 	void DrawGrenade(C_BaseEntity* ent);
 	void DrawDangerzoneItem(C_BaseEntity* ent, float maxRange);
 	void ThirdPerson();
+	
 
 	/* Local indicators */
 	void LbyIndicator();
@@ -135,12 +136,13 @@ public:
 	void DrawBoxEdges(float x1, float y1, float x2, float y2, Color clr, float edge_size, float size = 1.f);
 	void DrawCircle(float x, float y, float r, int seg, Color clr);
 	void DrawFilledCircle(float x, float y, float r, int seg, Color clr);
+	void DrawWave(Vector pos, float r, Color clr);
 	void Draw3DCircle(Vector position, float radius, int seg, Color clr);
-	void DrawIcon(wchar_t text, float x, float y, Color clr, int size = 15);
+	void DrawIcon(wchar_t code, float x, float y, Color color, int size = 15);
 
 	ImVec2 GetSize(std::string text, int size = 15);
 private:
 	bool Inited = false;
-	vgui::HFont fonts[128];
-	vgui::HFont WeaponFont;
+	vgui::HFont Fonts[128];
+	vgui::HFont WeaponFonts[128];
 };

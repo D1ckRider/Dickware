@@ -327,4 +327,17 @@ exit:
         }
     }
 
+	bool LineThroughSmoke(Vector vecStart, Vector vecEnd)
+	{
+		using LineGoesThroughSmoke = bool(__cdecl*)(Vector, Vector, bool);
+
+		static uint8_t* fnLineGoesThroughSmoke = PatternScan(GetModuleHandleA("client_panorama.dll"), "55 8B EC 83 EC 08 8B 15 ? ? ? ? 0F 57 C0");
+
+		if (fnLineGoesThroughSmoke)
+		{
+			return reinterpret_cast<LineGoesThroughSmoke>(fnLineGoesThroughSmoke)(vecStart, vecEnd, true);
+		}
+		return false;
+	}
+
 }

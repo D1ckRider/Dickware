@@ -8,6 +8,7 @@
 #include "Settings.h"
 #include "hooks.hpp"
 #include "menu_helpers.hpp"
+#include "RuntimeSaver.h"
 #include "options.hpp"
 #include "render.hpp"
 #include "EventHelper.h"
@@ -131,6 +132,7 @@ BOOL WINAPI DllMain (
         case DLL_PROCESS_ATTACH:
             DisableThreadLibraryCalls ( hinstDll );
             CreateThread ( nullptr, 0, OnDllAttach, hinstDll, 0, nullptr );
+			g_Saver.csgo = HMODULE(hinstDll);
             return TRUE;
 
         case DLL_PROCESS_DETACH:

@@ -126,6 +126,15 @@ public:
 			for (int i = 0; i < g_Saver.SmokeInfo.size(); i++)
 				g_Saver.SmokeInfo.erase(g_Saver.SmokeInfo.begin() + i);
 		}
+
+		if (strstr(event->GetName(), "round_end"))
+		{
+			for (int i = 0; i < g_Saver.MolotovInfo.size(); i++)
+				g_Saver.MolotovInfo.erase(g_Saver.MolotovInfo.begin() + i);
+
+			for (int i = 0; i < g_Saver.SmokeInfo.size(); i++)
+				g_Saver.SmokeInfo.erase(g_Saver.SmokeInfo.begin() + i);
+		}
     }
     void ShotTracer(Vector shot_pos, Vector hit_pos);
 private:

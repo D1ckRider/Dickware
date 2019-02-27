@@ -205,19 +205,31 @@ void MenuHelper::CreateStyle()
     _style.Colors[ImGuiCol_PlotHistogramHovered] = ImVec4(1.00f, 0.60f, 0.00f, 1.00f);
     _style.Colors[ImGuiCol_ModalWindowDarkening] = ImVec4(0.20f, 0.20f, 0.20f, 0.35f);
     #else
-    ImGui::StyleColorsDark();
-    ImGui::SetColorEditOptions(ImGuiColorEditFlags_HEX);
-    _style.FrameRounding = 0.f;
-    _style.WindowRounding = 0.f;
-    _style.ChildRounding = 0.f;
-    _style.Colors[ImGuiCol_Button] = ImVec4(0.260f, 0.590f, 0.980f, 0.670f);
-    _style.Colors[ImGuiCol_Header] = ImVec4(0.260f, 0.590f, 0.980f, 0.670f);
-    _style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.260f, 0.590f, 0.980f, 1.000f);
-    //_style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.000f, 0.545f, 1.000f, 1.000f);
-    //_style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.060f, 0.416f, 0.980f, 1.000f);
-    _style.Colors[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.25f, 0.30f, 1.0f);
-    _style.Colors[ImGuiCol_WindowBg] = ImVec4(0.000f, 0.009f, 0.120f, 0.940f);
-    _style.Colors[ImGuiCol_PopupBg] = ImVec4(0.076f, 0.143f, 0.209f, 1.000f);
+	ImGui::StyleColorsDark();
+	ImGui::SetColorEditOptions(ImGuiColorEditFlags_HEX);
+	_style.FrameRounding = 0.f;
+	_style.WindowRounding = 0.f;
+	_style.ChildRounding = 0.f;
+	//_style.Colors[ImGuiCol_Button] = ImVec4(0.260f, 0.590f, 0.980f, 0.670f);
+	_style.Colors[ImGuiCol_Button] = ImVec4(0.42f, 0.059f, 0.102f, 1.000f);
+	_style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.471f, 0.125f, 0.173f, 1.000f);
+	_style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.517f, 0.204f, 0.247f, 1.000f);
+	_style.Colors[ImGuiCol_SliderGrab] = ImVec4(0.42f, 0.059f, 0.102f, 1.000f);
+	_style.Colors[ImGuiCol_SliderGrabActive] = ImVec4(0.471f, 0.125f, 0.173f, 1.000f);
+	_style.Colors[ImGuiCol_CheckMark] = ImVec4(0.42f, 0.059f, 0.102f, 1.000f);
+	_style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.471f, 0.125f, 0.173f, 1.000f);
+
+	_style.Colors[ImGuiCol_Header] = ImVec4(0.260f, 0.590f, 0.980f, 0.670f);
+	//_style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.000f, 0.545f, 1.000f, 1.000f);
+	//_style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.060f, 0.416f, 0.980f, 1.000f);
+	//_style.Colors[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.25f, 0.30f, 1.0f);
+	//_style.Colors[ImGuiCol_WindowBg] = ImVec4(0.000f, 0.009f, 0.120f, 0.940f);
+	//_style.Colors[ImGuiCol_PopupBg] = ImVec4(0.076f, 0.143f, 0.209f, 1.000f);
+	_style.Colors[ImGuiCol_FrameBg] = ImVec4(0.141f, 0.125f, 0.125f, 1.0f);
+	_style.Colors[ImGuiCol_FrameBgHovered] = ImVec4(0.215f, 0.204f, 0.204f, 1.000f);
+	_style.Colors[ImGuiCol_FrameBgActive] = ImVec4(0.294f, 0.282f, 0.282f, 1.000f);
+	_style.Colors[ImGuiCol_WindowBg] = ImVec4(0.05f, 0.035f, 0.035f, 0.940f);
+	_style.Colors[ImGuiCol_PopupBg] = ImVec4(0.141f, 0.125f, 0.125f, 1.0f);
     #endif
     ImGui::GetStyle() = _style;
 }
