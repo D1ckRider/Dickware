@@ -299,7 +299,7 @@ public:
 	NETVAR(CHandle<C_BaseCombatWeapon>, m_hActiveWeapon, "DT_BaseCombatCharacter", "m_hActiveWeapon");
 	NETVAR(int32_t, m_iAccount, "DT_CSPlayer", "m_iAccount");
 	NETVAR(int32_t, m_iObserverMode, "DT_BasePlayer", "m_iObserverMode");
-	NETVAR(float, m_flFlashDuration, "DT_CSPlayer", "m_flFlashDuration");
+	NETVAR(float_t, m_flFlashDuration, "DT_CSPlayer", "m_flFlashDuration");
 	NETVAR(float, m_flSimulationTime, "DT_BaseEntity", "m_flSimulationTime");
 	NETVAR(float, m_flCycle, "DT_ServerAnimationData", "m_flCycle");
 	NETVAR(int, m_nSequence, "DT_BaseViewModel", "m_nSequence");
@@ -307,6 +307,7 @@ public:
 	NETPROP(m_flLowerBodyYawTargetProp, "DT_CSPlayer", "m_flLowerBodyYawTarget");
 	NETVAR(bool, m_bClientSideAnimation, "DT_BaseAnimating", "m_bClientSideAnimation");
 	NETVAR(Vector, m_ragPos, "DT_Ragdoll", "m_ragPos");
+	NETVAR(bool, m_bFreezePeriod, "DT_CSGameRulesProxy", "m_bFreezePeriod");
 	//NETVAR(float, m_flSurvivalStartTime, "DT_CSGameRulesProxy", "m_flSurvivalStartTime");
 	NETVAR(int, m_nSurvivalTeam, "DT_CSPlayer", "m_nSurvivalTeam");
 	//m_nSurvivalTeam

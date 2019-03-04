@@ -1,4 +1,3 @@
-
 #include "AntiAim.h"
 #include "helpers/math.hpp"
 #include "ConfigSystem.h"
@@ -38,6 +37,9 @@ void AntiAim::OnCreateMove ( CUserCmd* cmd, bool& bSendPacket )
 
     if ( !weapon )
         return;
+
+	//if (g_LocalPlayer->m_fFlags() & FL_FROZEN)
+		//return;
 
     if ( weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && ( cmd->buttons & IN_ATTACK || cmd->buttons & IN_ATTACK2 ) )
         return;

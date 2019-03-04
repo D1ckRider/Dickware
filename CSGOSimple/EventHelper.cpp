@@ -26,6 +26,11 @@ void EventHelper::listener::Start()
 
 	if (!g_GameEvents->AddListener(this, "round_end", false))
 		throw std::exception("Failed to register the event");
+
+	if (!g_GameEvents->AddListener(this, "player_footstep", false))
+		throw std::exception("Failed to register the event");
+	if (!g_GameEvents->AddListener(this, "player_jump", false))
+		throw std::exception("Failed to register the event");
 }
 
 void EventHelper::listener::Stop()

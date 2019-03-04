@@ -13,18 +13,13 @@ void KeyLoop::OnCreateMove()
 	if(InputSys::Get().WasKeyPressed(Settings::Visual::ThirdPersonHotkey))
 		Settings::Visual::ThirdPersonEnabled = !Settings::Visual::ThirdPersonEnabled;
 
-	// FIXME: 3:
 	if ( InputSys::Get().WasKeyPressed(Settings::RageBot::BAimHotkey) )
-	{
 		g_Saver.ForceBAim = !g_Saver.ForceBAim;
-		//Rbot::Get().ForceBAim = !Rbot::Get().ForceBAim;
-		//g_Logger.Info("INFO", "ForceBAim is " + std::to_string(Rbot::Get().ForceBAim));
-	}
 
-	if (InputSys::Get().WasKeyPressed(Settings::RageBot::DesyncFlipHotkey))
+/*	if (InputSys::Get().WasKeyPressed(Settings::RageBot::DesyncFlipHotkey))
 	{
 		AntiAim::Get().DesyncFlip = !AntiAim::Get().DesyncFlip;
-	}
+	}*/
 		
 	if( InputSys::Get().WasKeyPressed(Settings::RageBot::ManualAARightKey) )
     {
@@ -53,4 +48,7 @@ void KeyLoop::OnCreateMove()
 
         g_Saver.CurrentShouldSkipAnimations = true;
     }
+
+	if (InputSys::Get().WasKeyPressed(Settings::Misc::RadioPauseHotkey))
+		g_Saver.RadioPaused = !g_Saver.RadioPaused;
 }

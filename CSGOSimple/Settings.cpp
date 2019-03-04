@@ -131,6 +131,7 @@ void Settings::Initialize()
 	Visual::GlobalESP.BombColor = Color::Green;
 	Visual::GlobalESP.DZEnabled = false;
 	Visual::GlobalESP.DZRange = 100.f;
+	Visual::GlobalESP.SoundESPEnabled = false;
 }
 
 void Settings::CreateConfig(std::string fileName)
@@ -329,6 +330,7 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "vis_esp_other_weapon_enabled", Visual::GlobalESP.DropedWeaponsEnabled);
 	SaveValue(j, "vis_esp_other_dz_item", Visual::GlobalESP.DZEnabled);
 	SaveValue(j, "vis_esp_other_dz_range", Visual::GlobalESP.DZRange);
+	SaveValue(j, "vis_esp_other_sound_enabled", Visual::GlobalESP.SoundESPEnabled);
 	SaveValue(j, "vis_noscope_overlay", Visual::NoScopeOverlay);
 	SaveValue(j, "vis_bullet_tracers", Visual::BulletTracers);
 	SaveValue(j, "vis_noflash", Visual::NoFlash);
@@ -362,6 +364,11 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "misc_buybot_zeus", Misc::BuyBotZeus);
 	SaveValue(j, "misc_buybot_defuser", Misc::BuyBotDefuser);
 	SaveValue(j, "misc_skin_enabled", Misc::SkinchangerEnabled);
+	/* Radio */
+	SaveValue(j, "misc_radio_enabled", Misc::RadioEnabled);
+	SaveValue(j, "misc_radio_selected", Misc::RadioSelected);
+	SaveValue(j, "misc_radio_volume", Misc::RadioVolume);
+	SaveValue(j, "misc_radio_pause_hotkey", Misc::RadioPauseHotkey);
 	/* Write file */
 	o << std::setw(4) << j << std::endl;
 }
@@ -523,6 +530,7 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "vis_esp_other_bomb_enabled", 	Visual::GlobalESP.BombEnabled);
 	LoadColorValue(j, "vis_esp_other_bomb_color", Visual::GlobalESP.BombColor);
 	LoadValue(j, "vis_esp_other_weapon_enabled", Visual::GlobalESP.DropedWeaponsEnabled);
+	LoadValue(j, "vis_esp_other_sound_enabled", Visual::GlobalESP.SoundESPEnabled);
 	LoadValue(j, "vis_esp_other_dz_item", 	Visual::GlobalESP.DZEnabled);
 	LoadValue(j, "vis_esp_other_dz_range", 	Visual::GlobalESP.DZRange);
 	LoadValue(j, "vis_noscope_overlay", 	Visual::NoScopeOverlay);
@@ -558,6 +566,11 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "misc_buybot_zeus", 	Misc::BuyBotZeus);
 	LoadValue(j, "misc_buybot_defuser", 	Misc::BuyBotDefuser);
 	LoadValue(j, "misc_skin_enabled", Misc::SkinchangerEnabled);
+	/* Radio */
+	LoadValue(j, "misc_radio_enabled", Misc::RadioEnabled);
+	LoadValue(j, "misc_radio_selected", Misc::RadioSelected);
+	LoadValue(j, "misc_radio_volume", Misc::RadioVolume);
+	LoadValue(j, "misc_radio_pause_hotkey", Misc::RadioPauseHotkey);
 }
 
 void Settings::SaveSkinsSettings()
@@ -822,6 +835,7 @@ void Settings::ResetVisuals()
 	Visual::GlobalESP.Enabled = false;
 	Visual::GlobalESP.DZEnabled = false;
 	Visual::GlobalESP.DZRange = 100.f;
+	Visual::GlobalESP.SoundESPEnabled = false;
 }
 
 void Settings::ResetMisc()
@@ -840,6 +854,11 @@ void Settings::ResetMisc()
 	Misc::BuyBotZeus = false;
 	Misc::BuyBotDefuser = false;
 	Misc::SkinchangerEnabled = false;
+
+	Misc::RadioEnabled = false;
+	Misc::RadioSelected = -1;
+	Misc::RadioVolume = 20;
+	Misc::RadioPauseHotkey = 0x0;
 }
 
 void Settings::SaveColorValue(json & j, std::string name, const Color & value)
@@ -1046,4 +1065,8 @@ namespace Settings::Misc
 	bool BuyBotZeus = false;
 	bool BuyBotDefuser = false;
 	bool SkinchangerEnabled = false;
+	bool RadioEnabled = false;
+	int RadioSelected = -1;
+	int RadioVolume = 20;
+	int RadioPauseHotkey = 0x0;
 }

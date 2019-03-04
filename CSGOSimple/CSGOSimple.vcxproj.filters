@@ -266,6 +266,9 @@
     <ClCompile Include="Deps\lodepng.cpp">
       <Filter>Source Files\Depenedcies</Filter>
     </ClCompile>
+    <ClCompile Include="Media\Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="valve_sdk\misc\BaseHandle.hpp">
@@ -629,6 +632,9 @@
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Media\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -139,6 +139,7 @@ public:
 	void DrawWave(Vector pos, float r, Color clr);
 	void Draw3DCircle(Vector position, float radius, int seg, Color clr);
 	void DrawIcon(wchar_t code, float x, float y, Color color, int size = 15);
+	void DrawWave(Vector pos, Color clr);
 
 	ImVec2 GetSize(std::string text, int size = 15);
 private:

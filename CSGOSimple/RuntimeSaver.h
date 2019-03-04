@@ -22,7 +22,6 @@ struct StepInfoStruct
 {
 	Vector Origin = Vector(0,0,0);
 	float Time = 0.f;
-	float Radius = 0.f;
 	int EntityIndex = -1;
 };
 
@@ -114,6 +113,8 @@ public:
 	std::vector<StepInfoStruct> StepInfo;
 	std::vector<MovotovInfoStruct> MolotovInfo;
 	std::vector<SmokeInfoStruct> SmokeInfo;
+
+	bool RadioPaused;
 
     RbotShotInfoStruct RbotShotInfo;
 

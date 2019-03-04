@@ -127,6 +127,20 @@ public:
 				g_Saver.SmokeInfo.erase(g_Saver.SmokeInfo.begin() + i);
 		}
 
+
+		if (strstr(event->GetName(), "player_footstep") || strstr(event->GetName(), "player_jump"))
+		{
+			C_BasePlayer* walker = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(g_EngineClient->GetPlayerForUserID(event->GetInt("userid"))));
+			if (!walker)
+				return;
+
+			if (walker->IsDormant())
+				return;
+
+			if (walker->m_iTeamNum() != g_LocalPlayer->m_iTeamNum())
+				g_Saver.StepInfo.push_back(StepInfoStruct{ walker->GetRenderOrigin(), g_GlobalVars->curtime, event->GetInt("userid") });
+		}
+
 		if (strstr(event->GetName(), "round_end"))
 		{
 			for (int i = 0; i < g_Saver.MolotovInfo.size(); i++)

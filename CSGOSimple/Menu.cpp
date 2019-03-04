@@ -1,4 +1,3 @@
-
 #include "Menu.h"
 #include "FontManager.h"
 #include "ConfigSystem.h"
@@ -8,13 +7,16 @@
 #include "Settings.h"
 #include "ui.hpp"
 #include "features\Skinchanger.h"
-#include "features\NightMode.h"
+#include "definitions.h"
+#include "Media\Player.h"
+#include "RuntimeSaver.h"
+
 
 using WeaponType = Settings::WeaponType;
 using HitboxType = Settings::HitboxType;
 using AntiAimState = Settings::RageBot::AntiAimType;
 
-const std::string Version = "190217.01";
+const std::string Version = "190302.01";
 std::string CurrentConfig = "None";
 
 ImFont* IconsFont;
@@ -745,6 +747,7 @@ void Menu::RenderVisuals()
 			Components.Checkbox("Droped Weapons", Settings::Visual::GlobalESP.DropedWeaponsEnabled);
 			Components.Checkbox("DangerZone item ESP",  Settings::Visual::GlobalESP.DZEnabled);
 			Components.SliderFloat("DangerZone ESP Range",  Settings::Visual::GlobalESP.DZRange, 0.f, 1000.f);
+			Components.Checkbox("Sound ESP", Settings::Visual::GlobalESP.SoundESPEnabled);
 
 			Components.NextColumn();
 
@@ -793,9 +796,12 @@ void Menu::RenderVisuals()
 
 void Menu::RenderMisc()
 {
+	
     Components.BeginChild ( "#misc", ImVec2 ( 0, 450 ) );
 
     Components.Label ( "Misc" );
+
+	Components.Columns(2, false);
 
     //Components.Checkbox("No hands", "misc_no_hands");
 
@@ -830,13 +836,70 @@ void Menu::RenderMisc()
     Components.Checkbox ( "Buy zeus", Settings::Misc::BuyBotZeus);
     Components.Checkbox ( "Buy defuser", Settings::Misc::BuyBotDefuser);
 
-    if ( Components.Button ( "unload" ) )
-        g_Unload = true;
+	if (Components.Button("unload"))
+	{
+		g_Unload = true;
+		//player.Release();
+	}
 
+	Components.NextColumn();
+
+	Components.Checkbox("Radio Enabled", Settings::Misc::RadioEnabled);
+	// Radio feature
+	static RadioPlayer player;
+	static bool radioInit = false;
+	
+	if (Settings::Misc::RadioEnabled)
+	{
+		if (!radioInit)
+		{
+			player.PlayStreamFromURL(stations[Settings::Misc::RadioSelected].data());
+			radioInit = true;
+			g_Saver.RadioPaused = false;
+		}
+
+		player.SetVolume(Settings::Misc::RadioVolume);
+
+		if (!g_Saver.RadioPaused)
+		{
+			player.ResumePlayer();
+		}
+		else
+		{
+			player.PausePlayer();
+		}
+
+		if (ImGui::Combo("##Station", &Settings::Misc::RadioSelected, radio_name))
+		{
+			player.PlayStreamFromURL(stations[Settings::Misc::RadioSelected].data());
+		}
+
+		char* name;
+
+		if (!g_Saver.RadioPaused)
+			name = "||";
+		else
+			name = ">";
+
+		Components.Hotkey("Pause Hotkey", Settings::Misc::RadioPauseHotkey, (int)HotkeyType::Tap);
+
+		if (ImGui::Button(name, ImVec2(132, 32)))
+		{
+			g_Saver.RadioPaused = !g_Saver.RadioPaused;
+			//player.PausePlayer();
+		}
+
+		Components.SliderInt("Volume", Settings::Misc::RadioVolume, 0, 100);
+	}
+	else
+	{
+		if (radioInit)
+			player.PausePlayer();
+	}
+	
     #ifdef _DEBUG
     //Components.Checkbox ( "misc_debug_overlay", "misc_debug_overlay" );
     #endif // _DEBUG
-
 
     Components.EndChild();
 }
@@ -995,8 +1058,6 @@ void Menu::RenderSettings()
 
 	if (Components.Button("Load Game CFG"))
 		g_EngineClient->ExecuteClientCmd(Settings::LoadGameCfg().data());
-
-	
 
     Components.EndChild();
 }

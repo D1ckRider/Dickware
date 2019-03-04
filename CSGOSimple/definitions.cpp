@@ -56,3 +56,21 @@ std::map<int, wchar_t> g_WeaponIcons =
 	{ ItemDefinitionIndex::WEAPON_C4, 'o'},
 	{ ItemDefinitionIndex::WEAPON_KNIFE, ']'}
 };
+
+std::vector<std::string> radio_name = {
+	"VRX",
+	"Anison.fm",
+	"Chillsky",
+	"DKFM Shoegaze Radio",
+	"Primal Radio",
+	"Synthetic FM"
+};
+
+std::wstring stations[] = {
+	L"http://vrx.piro.moe:8000/stream-256",
+	L"http://pool.anison.fm:9000/AniSonFM(320)?nocache=0.752104723294601",
+	L"http://hyades.shoutca.st:8043/autodj",
+	L"http://bb32.sonixcast.com:8080/8724",
+	L"http://199.101.51.168:8058/stream",
+	L"http://stream.syntheticfm.com:8040/stream"
+};

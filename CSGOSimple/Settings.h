@@ -213,6 +213,7 @@ namespace Settings
 			Color BombColor;
 			bool DZEnabled;
 			float DZRange;
+			bool SoundESPEnabled;
 		};
 
 		extern Chams LocalChams;
@@ -285,6 +286,11 @@ namespace Settings
 		extern bool BuyBotArmor;
 		extern bool BuyBotZeus;
 		extern bool BuyBotDefuser;
+
+		extern bool RadioEnabled;
+		extern int RadioSelected;
+		extern int RadioVolume;
+		extern int RadioPauseHotkey;
 
 		extern bool SkinchangerEnabled;
 	}

@@ -583,6 +583,7 @@ void Visuals::RenderPlantedC4 ( C_BaseEntity* ent )
 
 void Visuals::RenderSoundESP()
 {
+	/*
 	for (size_t i = 0; i < g_Saver.StepInfo.size(); i++)
 	{
 		if ((g_Saver.StepInfo[i].Origin != nullptr) || i > 16 || g_Saver.StepInfo[i].Time < g_GlobalVars->curtime)
@@ -596,6 +597,19 @@ void Visuals::RenderSoundESP()
 			VGSHelper::Get().DrawWave(g_Saver.StepInfo[i].Origin, g_Saver.StepInfo[i].Radius, Color::Green);
 
 		g_Saver.StepInfo[i].Radius -= 0.5f;
+	}
+	*/
+
+	if (!g_EngineClient->IsInGame() || !g_EngineClient->IsConnected())
+		return;
+
+	for (size_t i = 0; i < g_Saver.StepInfo.size(); i++)
+	{
+		Vector Pos2D;
+		Math::WorldToScreen(g_Saver.StepInfo[i].Origin, Pos2D);
+		VGSHelper::Get().DrawText("step", Pos2D.x, Pos2D.y, Color::White);
+		if(g_GlobalVars->curtime > g_Saver.StepInfo[i].Time + 1.5f)
+			g_Saver.StepInfo.erase(g_Saver.StepInfo.begin() + i);
 	}
 }
 
@@ -1349,7 +1363,8 @@ void Visuals::AddToDrawList()
             DrawGrenade ( entity );
 		
 		// Add Check
-		RenderSoundESP();
+		if(Settings::Visual::GlobalESP.SoundESPEnabled)
+			RenderSoundESP();
     }
 
 	if ( Settings::RageBot::Enabled )
@@ -1613,6 +1628,38 @@ void VGSHelper::DrawIcon(wchar_t code, float x, float y, Color color, int size)
 	g_VGuiSurface->DrawSetTextPos(x, y);
 	g_VGuiSurface->DrawSetTextFont(WeaponFonts[size]);
 	g_VGuiSurface->DrawPrintText(&code, 1);
+}
+
+void VGSHelper::DrawWave(Vector pos, Color clr)
+{
+	BeamInfo_t beamInfo;
+	beamInfo.m_nType = TE_BEAMRINGPOINT;
+	beamInfo.m_pszModelName = "sprites/purplelaser1.vmt";
+	beamInfo.m_nModelIndex = g_MdlInfo->GetModelIndex("sprites/purplelaser1.vmt");
+	beamInfo.m_pszHaloName = "sprites/purplelaser1.vmt";
+	beamInfo.m_nHaloIndex = g_MdlInfo->GetModelIndex("sprites/purplelaser1.vmt");
+	beamInfo.m_flHaloScale = 5;
+	beamInfo.m_flLife = 2.50f;
+	beamInfo.m_flWidth = 12.f;
+	beamInfo.m_flFadeLength = 1.0f;
+	beamInfo.m_flAmplitude = 0.f;
+	beamInfo.m_flRed = clr.r();
+	beamInfo.m_flGreen = clr.g();
+	beamInfo.m_flBlue = clr.b();
+	beamInfo.m_flBrightness = 255;
+	beamInfo.m_flSpeed = 1.f;
+	beamInfo.m_nStartFrame = 0;
+	beamInfo.m_flFrameRate = 1;
+	beamInfo.m_nSegments = 1;
+	beamInfo.m_bRenderable = true;
+	beamInfo.m_nFlags = 0;
+	beamInfo.m_vecCenter = pos + Vector(0, 0, 5);
+	beamInfo.m_flStartRadius = 1;
+	beamInfo.m_flEndRadius = 350;
+
+	auto beam = g_RenderBeams->CreateBeamRingPoint(beamInfo);
+
+	if (beam) g_RenderBeams->DrawBeam(beam);
 }
 
 ImVec2 VGSHelper::GetSize ( std::string text, int size )
