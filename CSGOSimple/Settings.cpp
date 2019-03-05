@@ -236,6 +236,7 @@ void Settings::SaveSettings(std::string fileName)
 	/* Write legitbot settings */
 	SaveValue(j, "lbot_enabled", Aimbot::Enabled);
 	SaveValue(j, "lbot_key", Aimbot::Hotkey);
+	SaveValue(j, "lbot_smoke_check", Aimbot::SmokeCheck);
 	for ( int i = 0; i < 11; i++ )
 	{
 		/* Base Settings */
@@ -438,6 +439,7 @@ void Settings::LoadSettings(std::string fileName)
 	/* Read LBot Settings */
 	LoadValue(j, "lbot_enabled", 	Aimbot::Enabled);
 	LoadValue(j, "lbot_key", 	Aimbot::Hotkey);
+	LoadValue(j, "lbot_smoke_check", Aimbot::SmokeCheck);
 	for (int i = 0; i < 11; i++)
 	{
 		/* Base Weapon Settings */
@@ -973,6 +975,7 @@ namespace Settings::Aimbot
 {
 	bool Enabled = false;
 	int Hotkey = 0;
+	bool SmokeCheck = false;
 	LBotWeaponSetting WeaponAimSetting[11] = { 0 };
 	bool Backtrack = false;
 	bool BacktrackAtAim = false;

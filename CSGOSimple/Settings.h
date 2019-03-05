@@ -164,6 +164,7 @@ namespace Settings
 		};
 		extern bool Enabled;
 		extern int Hotkey;
+		extern bool SmokeCheck;
 		extern LBotWeaponSetting WeaponAimSetting[11];
 		extern bool Backtrack;
 		extern bool BacktrackAtAim;

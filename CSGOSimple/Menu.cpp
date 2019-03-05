@@ -386,6 +386,7 @@ void Menu::RenderLegitbot()
 		Components.Columns(2, false);
 
 		Components.Hotkey("Aimkey", Settings::Aimbot::Hotkey);
+		Components.Checkbox("Smoke Check", Settings::Aimbot::SmokeCheck);
 
 		switch ((LbotWeaponsAvailable)WeaponSelected)
 		{
@@ -853,7 +854,7 @@ void Menu::RenderMisc()
 	{
 		if (!radioInit)
 		{
-			player.PlayStreamFromURL(stations[Settings::Misc::RadioSelected].data());
+			player.PlayStreamFromURL(stations[0].data());
 			radioInit = true;
 			g_Saver.RadioPaused = false;
 		}

@@ -194,10 +194,14 @@ int Lbot::GetBestTarget(C_BasePlayer* local, C_BaseCombatWeapon* weapon, CUserCm
             {
                 continue;
             }
-            if (!local->CanSeePlayer(local, pos, true))
+            if (!local->CanSeePlayer(local, pos))
             {
                 continue;
             }
+
+			if (Settings::Aimbot::SmokeCheck && Utils::LineThroughSmoke(local->GetEyePos(), pos))
+				continue;
+
             float fov = Math::GetFOV(viewangles, Math::CalcAngle(local->GetEyePos(), pos));
 
             if (fov < BestFov)
@@ -267,7 +271,7 @@ int Lbot::GetBestTarget(C_BasePlayer* local, C_BaseCombatWeapon* weapon, CUserCm
                             break;
                     }
 
-                    if (!local->CanSeePlayer(local, record->hitboxes[hitbox], true))
+                    if (!local->CanSeePlayer(local, record->hitboxes[hitbox]))
                     {
                         continue;
                     }

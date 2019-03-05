@@ -429,8 +429,6 @@ public:
 	Vector        GetBonePos(int bone);
 	bool          CanSeePlayer(C_BasePlayer* player, int hitbox);
 	bool          CanSeePlayer(C_BasePlayer* player, const Vector& pos);
-	bool          CanSeePlayer(C_BasePlayer* player, int hitbox, bool smoke_check);
-	bool		  CanSeePlayer(C_BasePlayer* player, Vector pos, bool smoke_check);
 	void UpdateClientSideAnimation();
 	void SetAngle2(QAngle wantedang);
 

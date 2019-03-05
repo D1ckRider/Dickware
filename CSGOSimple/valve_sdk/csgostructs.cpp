@@ -599,47 +599,6 @@ bool C_BasePlayer::CanSeePlayer(C_BasePlayer* player, const Vector& pos)
 	return tr.hit_entity == player || tr.fraction > 0.97f;
 }
 
-bool C_BasePlayer::CanSeePlayer(C_BasePlayer * player, int hitbox, bool smoke_check)
-{
-	CGameTrace tr;
-	Ray_t ray;
-	CTraceFilter filter;
-	filter.pSkip = this;
-	bool visible = false;
-
-	auto endpos = player->GetHitboxPos(hitbox);
-
-	ray.Init(GetEyePos(), endpos);
-	g_EngineTrace->TraceRay(ray, MASK_SHOT | CONTENTS_GRATE, &filter, &tr);
-
-	if (tr.hit_entity == player || tr.fraction > 0.97f) visible = true;
-	if (visible && smoke_check) visible = !Utils::LineThroughSmoke(GetEyePos(), endpos);
-
-	return visible;
-	//return tr.hit_entity == player || tr.fraction > 0.97f;
-}
-
-bool C_BasePlayer::CanSeePlayer(C_BasePlayer * player, Vector pos, bool smoke_check)
-{
-	CGameTrace tr;
-	Ray_t ray;
-	CTraceFilter filter;
-	filter.pSkip = this;
-	bool visible = false;
-
-	//auto start = GetEyePos();
-	//auto dir = (pos - start).Normalized();
-
-	ray.Init(GetEyePos(), pos);
-	g_EngineTrace->TraceRay(ray, MASK_SHOT | CONTENTS_GRATE, &filter, &tr);
-
-	if (tr.hit_entity == player || tr.fraction > 0.97f) visible = true;
-	if (visible && smoke_check) visible = !Utils::LineThroughSmoke(GetEyePos(), pos);
-
-	//return tr.hit_entity == player || tr.fraction > 0.97f;
-	return visible;
-}
-
 void C_BasePlayer::UpdateClientSideAnimation()
 {
 	return CallVFunction<void(__thiscall*)(void*)>(this, 219)(this);
