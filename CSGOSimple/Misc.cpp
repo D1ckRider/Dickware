@@ -12,8 +12,6 @@ void Misc::OnCreateMove(CUserCmd* cmd)
         return;
 
     NoCrouchCooldown(cmd);
-
-	
 }
 
 void Misc::OnFrameStageNotify(ClientFrameStage_t stage)

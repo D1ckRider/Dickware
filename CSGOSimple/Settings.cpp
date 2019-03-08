@@ -307,6 +307,8 @@ void Settings::SaveSettings(std::string fileName)
 	SaveColorValue(j, "vis_esp_enemy_weapon_color", Visual::EnemyESP.WeaponColor);
 	SaveValue(j, "vis_esp_enemy_snapline_enabled", Visual::EnemyESP.SnaplineEnabled);
 	SaveColorValue(j, "vis_esp_enemy_snapline_color", Visual::EnemyESP.SnaplineColor);
+	SaveValue(j, "vis_esp_enemy_offscreen_enabled", Visual::OffscreenESPEnabled);
+	SaveColorValue(j, "vis_esp_enemy_offscreen_color", Visual::OffscreenESPColor);
 	// Team ESP
 	SaveValue(j, "vis_esp_team_enabled", Visual::TeamESP.Enabled);
 	SaveValue(j, "vis_esp_team_box_enabled", Visual::TeamESP.BoxEnabled);
@@ -331,6 +333,7 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "vis_esp_other_weapon_enabled", Visual::GlobalESP.DropedWeaponsEnabled);
 	SaveValue(j, "vis_esp_other_dz_item", Visual::GlobalESP.DZEnabled);
 	SaveValue(j, "vis_esp_other_dz_range", Visual::GlobalESP.DZRange);
+	SaveValue(j, "vis_radar_type", Visual::GlobalESP.RadarType);
 	SaveValue(j, "vis_esp_other_sound_enabled", Visual::GlobalESP.SoundESPEnabled);
 	SaveValue(j, "vis_noscope_overlay", Visual::NoScopeOverlay);
 	SaveValue(j, "vis_bullet_tracers", Visual::BulletTracers);
@@ -350,6 +353,8 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "vis_hitmarker", Visual::Hitmarker);
 	SaveValue(j, "vis_hitmarker_sound", Visual::HitmarkerSound);
 	SaveValue(j, "vis_ragdoll_force", Visual::RagdollForce);
+	SaveValue(j, "vis_health_pos", Visual::HealthPos);
+	SaveValue(j, "vis_armor_pos", Visual::ArmorPos);
 	/* Misc */
 	SaveValue(j, "misc_bhop", Misc::BHop);
 	SaveValue(j, "misc_autostrafe", Misc::AutoStrafe);
@@ -510,6 +515,8 @@ void Settings::LoadSettings(std::string fileName)
 	LoadColorValue(j, "vis_esp_enemy_weapon_color", Visual::EnemyESP.WeaponColor);
 	LoadValue(j, "vis_esp_enemy_snapline_enabled", 	Visual::EnemyESP.SnaplineEnabled);
 	LoadColorValue(j, "vis_esp_enemy_snapline_color", Visual::EnemyESP.SnaplineColor);
+	LoadValue(j, "vis_esp_enemy_offscreen_enabled", Visual::OffscreenESPEnabled);
+	LoadColorValue(j, "vis_esp_enemy_offscreen_color", Visual::OffscreenESPColor);
 	// Team ESP
 	LoadValue(j, "vis_esp_team_enabled", 	Visual::TeamESP.Enabled);
 	LoadValue(j, "vis_esp_team_box_enabled", 	Visual::TeamESP.BoxEnabled);
@@ -535,6 +542,7 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "vis_esp_other_sound_enabled", Visual::GlobalESP.SoundESPEnabled);
 	LoadValue(j, "vis_esp_other_dz_item", 	Visual::GlobalESP.DZEnabled);
 	LoadValue(j, "vis_esp_other_dz_range", 	Visual::GlobalESP.DZRange);
+	LoadValue(j, "vis_radar_type", Visual::GlobalESP.RadarType);
 	LoadValue(j, "vis_noscope_overlay", 	Visual::NoScopeOverlay);
 	LoadValue(j, "vis_bullet_tracers", 	Visual::BulletTracers);
 	LoadValue(j, "vis_noflash", 	Visual::NoFlash);
@@ -553,6 +561,8 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "vis_hitmarker", 	Visual::Hitmarker);
 	LoadValue(j, "vis_hitmarker_sound", Visual::HitmarkerSound);
 	LoadValue(j, "vis_ragdoll_force", 	Visual::RagdollForce);
+	LoadValue(j, "vis_health_pos", Visual::HealthPos);
+	LoadValue(j, "vis_armor_pos", Visual::ArmorPos);
 	/* Misc */
 	LoadValue(j, "misc_bhop", 	Misc::BHop);
 	LoadValue(j, "misc_autostrafe", 	Misc::AutoStrafe);
@@ -775,6 +785,9 @@ void Settings::ResetVisuals()
 	Visual::Hitmarker = false;
 	Visual::HitmarkerSound = false;
 	Visual::RagdollForce = 0;
+	Visual::HealthPos = 0;
+	Visual::ArmorPos = 0;
+
 
 	Visual::LocalChams.Enabled = false;
 	Visual::LocalChams.Mode = 0;
@@ -829,6 +842,8 @@ void Settings::ResetVisuals()
 	Visual::EnemyESP.WeaponColor = Color::White;
 	Visual::EnemyESP.SnaplineEnabled = false;
 	Visual::EnemyESP.SnaplineColor = Color::White;
+	Visual::OffscreenESPEnabled = false;
+	Visual::OffscreenESPColor = Color::Red;
 
 	Visual::GlobalESP.Enabled = false;
 	Visual::GlobalESP.GrenadeEnabled = false;
@@ -837,6 +852,7 @@ void Settings::ResetVisuals()
 	Visual::GlobalESP.Enabled = false;
 	Visual::GlobalESP.DZEnabled = false;
 	Visual::GlobalESP.DZRange = 100.f;
+	Visual::GlobalESP.RadarType = 0;
 	Visual::GlobalESP.SoundESPEnabled = false;
 }
 
@@ -1023,6 +1039,8 @@ namespace Settings::Visual
 	bool GhostEnabled = false;
 	Color GhostColor = Color::White;
 	Chams EnemyChams;
+	bool OffscreenESPEnabled = false;
+	Color OffscreenESPColor = Color::Red;
 	PlayerESP EnemyESP;
 	Chams TeamChams;
 	PlayerESP TeamESP;
@@ -1050,6 +1068,9 @@ namespace Settings::Visual
 	bool Hitmarker = false;
 	bool HitmarkerSound = false;
 	int RagdollForce = 0;
+
+	int HealthPos = 0;
+	int ArmorPos = 0;
 }
 
 namespace Settings::Misc

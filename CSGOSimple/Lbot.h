@@ -8,7 +8,7 @@ class Lbot : public Singleton<Lbot>
 {
 public:
     void OnCreateMove(CUserCmd* cmd);
-    //void LegitAA(CUserCmd* cmd, bool & bSendPackets);
+    void LegitAA(CUserCmd* cmd, bool & bSendPackets);
 private:
     //bool CanShoot(C_BaseCombatWeapon* weapon);
     void UpdateWeaponConfig(C_BaseCombatWeapon* weapon);

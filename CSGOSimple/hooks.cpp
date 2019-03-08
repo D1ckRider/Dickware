@@ -333,12 +333,13 @@ namespace Hooks
 		if(Settings::Misc::BHop)
             BunnyHop::Get().OnCreateMove ( cmd );
 
-        //if (rbot) AntiAim::Get().Fakewalk(cmd, bSendPacket);
         if ( rbot )
             Fakelag::Get().OnCreateMove ( cmd, bSendPacket );
 
 		if ( Settings::RageBot::EnabledAA )
             AntiAim::Get().OnCreateMove ( cmd, bSendPacket );
+
+		//Lbot::Get().LegitAA(cmd, bSendPacket);
 
         if ( rbot )
         {
@@ -475,69 +476,7 @@ namespace Hooks
 		if (!strcmp(pSoundEntry, "UIPanorama.popup_accept_match_beep"))
 			Misc::Get().SetLocalPlayerReady();
 
-		/*if ( g_EngineClient->IsInGame() && pSample )
-		{
-			if (!strstr(pSample, "bulletLtoR") &&
-				!strstr(pSample, "rics/ric") &&
-				!strstr(pSample, "impact_bullet"))
-			{
-				g_Logger.Info("INFO", "Catch sound esp");
-				if (pOrigin && g_LocalPlayer->IsAlive())
-				{
-					StepInfoStruct stp = { *pOrigin, g_GlobalVars->realtime };
-					g_Saver.StepInfo.push_back(stp);
-				}
-			}
-		}*/
-		
         ofunc ( g_EngineSound, filter, iEntIndex, iChannel, pSoundEntry, nSoundEntryHash, pSample, flVolume, nSeed, flAttenuation, iFlags, iPitch, pOrigin, pDirection, pUtlVecOrigins, bUpdatePositions, soundtime, speakerentity, unk );
-
-		/*if (true)
-		{
-			C_BaseEntity* pEntity = static_cast<C_BaseEntity*>( g_EntityList->GetClientEntity(iEntIndex));
-
-			if (!g_LocalPlayer)
-				return;
-
-			if (!pEntity)
-				return;
-
-			if (pEntity == g_LocalPlayer->GetBaseEntity())
-				return;
-
-
-			player_info_t pInfo;
-
-			if (!g_EngineClient->GetPlayerInfo(iEntIndex, &pInfo))
-				return;
-
-			switch (iChannel)
-			{
-			case CHAN_BODY:
-			{
-				if (!strstr(pSample, "bulletLtoR") &&
-					!strstr(pSample, "rics/ric") &&
-					!strstr(pSample, "impact_bullet"))
-				{
-					g_Logger.Info("INFO", "Catch sound esp");
-					StepInfoStruct step = { *pOrigin, g_GlobalVars->realtime };
-					g_Saver.StepInfo.push_back(step);
-					/*stepesp_t player;
-
-					player.iEntIndex = iEntIndex;
-					player.pOrigin = *pOrigin;
-					player.soundtime = soundtime;
-
-					player.donetime = g_pGlobalVars->curtime + soundtime;
-
-					vStep.push_back(player);
-				}
-				break;
-			}
-
-			break;
-			}
-		}*/
     }
     //--------------------------------------------------------------------------------
     int __stdcall hkDoPostScreenEffects ( int a1 )
@@ -576,7 +515,6 @@ namespace Hooks
 
             case FRAME_NET_UPDATE_POSTDATAUPDATE_START:
             {
-
 				break;
             }
 

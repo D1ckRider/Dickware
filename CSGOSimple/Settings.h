@@ -214,6 +214,7 @@ namespace Settings
 			Color BombColor;
 			bool DZEnabled;
 			float DZRange;
+			int RadarType;
 			bool SoundESPEnabled;
 		};
 
@@ -223,6 +224,8 @@ namespace Settings
 		extern PlayerESP LocalESP;
 		extern Chams EnemyChams;
 		extern PlayerESP EnemyESP;
+		extern bool OffscreenESPEnabled;
+		extern Color OffscreenESPColor;
 		extern Chams TeamChams;
 		extern PlayerESP TeamESP;
 
@@ -249,6 +252,9 @@ namespace Settings
 		extern bool Hitmarker;
 		extern bool HitmarkerSound;
 		extern int RagdollForce;
+
+		extern int HealthPos;
+		extern int ArmorPos;
 	}
 
 

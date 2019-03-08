@@ -67,9 +67,6 @@ public:
 		void RenderBox();
 		void RenderName();
 		void RenderWeaponName();
-		
-		void DrawPlayerPOV();
-
 		void RenderHealth();
 		void RenderArmour();
 		void RenderLbyUpdateBar();
@@ -89,7 +86,7 @@ public:
 	void RenderDefuseKit(C_BaseEntity* ent);
 	void RenderPlantedC4(C_BaseEntity* ent);
 	void RenderSoundESP();
-	void RenderOffscreenESP();
+	void RenderOffscreenESP(C_BasePlayer* ent);
 	void DrawGrenade(C_BaseEntity* ent);
 	void DrawDangerzoneItem(C_BaseEntity* ent, float maxRange);
 	void ThirdPerson();

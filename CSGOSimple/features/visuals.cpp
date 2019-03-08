@@ -241,55 +241,6 @@ void Visuals::Player::RenderWeaponName()
 	TextHeight += 12.f;
 }
 
-bool IsOnScreen(Vector origin, Vector& screen)
-{
-	if (!Math::WorldToScreen(origin, screen)) return false;
-	int iScreenWidth, iScreenHeight;
-	g_EngineClient->GetScreenSize(iScreenWidth, iScreenHeight);
-	bool xOk = iScreenWidth > screen.x > 0, yOk = iScreenHeight > screen.y > 0;
-	return xOk && yOk;
-}
-
-void Visuals::Player::DrawPlayerPOV()
-{
- 	/*QAngle eyeangles; Vector poopvec;
-	int screen_w, screen_h;
-	g_EngineClient->GetScreenSize(screen_w, screen_h);
-	g_EngineClient->GetViewAngles(eyeangles);
-	//QAngle newangle = Math::CalcAngle(Vector(g_LocalPlayer->m_angAbsOrigin().x, g_LocalPlayer->m_angAbsOrigin().y, 0), Vector(ctx.pl->m_angAbsOrigin().x, ctx.pl->m_angAbsOrigin().y, 0));
-	QAngle newangle = Math::CalcAngle(Vector(g_LocalPlayer->GetRenderOrigin().x, g_LocalPlayer->GetRenderOrigin().y, 0), Vector(ctx.pl->GetRenderOrigin().x, ctx.pl->GetRenderOrigin().y, 0));
-	//Math::AngleVectors(QAngle(0, 270, 0) - newangle + QAngle(0, eyeangles.y, 0), &poopvec);
-	Math::AngleVectors(QAngle(0, 270, 0) - newangle + QAngle(0, eyeangles.yaw, 0), poopvec);
-	auto circlevec = Vector(screen_w / 2, screen_h / 2, 0) + (poopvec * 250.f);
-	//VGSHelper::Get().DrawCircle(circlevec.x, circlevec.y, 6, 4, ctx.pl->IsDormant() ? Color(100, 100, 100, 100) : Color(255, 0, 0, 100));
-	VGSHelper::Get().DrawFilledBox(circlevec.x, circlevec.y, 10, 10, ctx.pl->IsDormant() ? Color(100, 100, 100, 100) : Color(255, 0, 0, 100));*/
-
-	if (!g_LocalPlayer) return;
-	//if (ctx.pl->IsDormant()) return;
-
-	Vector screenPos;
-	QAngle client_viewangles;
-	Vector hitboxPos;
-	ctx.pl->GetOptimizedHitboxPos(0, hitboxPos);
-	int screen_width = 0, screen_height = 0;
-	float radius = 300.f;
-
-	if (IsOnScreen(hitboxPos, screenPos)) return;
-
-	g_EngineClient->GetViewAngles(client_viewangles);
-	g_EngineClient->GetScreenSize(screen_width, screen_height);
-
-	const auto screen_center = Vector(screen_width / 2.f, screen_height / 2.f, 0);
-	const auto rot = DEG2RAD(client_viewangles.yaw - Math::CalcAngle(g_LocalPlayer->GetEyePos(), hitboxPos).yaw - 90);
-
-	std::vector<Vertex_t> vertices;
-
-	vertices.push_back(Vertex_t(Vector2D(screen_center.x + cosf(rot) * radius, screen_center.y + sinf(rot) * radius)));
-	vertices.push_back(Vertex_t(Vector2D(screen_center.x + cosf(rot + DEG2RAD(2)) * (radius - 16), screen_center.y + sinf(rot + DEG2RAD(2)) * (radius - 16))));
-	vertices.push_back(Vertex_t(Vector2D(screen_center.x + cosf(rot - DEG2RAD(2)) * (radius - 16), screen_center.y + sinf(rot - DEG2RAD(2)) * (radius - 16))));
-
-	VGSHelper::Get().DrawTriangle(3, vertices.data(), Color::Red);
-}
 //--------------------------------------------------------------------------------
 void Visuals::Player::RenderSnapline()
 {
@@ -650,11 +601,42 @@ void Visuals::RenderSoundESP()
 }
 
 
-
-void Visuals::RenderOffscreenESP()
+bool IsOnScreen(Vector origin, Vector& screen)
 {
-	
-	//TexturedPolygon(3, vertices, color);
+	if (!Math::WorldToScreen(origin, screen)) return false;
+	int iScreenWidth, iScreenHeight;
+	g_EngineClient->GetScreenSize(iScreenWidth, iScreenHeight);
+	bool xOk = iScreenWidth > screen.x > 0, yOk = iScreenHeight > screen.y > 0;
+	return xOk && yOk;
+}
+
+void Visuals::RenderOffscreenESP(C_BasePlayer* ent)
+{
+	if (!g_LocalPlayer) return;
+	if (ent->IsDormant()) return;
+
+	Vector screenPos;
+	QAngle client_viewangles;
+	Vector hitboxPos;
+	ent->GetHitboxPos(0, hitboxPos);
+	int screen_width = 0, screen_height = 0;
+	float radius = 300.f;
+
+	if (IsOnScreen(hitboxPos, screenPos)) return;
+
+	g_EngineClient->GetViewAngles(client_viewangles);
+	g_EngineClient->GetScreenSize(screen_width, screen_height);
+
+	const auto screen_center = Vector(screen_width / 2.f, screen_height / 2.f, 0);
+	const auto rot = DEG2RAD(client_viewangles.yaw - Math::CalcAngle(g_LocalPlayer->GetEyePos(), hitboxPos).yaw - 90);
+
+	std::vector<Vertex_t> vertices;
+
+	vertices.push_back(Vertex_t(Vector2D(screen_center.x + cosf(rot) * radius, screen_center.y + sinf(rot) * radius)));
+	vertices.push_back(Vertex_t(Vector2D(screen_center.x + cosf(rot + DEG2RAD(2)) * (radius - 16), screen_center.y + sinf(rot + DEG2RAD(2)) * (radius - 16))));
+	vertices.push_back(Vertex_t(Vector2D(screen_center.x + cosf(rot - DEG2RAD(2)) * (radius - 16), screen_center.y + sinf(rot - DEG2RAD(2)) * (radius - 16))));
+
+	VGSHelper::Get().DrawTriangle(3, vertices.data(), Settings::Visual::OffscreenESPColor);
 }
 
 
@@ -1128,8 +1110,9 @@ void Visuals::AddToDrawList()
         return;
 
 	bool GrenadeEsp = Settings::Visual::GlobalESP.GrenadeEnabled; 
-    DrawSideModes health_pos = ( DrawSideModes ) g_Config.GetInt ( "esp_health_pos" );
-    DrawSideModes armour_pos = ( DrawSideModes ) g_Config.GetInt ( "esp_armour_pos" );
+
+	DrawSideModes health_pos = (DrawSideModes)Settings::Visual::HealthPos;
+	DrawSideModes armour_pos = (DrawSideModes)Settings::Visual::ArmorPos;
 
 	bool esp_local_enabled = Settings::Visual::LocalESP.Enabled; 
 	bool esp_team_enabled = Settings::Visual::TeamESP.Enabled;
@@ -1256,6 +1239,13 @@ void Visuals::AddToDrawList()
         {
             auto player = Player();
 
+			C_BasePlayer* plr = static_cast<C_BasePlayer*>(entity);
+			if (Settings::Visual::GlobalESP.RadarType == 1 && plr->m_bSpotted() == false)
+				plr->m_bSpotted() = true;
+
+			if (Settings::Visual::OffscreenESPEnabled && g_LocalPlayer->m_iTeamNum() != plr->m_iTeamNum())
+				RenderOffscreenESP(plr);
+
             if ( player.Begin ( ( C_BasePlayer* ) entity ) )
             {
                 bool Enemy = player.ctx.pl->IsEnemy();
@@ -1315,10 +1305,6 @@ void Visuals::AddToDrawList()
 
                 if ( rbot_resolver && Enemy && esp_enemy_info )
                     player.RenderResolverInfo();
-
-				// Add check
-				//if(Enemy)
-					player.DrawPlayerPOV();
 
                 if ( ( Local && esp_local_enabled && esp_local_weapons ) || ( Team && esp_team_enabled && esp_team_weapons ) || ( Enemy && esp_enemy_enabled && esp_enemy_weapons ) )
                     player.RenderWeaponName();

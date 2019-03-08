@@ -661,6 +661,8 @@ void Menu::RenderVisuals()
     static const char* ChamsTypes[] = { "normal", "flat", "wireframe", "glass", "metallic",  "xqz", "metallic xqz", "flat xqz" };
     static const char* BoxTypes[] = { "normal", "edge" };
 
+	static const char* RadarTypes[] = { "none", "in-game" };
+
     switch ( ( VisualsMenuAvailable ) SelectedMenu )
     {
         case VisualsMenuAvailable::LOCAL:
@@ -705,6 +707,7 @@ void Menu::RenderVisuals()
 			Components.ColorCheckbox("Armor", Settings::Visual::EnemyESP.ArmorEnabled, Settings::Visual::EnemyESP.ArmorColor);
 			Components.ColorCheckbox("Weapon", Settings::Visual::EnemyESP.WeaponEnabled, Settings::Visual::EnemyESP.WeaponColor);
 			Components.ColorCheckbox("Snapline", Settings::Visual::EnemyESP.SnaplineEnabled, Settings::Visual::EnemyESP.SnaplineColor);
+			Components.ColorCheckbox("Offscreen ESP", Settings::Visual::OffscreenESPEnabled, Settings::Visual::OffscreenESPColor);
 			break;
         }
 
@@ -748,6 +751,7 @@ void Menu::RenderVisuals()
 			Components.Checkbox("Droped Weapons", Settings::Visual::GlobalESP.DropedWeaponsEnabled);
 			Components.Checkbox("DangerZone item ESP",  Settings::Visual::GlobalESP.DZEnabled);
 			Components.SliderFloat("DangerZone ESP Range",  Settings::Visual::GlobalESP.DZRange, 0.f, 1000.f);
+			Components.ComboBox("Radar type", RadarTypes, IM_ARRAYSIZE(RadarTypes), Settings::Visual::GlobalESP.RadarType);
 			Components.Checkbox("Sound ESP", Settings::Visual::GlobalESP.SoundESPEnabled);
 
 			Components.NextColumn();
@@ -773,7 +777,8 @@ void Menu::RenderVisuals()
             //Components.SliderInt("Asuswalls", "vis_misc_asuswalls_percent", 0, 100);
             //Components.Checkbox("Autowall crosshair", "vis_misc_autowall_crosshair");
             #ifdef _DEBUG
-            Components.SliderInt ( "Ragdoll force", "misc_add_force", 0, 10 );
+			Components.SliderInt("Ragdoll Force", Settings::Visual::RagdollForce, 0, 10);
+            //Components.SliderInt ( "Ragdoll force", "misc_add_force", 0, 10 );
             #endif // _DEBUG
 
             break;
@@ -785,8 +790,8 @@ void Menu::RenderVisuals()
             static const char* ItemPositions[] = { "top", "right", "bottom", "left" };
             //Components.ComboBox("Name pos", ItemPositions, IM_ARRAYSIZE(ItemPositions), "esp_name_pos");
             //Components.ComboBox("Weapon name pos", ItemPositions, IM_ARRAYSIZE(ItemPositions), "esp_weapons_pos");
-            Components.ComboBox ( "Health pos", ItemPositions, IM_ARRAYSIZE ( ItemPositions ), "esp_health_pos" );
-            Components.ComboBox ( "Armour pos", ItemPositions, IM_ARRAYSIZE ( ItemPositions ), "esp_armour_pos" );
+			Components.ComboBox("Health Position", ItemPositions, IM_ARRAYSIZE(ItemPositions), Settings::Visual::HealthPos);
+			Components.ComboBox("Armor Position", ItemPositions, IM_ARRAYSIZE(ItemPositions), Settings::Visual::ArmorPos);
             //Components.Checkbox("Esp outline", "esp_misc_outline");
             break;
         }
@@ -1037,6 +1042,17 @@ void Menu::RenderSettings()
 
 	if (Components.Button("Save") && Selected != -1)
 	{
+		/*if (ImGui::BeginPopup("WARNING", ImGuiWindowFlags_AlwaysAutoResize))
+		{
+			ImGui::Text("Are you want to rewrite config?");
+			if (ImGui::Button("Yes"))
+			{
+				Settings::SaveSettings(Settings::Configs[Selected]);
+				CurrentConfig = Settings::Configs[Selected];
+			}
+			if (ImGui::Button("No"))
+				ImGui::EndPopup();
+		}*/
 		Settings::SaveSettings(Settings::Configs[Selected]);
 		CurrentConfig = Settings::Configs[Selected];
 	}

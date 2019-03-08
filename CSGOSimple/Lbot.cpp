@@ -412,41 +412,27 @@ void Lbot::DoAimbot(CUserCmd* cmd, C_BasePlayer* local, C_BaseCombatWeapon* weap
         cmd->tick_count = TIME_TO_TICKS(entity->m_flSimulationTime() + Backtrack::Get().GetLerpTime());
     }
 }
-/*
-void Lbot::LegitAA(CUserCmd * cmd, bool & bSendPackets)
+
+
+
+void Lbot::LegitAA(CUserCmd * cmd, bool & bSendPacket)
 {
-	return;
-	if (!g_Config.GetBool("lbot_legitaa")) return;
+	static bool sw = false;
+	bSendPacket = sw;
+	sw = !sw;
 
-	static int ChokedPackets = -1;
-	//static float LastRealPitch = 0.f;
-	if (!g_Saver.InFakewalk && (!g_Config.GetBool("misc_fakelag") || !g_Saver.FakelagCurrentlyEnabled || g_Saver.RbotAADidShot))
-	{
-		if (g_Saver.RbotAADidShot)
-		{
-			g_Saver.RbotAADidShot = false;
-		}
+	auto animstate = g_LocalPlayer->GetBasePlayerAnimState();
+	float feet_yaw = animstate->m_flGoalFeetYaw;
+	float feet_delta = Math::NormalizeAngle(cmd->viewangles.yaw - feet_yaw);
+	float desync_delta = g_LocalPlayer->GetMaxDesyncAngle();
+	float delta = std::clamp(Math::NormalizeAngle(desync_delta - feet_delta), -desync_delta, desync_delta);
 
-		ChokedPackets++;
-		if (ChokedPackets < 1)
-		{
-			bSendPackets = true;
-		}
-		else
-		{
-			bSendPackets = false;
-		}
-	}
 
-	if (bSendPackets)
+	static bool bSwitch = false;
+	if (!bSendPacket && !(cmd->buttons & IN_ATTACK))
 	{
-		g_Saver.AAFakeAngle = cmd->viewangles;
+		cmd->viewangles.yaw += bSwitch ? delta : -delta;
+		bSwitch != bSwitch;
 	}
-	else
-	{
-		cmd->viewangles.yaw += g_Config.GetFloat("lbot_legitaa_yaw");
-		ChokedPackets = -1;
-		g_Saver.AARealAngle = cmd->viewangles;
-	}
+		
 }
-*/

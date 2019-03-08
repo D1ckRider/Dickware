@@ -37,16 +37,11 @@ public:
         void NavbarIcons(char* items[], char* hovered_items[], int size, int& selected, ImFont* font);
         void Navbar(char* items[], int size, int& selected);
         void HelpMarker(const char* text);
-        void Checkbox(std::string text, std::string settings_name);
 		void Checkbox(std::string label, bool& value);
-        void ColorCheckbox(std::string text, std::string settings_name, std::string settings_name_color);
 		void ColorCheckbox(std::string text, bool &name, Color &color);
-        void ColorCheckbox2(std::string text, std::string settings_name, std::string settings_name_color, std::string settings_name_color2);
 		void ColorCheckbox2(std::string text, bool &name, Color &color1, Color &color2);
 		void Label(std::string text);
-        void ComboBox(std::string label, const char* items[], int size, std::string settings_name);
 		void ComboBox(std::string text, const char* items[], int size, int& value);
-        void ComboCheckBox(std::string text, std::string items[], std::string setting_names[], int size);
 		void ComboCheckBox(std::string label, const char* items[], bool* values[], int size);
 		void ComboFilterBox(std::string label, const char* items[], int size, int& value);
         void BeginChild(std::string id, ImVec2 size, bool border = true, ImGuiWindowFlags flags = 0);
@@ -54,14 +49,12 @@ public:
         void Columns(int count, bool border, char* id = NULL);
         void NextColumn();
         void SameLine();
-        void SliderInt(std::string text, std::string settings_name, int min, int max);
 		void SliderInt(std::string label, int& value, int min, int max);
-        void SliderFloat(std::string text, std::string settings_name, float min, float max);
 		void SliderFloat(std::string label, float& value, float min, float max);
-        void Hotkey(std::string text, std::string settings_name);
 		void Hotkey(std::string label, int& value, const int& type = 0);
         bool Button(std::string text);
         void Spacing();
+		bool MessageDialog(std::string header, std::string msg);
 
     private:
         bool InColumns = false;

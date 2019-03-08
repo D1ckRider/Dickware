@@ -424,7 +424,6 @@ void AntiAim::LbyBreakerPrediction ( CUserCmd* cmd, bool& bSendPacket )
 {
     return;
 
-    //if ( !g_Config.GetBool ( "rbot_aa_desync" ) || !g_Config.GetBool ( "rbot" ) || !g_LocalPlayer || !g_LocalPlayer->IsAlive() )
 	if (!Settings::RageBot::Desync || !Settings::RageBot::Enabled || !g_LocalPlayer || !g_LocalPlayer->IsAlive())
         return;
     /*
@@ -572,48 +571,6 @@ void AntiAim::ResetLbyPrediction()
 
 void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
 {
-    /*
-    bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1;
-    bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
-    bool Standing = !Moving && !InAir;
-
-    if (Standing) { mode = (YawAntiAims)g_Config.GetInt("rbot_aa_stand_fake_yaw"); CustomYaw = g_Config.GetFloat("rbot_aa_stand_fake_yaw_custom"); }
-    	else if (Moving && !InAir) { mode = (YawAntiAims)g_Config.GetInt("rbot_aa_move_fake_yaw"); CustomYaw = g_Config.GetFloat("rbot_aa_move_fake_yaw_custom"); }
-    	else { mode = (YawAntiAims)g_Config.GetInt("rbot_aa_air_fake_yaw"); CustomYaw = g_Config.GetFloat("rbot_aa_air_fake_yaw_custom"); }
-    */
-    /*
-    bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1;
-    bool InAir = !(g_LocalPlayer->m_fFlags() & FL_ONGROUND);
-    bool Standing = !Moving && !InAir;
-
-    bool UsingFake = false;
-    if (Standing) UsingFake = (YawAntiAims)g_Config.GetInt("rbot_aa_stand_fake_yaw") != YawAntiAims::NONE;
-    else if (Moving && !InAir) UsingFake = (YawAntiAims)g_Config.GetInt("rbot_aa_move_fake_yaw") != YawAntiAims::NONE;
-    else UsingFake = (YawAntiAims)g_Config.GetInt("rbot_aa_air_fake_yaw") != YawAntiAims::NONE;
-    */
-
-    /*
-    static int ChokedPackets = -1;
-    static float LastRealPitch = 0.f;
-    if (!g_Saver.InFakewalk && UsingFake && (!g_Config.GetBool("misc_fakelag") || !g_Saver.FakelagCurrentlyEnabled || g_Saver.RbotAADidShot))
-    {
-    	if (g_Saver.RbotAADidShot)
-    	{
-    		g_Saver.RbotAADidShot = false;
-    	}
-
-    	ChokedPackets++;
-    	if (ChokedPackets < 1)
-    	{
-    		bSendPacket = true;
-    	}
-    	else
-    	{
-    		bSendPacket = false;
-    	}
-    }
-    */
-
     Yaw ( cmd, false );
     YawAdd ( cmd, false );
     Pitch ( cmd );
@@ -648,7 +605,7 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
 		float feet_yaw = animstate->m_flGoalFeetYaw;
 		float feet_delta = Math::NormalizeAngle(cmd->viewangles.yaw - feet_yaw);
 		float fake_yaw;
-		float desync_delta = g_LocalPlayer->GetMaxDesyncAngle(); //GetMaxDesyncYaw();
+		float desync_delta = g_LocalPlayer->GetMaxDesyncAngle();
 		float delta = std::clamp(Math::NormalizeAngle(desync_delta - feet_delta), -desync_delta, desync_delta);
 		float negative_delta = std::clamp(Math::NormalizeAngle(desync_delta + feet_delta), -desync_delta, desync_delta);
 		bool c_switch = fabsf(negative_delta) > fabsf(delta);
@@ -657,11 +614,10 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
 			b_switch = !c_switch;
 
 		b_switch ? fake_yaw = cmd->viewangles.yaw - negative_delta : fake_yaw = cmd->viewangles.yaw + delta;
-
-
+		
         if ( !bSendPacket && !( cmd->buttons & IN_ATTACK ) )
         {
-			cmd->viewangles.yaw += g_LocalPlayer->GetMaxDesyncAngle(); //fake_yaw;
+			cmd->viewangles.yaw = fake_yaw;
 			g_Saver.AADesyncAngle = cmd->viewangles;
         }
 
