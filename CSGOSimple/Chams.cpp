@@ -7,9 +7,7 @@
 void Chams::OnSceneEnd()
 {
     if (!g_EngineClient->IsInGame() || !g_EngineClient->IsConnected() || !g_LocalPlayer)
-    {
         return;
-    }
 
 	ChamsModes LocalChamsMode = (ChamsModes)Settings::Visual::LocalChams.Mode;
 	ChamsModes TeamChamsMode = (ChamsModes)Settings::Visual::TeamChams.Mode;
@@ -31,9 +29,7 @@ void Chams::OnSceneEnd()
     {
         auto entity = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(i));
         if (!entity || !entity->IsPlayer() || entity->IsDormant() || !entity->IsAlive())
-        {
             continue;
-        }
 
         bool IsLocal = entity == g_LocalPlayer;
         bool IsTeam = !entity->IsEnemy();
@@ -50,17 +46,11 @@ void Chams::OnSceneEnd()
         ChamsModes mode = IsLocal ? LocalChamsMode : (IsTeam ? TeamChamsMode : EnemyChamsMode);
 
         if (IsLocal && !LocalChams)
-        {
             continue;
-        }
         if ((IsTeam && !IsLocal) && !TeamChams)
-        {
             continue;
-        }
         if (!IsTeam && !EnemyChams)
-        {
             continue;
-        }
 
         Color clr = IsLocal ? LocalColor : (IsTeam ? TeamColor : EnemyColor);
         Color clr2 = IsLocal ? LocalColorXqz : (IsTeam ? TeamColorXqz : EnemyColorXqz);

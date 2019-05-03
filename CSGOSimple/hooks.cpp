@@ -35,6 +35,7 @@
 #include "features\NightMode.h"
 #include "features\Skinchanger.h"
 #include "features\GrenadeTrajectory.h"
+#include "features\Radar.h"
 //#include "Asuswalls.h"
 #include "NoSmoke.h"
 #pragma intrinsic(_ReturnAddress)
@@ -258,7 +259,8 @@ namespace Hooks
         auto esp_drawlist = Render::Get().RenderScene();
 
         MenuHelper::Get().Render();
-
+		// Add radar render
+		Radar::Get().Render();
 
         ImGui::Render();
         ImGui_ImplDX9_RenderDrawData ( ImGui::GetDrawData(), esp_drawlist );

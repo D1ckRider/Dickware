@@ -624,6 +624,11 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
         if ( bSendPacket )
             LastRealAngle = cmd->viewangles;
 
+		// LBY Prediction
+		//if (true)
+			//cmd->viewangles.yaw = (180 - fake_yaw);
+
+
         g_Saver.FakelagData.ang = LastRealAngle;
     }
 
@@ -661,6 +666,7 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
     }
     */
 }
+
 
 void AntiAim::Pitch ( CUserCmd* cmd )
 {

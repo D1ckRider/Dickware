@@ -334,6 +334,8 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "vis_esp_other_dz_item", Visual::GlobalESP.DZEnabled);
 	SaveValue(j, "vis_esp_other_dz_range", Visual::GlobalESP.DZRange);
 	SaveValue(j, "vis_radar_type", Visual::GlobalESP.RadarType);
+	SaveValue(j, "vis_radar_range", Visual::GlobalESP.RadarRange);
+	SaveValue(j, "vis_radar_alpha", Visual::GlobalESP.RadarAlpha);
 	SaveValue(j, "vis_esp_other_sound_enabled", Visual::GlobalESP.SoundESPEnabled);
 	SaveValue(j, "vis_noscope_overlay", Visual::NoScopeOverlay);
 	SaveValue(j, "vis_bullet_tracers", Visual::BulletTracers);
@@ -370,6 +372,7 @@ void Settings::SaveSettings(std::string fileName)
 	SaveValue(j, "misc_buybot_zeus", Misc::BuyBotZeus);
 	SaveValue(j, "misc_buybot_defuser", Misc::BuyBotDefuser);
 	SaveValue(j, "misc_skin_enabled", Misc::SkinchangerEnabled);
+	SaveValue(j, "misc_watermark_enabled", Misc::WatermarkEnabled);
 	/* Radio */
 	SaveValue(j, "misc_radio_enabled", Misc::RadioEnabled);
 	SaveValue(j, "misc_radio_selected", Misc::RadioSelected);
@@ -543,6 +546,8 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "vis_esp_other_dz_item", 	Visual::GlobalESP.DZEnabled);
 	LoadValue(j, "vis_esp_other_dz_range", 	Visual::GlobalESP.DZRange);
 	LoadValue(j, "vis_radar_type", Visual::GlobalESP.RadarType);
+	LoadValue(j, "vis_radar_range", Visual::GlobalESP.RadarRange);
+	LoadValue(j, "vis_radar_alpha", Visual::GlobalESP.RadarAlpha);
 	LoadValue(j, "vis_noscope_overlay", 	Visual::NoScopeOverlay);
 	LoadValue(j, "vis_bullet_tracers", 	Visual::BulletTracers);
 	LoadValue(j, "vis_noflash", 	Visual::NoFlash);
@@ -578,6 +583,7 @@ void Settings::LoadSettings(std::string fileName)
 	LoadValue(j, "misc_buybot_zeus", 	Misc::BuyBotZeus);
 	LoadValue(j, "misc_buybot_defuser", 	Misc::BuyBotDefuser);
 	LoadValue(j, "misc_skin_enabled", Misc::SkinchangerEnabled);
+	LoadValue(j, "misc_watermark_enabled", Misc::WatermarkEnabled);
 	/* Radio */
 	LoadValue(j, "misc_radio_enabled", Misc::RadioEnabled);
 	LoadValue(j, "misc_radio_selected", Misc::RadioSelected);
@@ -854,6 +860,8 @@ void Settings::ResetVisuals()
 	Visual::GlobalESP.DZRange = 100.f;
 	Visual::GlobalESP.RadarType = 0;
 	Visual::GlobalESP.SoundESPEnabled = false;
+	Visual::GlobalESP.RadarAlpha = 255;
+	Visual::GlobalESP.RadarRange = 200.f;
 }
 
 void Settings::ResetMisc()
@@ -872,6 +880,7 @@ void Settings::ResetMisc()
 	Misc::BuyBotZeus = false;
 	Misc::BuyBotDefuser = false;
 	Misc::SkinchangerEnabled = false;
+	Misc::WatermarkEnabled = true;
 
 	Misc::RadioEnabled = false;
 	Misc::RadioSelected = -1;
@@ -1093,4 +1102,5 @@ namespace Settings::Misc
 	int RadioSelected = -1;
 	int RadioVolume = 20;
 	int RadioPauseHotkey = 0x0;
+	bool WatermarkEnabled = true;
 }

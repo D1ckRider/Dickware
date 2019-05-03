@@ -41,6 +41,8 @@ private:
 		return ((_color[3] & 0xff) << 24) + ((_color[2] & 0xff) << 16) + ((_color[1] & 0xff) << 8)
 			+ (_color[0] & 0xff);
 	}
+
+	void DrawWatermark();
 public:
 	void Initialize();
 	void GetFonts();
@@ -57,6 +59,10 @@ public:
 
 	void RenderImage(ImTextureID user_texture_id, const ImVec2& a, const ImVec2& b, const ImVec2& uv_a = ImVec2(0, 0), const ImVec2& uv_b = ImVec2(1, 1), ImU32 col = 0xFFFFFFFF) {
 		draw_list->AddImage(user_texture_id, a, b, uv_a, uv_b, col);
+	}
+
+	void RenderBoxFilled(float x1, float y1, float x2, float y2, Color color, float thickness = 1.0, float rounding = 0.0) {
+		draw_list->AddRectFilled(ImVec2(x1, y1), ImVec2(x2, y2), GetU32(color), rounding, 15);
 	}
 
 	template <class T>

@@ -5,19 +5,19 @@
 
 bool C_BaseEntity::IsPlayer()
 {
-	//index: 152
+	//index: 155
 	//ref: "effects/nightvision"
 	//sig: 8B 92 ? ? ? ? FF D2 84 C0 0F 45 F7 85 F6
 	return this->GetClientClass()->m_ClassID == ClassId::CCSPlayer;
-	return CallVFunction<bool(__thiscall*)(C_BaseEntity*)>(this, 152)(this);
+	return CallVFunction<bool(__thiscall*)(C_BaseEntity*)>(this, 155)(this);
 }
 
 bool C_BaseEntity::IsWeapon()
 {
-	//index: 160
+	//index: 163
 	//ref: "CNewParticleEffect::DrawModel"
 	//sig: 8B 80 ? ? ? ? FF D0 84 C0 74 6F 8B 4D A4
-	return CallVFunction<bool(__thiscall*)(C_BaseEntity*)>(this, 161)(this);
+	return CallVFunction<bool(__thiscall*)(C_BaseEntity*)>(this, 163)(this);
 }
 
 
@@ -33,7 +33,7 @@ bool C_BaseEntity::IsDefuseKit()
 
 CCSWeaponInfo* C_BaseCombatWeapon::GetCSWeaponData()
 {
-	return CallVFunction<CCSWeaponInfo*(__thiscall*)(void*)>(this, 448)(this); //444
+	return CallVFunction<CCSWeaponInfo*(__thiscall*)(void*)>(this, 454)(this);
 	/*
 	static auto fnGetWpnData
 	= reinterpret_cast<CCSWeaponInfo*(__thiscall*)(void*)>(
@@ -92,7 +92,7 @@ bool C_BaseCombatWeapon::IsGun()
 
 bool C_BaseCombatWeapon::IsKnife()
 {
-	if (this->m_Item().m_iItemDefinitionIndex() == WEAPON_TASER)
+	if (this->m_Item().m_iItemDefinitionIndex() == WEAPON_ZEUS)
 	{
 		return false;
 	}
@@ -172,7 +172,7 @@ int C_BaseCombatWeapon::GetItemDefinitionIndex()
 
 bool C_BaseCombatWeapon::IsZeus()
 {
-	if (this->m_Item().m_iItemDefinitionIndex() == WEAPON_TASER)
+	if (this->m_Item().m_iItemDefinitionIndex() == WEAPON_ZEUS)
 	{
 		return true;
 	}
@@ -187,18 +187,18 @@ bool C_BaseCombatWeapon::IsReloading()
 
 float C_BaseCombatWeapon::GetInaccuracy()
 {
-	return CallVFunction<float(__thiscall*)(void*)>(this, 471)(this); //467
+	return CallVFunction<float(__thiscall*)(void*)>(this, 476)(this);
 }
 
 float C_BaseCombatWeapon::GetSpread()
 {
-	return CallVFunction<float(__thiscall*)(void*)>(this, 440)(this); //436 440
+	return CallVFunction<float(__thiscall*)(void*)>(this, 446)(this);
 }
 
 
 void C_BaseCombatWeapon::UpdateAccuracyPenalty()
 {
-	CallVFunction<void(__thiscall*)(void*)>(this, 472)(this); //467
+	CallVFunction<void(__thiscall*)(void*)>(this, 477)(this);
 }
 
 CUtlVector<IRefCounted*>& C_BaseCombatWeapon::m_CustomMaterials()
@@ -601,7 +601,7 @@ bool C_BasePlayer::CanSeePlayer(C_BasePlayer* player, const Vector& pos)
 
 void C_BasePlayer::UpdateClientSideAnimation()
 {
-	return CallVFunction<void(__thiscall*)(void*)>(this, 219)(this);
+	return CallVFunction<void(__thiscall*)(void*)>(this, 222)(this);
 }
 
 void C_BasePlayer::SetAngle2(QAngle wantedang)

@@ -116,6 +116,8 @@ public:
 
 	void RenderHitmarker();
 
+	/* Cache screen coords */
+	int ScreenX, ScreenY;
 public:
 	void AddToDrawList();
 	void Render();

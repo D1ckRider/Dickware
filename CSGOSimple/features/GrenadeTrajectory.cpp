@@ -146,7 +146,7 @@ void GrenadeHint::Paint()
 		if (pWeapon &&
 			weap_id == WEAPON_HEGRENADE ||
 			weap_id == WEAPON_MOLOTOV ||
-			weap_id == WEAPON_INCGRENADE) {
+			weap_id == WEAPON_INC) {
 			for (int i = 1; i < 64; i++) {
 				C_BasePlayer *pEntity = (C_BasePlayer*)g_EntityList->GetClientEntity(i);
 
@@ -195,7 +195,7 @@ void GrenadeHint::Paint()
 		}
 
 		if (bestdmg > 0.f) {
-			if (weap_id != WEAPON_HEGRENADE || WEAPON_MOLOTOV || WEAPON_INCGRENADE)
+			if (weap_id != WEAPON_HEGRENADE || WEAPON_MOLOTOV || WEAPON_INC)
 			{
 				if (Math::WorldToScreen(prev, cd))
 					VGSHelper::Get().DrawText(firegrenade_didnt_hit ? "No collisions" : (EntName + " will be burnt."), cd.x, cd.y - 10, *BestColor);

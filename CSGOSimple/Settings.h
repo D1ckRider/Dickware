@@ -215,6 +215,8 @@ namespace Settings
 			bool DZEnabled;
 			float DZRange;
 			int RadarType;
+			float RadarRange;
+			int RadarAlpha;
 			bool SoundESPEnabled;
 		};
 
@@ -298,6 +300,8 @@ namespace Settings
 		extern int RadioSelected;
 		extern int RadioVolume;
 		extern int RadioPauseHotkey;
+		extern bool WatermarkEnabled;
+
 
 		extern bool SkinchangerEnabled;
 	}

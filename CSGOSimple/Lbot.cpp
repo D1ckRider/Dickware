@@ -427,12 +427,10 @@ void Lbot::LegitAA(CUserCmd * cmd, bool & bSendPacket)
 	float desync_delta = g_LocalPlayer->GetMaxDesyncAngle();
 	float delta = std::clamp(Math::NormalizeAngle(desync_delta - feet_delta), -desync_delta, desync_delta);
 
-
 	static bool bSwitch = false;
 	if (!bSendPacket && !(cmd->buttons & IN_ATTACK))
 	{
 		cmd->viewangles.yaw += bSwitch ? delta : -delta;
 		bSwitch != bSwitch;
 	}
-		
 }

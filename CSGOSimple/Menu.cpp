@@ -16,7 +16,7 @@ using WeaponType = Settings::WeaponType;
 using HitboxType = Settings::HitboxType;
 using AntiAimState = Settings::RageBot::AntiAimType;
 
-const std::string Version = "190302.01";
+const std::string Version = "190308.01b";
 std::string CurrentConfig = "None";
 
 ImFont* IconsFont;
@@ -661,7 +661,7 @@ void Menu::RenderVisuals()
     static const char* ChamsTypes[] = { "normal", "flat", "wireframe", "glass", "metallic",  "xqz", "metallic xqz", "flat xqz" };
     static const char* BoxTypes[] = { "normal", "edge" };
 
-	static const char* RadarTypes[] = { "none", "in-game" };
+	static const char* RadarTypes[] = { "none", "in-game", "external" };
 
     switch ( ( VisualsMenuAvailable ) SelectedMenu )
     {
@@ -752,6 +752,8 @@ void Menu::RenderVisuals()
 			Components.Checkbox("DangerZone item ESP",  Settings::Visual::GlobalESP.DZEnabled);
 			Components.SliderFloat("DangerZone ESP Range",  Settings::Visual::GlobalESP.DZRange, 0.f, 1000.f);
 			Components.ComboBox("Radar type", RadarTypes, IM_ARRAYSIZE(RadarTypes), Settings::Visual::GlobalESP.RadarType);
+			//Components.SliderInt("Alpha", Settings::Visual::GlobalESP.RadarAlpha, 0, 255);
+			Components.SliderFloat("Range", Settings::Visual::GlobalESP.RadarRange, 200, 1500);
 			Components.Checkbox("Sound ESP", Settings::Visual::GlobalESP.SoundESPEnabled);
 
 			Components.NextColumn();
@@ -810,6 +812,8 @@ void Menu::RenderMisc()
 	Components.Columns(2, false);
 
     //Components.Checkbox("No hands", "misc_no_hands");
+
+	Components.Checkbox("Watermark", Settings::Misc::WatermarkEnabled);
 
 	Components.Checkbox("BHop",  Settings::Misc::BHop);
 	Components.Checkbox("Autostrafe",  Settings::Misc::AutoStrafe);

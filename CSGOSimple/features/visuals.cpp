@@ -18,6 +18,8 @@
 #include "../Rbot.h"
 #include "../helpers/C_Texture.h"
 #include "../resource.h"
+#include <chrono>
+#include <ctime>
 
 RECT GetBBox ( C_BaseEntity* ent )
 {
@@ -456,14 +458,14 @@ void Visuals::Player::RenderResolverInfo()
 //--------------------------------------------------------------------------------
 void Visuals::RenderCrosshair()
 {
-    int w, h;
+    //int w, h;
 	if (!g_LocalPlayer->m_hActiveWeapon()->IsSniper())
 		return;
 
-    g_EngineClient->GetScreenSize ( w, h );
+    //g_EngineClient->GetScreenSize ( w, h );
 
-    int cx = w / 2;
-    int cy = h / 2;
+    int cx = ScreenX / 2;
+    int cy = ScreenY / 2;
 	Color clr = Color::Red; //g_Config.GetColor ( "color_esp_crosshair" );
     VGSHelper::Get().DrawLine ( cx - 5, cy, cx + 5, cy, clr );
     VGSHelper::Get().DrawLine ( cx, cy - 5, cx, cy + 5, clr );
@@ -558,11 +560,11 @@ void Visuals::RenderPlantedC4 ( C_BaseEntity* ent )
     auto sz = g_pDefaultFont->CalcTextSizeA ( 12.f, FLT_MAX, 0.0f, timer.c_str() );
     int w = bbox.right - bbox.left;
 
-	int x, y;
-	g_EngineClient->GetScreenSize(x, y);
+	//int x, y;
+	//g_EngineClient->GetScreenSize(x, y);
 	ImVec2 t = g_pDefaultFont->CalcTextSizeA(34.f, FLT_MAX, 0.0f, timer.data());
 
-	Render::Get().RenderTextNoOutline(timer.data(), ImVec2(x - 150, y / 2 - 340.f), 34.f, timerClr);
+	Render::Get().RenderTextNoOutline(timer.data(), ImVec2(ScreenX - 150, ScreenY / 2 - 340.f), 34.f, timerClr);
 
     //VGSHelper::Get().DrawText ( timer, ( bbox.left + w * 0.5f ) - sz.x * 0.5f, bbox.bottom + 1, clr, 12 );
 	VGSHelper::Get().DrawIcon((wchar_t)'o', (bbox.left + w * 0.5f) - sz.x * 0.5f, bbox.bottom + 1, clr, 12);
@@ -614,20 +616,21 @@ void Visuals::RenderOffscreenESP(C_BasePlayer* ent)
 {
 	if (!g_LocalPlayer) return;
 	if (ent->IsDormant()) return;
+	if (!ent->IsAlive()) return;
 
 	Vector screenPos;
 	QAngle client_viewangles;
 	Vector hitboxPos;
 	ent->GetHitboxPos(0, hitboxPos);
-	int screen_width = 0, screen_height = 0;
+	//int screen_width = 0, screen_height = 0;
 	float radius = 300.f;
 
 	if (IsOnScreen(hitboxPos, screenPos)) return;
 
 	g_EngineClient->GetViewAngles(client_viewangles);
-	g_EngineClient->GetScreenSize(screen_width, screen_height);
+	//g_EngineClient->GetScreenSize(screen_width, screen_height);
 
-	const auto screen_center = Vector(screen_width / 2.f, screen_height / 2.f, 0);
+	const auto screen_center = Vector(ScreenX / 2.f, ScreenY / 2.f, 0);
 	const auto rot = DEG2RAD(client_viewangles.yaw - Math::CalcAngle(g_LocalPlayer->GetEyePos(), hitboxPos).yaw - 90);
 
 	std::vector<Vertex_t> vertices;
@@ -810,8 +813,8 @@ void Visuals::LbyIndicator()
     if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive() )
         return;
 
-    int x, y;
-    g_EngineClient->GetScreenSize ( x, y );
+    //int x, y;
+    //g_EngineClient->GetScreenSize ( x, y );
 
     bool Moving = g_LocalPlayer->m_vecVelocity().Length2D() > 0.1;
     bool InAir = ! ( g_LocalPlayer->m_fFlags() & FL_ONGROUND );
@@ -839,12 +842,12 @@ void Visuals::LbyIndicator()
     ImVec2 t = g_pDefaultFont->CalcTextSizeA ( 34.f, FLT_MAX, 0.0f, "LBY" );
     float width = t.x * percent;
 
-    Render::Get().RenderLine ( 9.f, y - 100.f - ( CurrentIndicatorHeight - 34.f ), 11.f + t.x, y - 100.f - ( CurrentIndicatorHeight - 34.f ), Color ( 0, 0, 0, 25 ), 4.f );
+    Render::Get().RenderLine ( 9.f, ScreenY - 100.f - ( CurrentIndicatorHeight - 34.f ), 11.f + t.x, ScreenY - 100.f - ( CurrentIndicatorHeight - 34.f ), Color ( 0, 0, 0, 25 ), 4.f );
 
     if ( width < t.x && width > 0.f )
-        Render::Get().RenderLine ( 10.f, y - 100.f - ( CurrentIndicatorHeight - 34.f ), 10.f + width, y - 100.f - ( CurrentIndicatorHeight - 34.f ), clr, 2.f );
+        Render::Get().RenderLine ( 10.f, ScreenY - 100.f - ( CurrentIndicatorHeight - 34.f ), 10.f + width, ScreenY - 100.f - ( CurrentIndicatorHeight - 34.f ), clr, 2.f );
 
-    Render::Get().RenderTextNoOutline ( "LBY", ImVec2 ( 10, y - 100.f - CurrentIndicatorHeight ), 34.f, clr );
+    Render::Get().RenderTextNoOutline ( "LBY", ImVec2 ( 10, ScreenY - 100.f - CurrentIndicatorHeight ), 34.f, clr );
     CurrentIndicatorHeight += 34.f;
 }
 
@@ -859,8 +862,8 @@ void Visuals::PingIndicator()
         return;
 
     float ping = nci ? ( nci->GetAvgLatency ( FLOW_INCOMING ) ) * 1000.f : 0.0f;
-    int x, y;
-    g_EngineClient->GetScreenSize ( x, y );
+    //int x, y;
+    //g_EngineClient->GetScreenSize ( x, y );
 
     //std::string text = "PING: " + std::to_string(ping);
     float percent = ping / 100.f;
@@ -870,9 +873,9 @@ void Visuals::PingIndicator()
     int green = int ( percent * 2.55f );
     int red = 255 - green;
 
-    Render::Get().RenderLine ( 9.f, y - 100.f - ( CurrentIndicatorHeight - 34.f ), 11.f + t.x, y - 100.f - ( CurrentIndicatorHeight - 34.f ), Color ( 0, 0, 0, 25 ), 4.f );
-    Render::Get().RenderLine ( 10.f, y - 100.f - ( CurrentIndicatorHeight - 34.f ), 10.f + width, y - 100.f - ( CurrentIndicatorHeight - 34.f ), Color ( red, green, 0 ), 2.f );
-    Render::Get().RenderTextNoOutline ( "PING", ImVec2 ( 10, y - 100.f - CurrentIndicatorHeight ), 34.f, Color ( red, green, 0 ) );
+    Render::Get().RenderLine ( 9.f, ScreenY - 100.f - ( CurrentIndicatorHeight - 34.f ), 11.f + t.x, ScreenY - 100.f - ( CurrentIndicatorHeight - 34.f ), Color ( 0, 0, 0, 25 ), 4.f );
+    Render::Get().RenderLine ( 10.f, ScreenY - 100.f - ( CurrentIndicatorHeight - 34.f ), 10.f + width, ScreenY - 100.f - ( CurrentIndicatorHeight - 34.f ), Color ( red, green, 0 ), 2.f );
+    Render::Get().RenderTextNoOutline ( "PING", ImVec2 ( 10, ScreenY - 100.f - CurrentIndicatorHeight ), 34.f, Color ( red, green, 0 ) );
     CurrentIndicatorHeight += 34.f;
 }
 
@@ -881,14 +884,14 @@ void Visuals::LCIndicator()
     if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive() || g_LocalPlayer->m_fFlags() & FL_ONGROUND )
         return;
 
-    int x, y;
-    g_EngineClient->GetScreenSize ( x, y );
+    //int x, y;
+    //g_EngineClient->GetScreenSize ( x, y );
 
     if ( ( g_LocalPlayer->m_fFlags() & FL_ONGROUND ) )
         return;
 
     //ImVec2 t = g_pDefaultFont->CalcTextSizeA(34.f, FLT_MAX, 0.0f, "LBY");
-    Render::Get().RenderTextNoOutline ( "LC", ImVec2 ( 10, y - 100.f - CurrentIndicatorHeight ), 34.f, g_Saver.LCbroken ? Color::Green : Color::Red );
+    Render::Get().RenderTextNoOutline ( "LC", ImVec2 ( 10, ScreenY - 100.f - CurrentIndicatorHeight ), 34.f, g_Saver.LCbroken ? Color::Green : Color::Red );
     CurrentIndicatorHeight += 34.f;
 }
 
@@ -898,14 +901,14 @@ void Visuals::BAimIndicator()
 		return;
 
 	Color clr = Color::Red;
-	int x, y;
-	g_EngineClient->GetScreenSize(x, y);
+	//int x, y;
+	//g_EngineClient->GetScreenSize(x, y);
 
 	if (*Rbot::Get().GetBAimStatus() == BaimMode::FORCE_BAIM)
 		clr = Color::Green;
 	ImVec2 t = g_pDefaultFont->CalcTextSizeA(34.f, FLT_MAX, 0.0f, "BAIM");
 
-	Render::Get().RenderTextNoOutline("BAIM", ImVec2(10, y - 100.f - CurrentIndicatorHeight), 34.f, clr);
+	Render::Get().RenderTextNoOutline("BAIM", ImVec2(10, ScreenY - 100.f - CurrentIndicatorHeight), 34.f, clr);
 	CurrentIndicatorHeight += 34.f;
 
 }
@@ -915,14 +918,14 @@ void Visuals::DesyncIndicator()
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
 		return;
 
-	Color clr = Color::Red;
-	int x, y;
-	g_EngineClient->GetScreenSize(x, y);
+	Color clr = Color::Green;
+	//int x, y;
+	//g_EngineClient->GetScreenSize(x, y);
 
 	std::string text = "Desync: " + std::to_string(g_LocalPlayer->GetMaxDesyncAngle());
 	ImVec2 t = g_pDefaultFont->CalcTextSizeA(34.f, FLT_MAX, 0.0f, text.data());
 
-	Render::Get().RenderTextNoOutline(text, ImVec2(10, y - 100.f - CurrentIndicatorHeight), 34.f, clr);
+	Render::Get().RenderTextNoOutline(text, ImVec2(10, ScreenY - 100.f - CurrentIndicatorHeight), 34.f, clr);
 	CurrentIndicatorHeight += 34.f;
 }
 
@@ -980,10 +983,10 @@ void Visuals::ManualAAIndicator()
     if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive() )
         return;
 
-    int x, y;
-    g_EngineClient->GetScreenSize ( x, y );
-    float cx = x / 2.f;
-    float cy = y / 2.f;
+    //int x, y;
+    //g_EngineClient->GetScreenSize ( x, y );
+    float cx = ScreenX / 2.f;
+    float cy = ScreenY / 2.f;
 
 	//auto d_us = C_Texture(AA_D_US, 64, 64);
 	//auto d_s = C_Texture(AA_D_S, 64, 64);
@@ -1040,10 +1043,10 @@ void Visuals::SpreadCircle()
     if ( spread == 0.f )
         return;
 
-    int x, y;
-    g_EngineClient->GetScreenSize ( x, y );
-    float cx = x / 2.f;
-    float cy = y / 2.f;
+    //int x, y;
+    //g_EngineClient->GetScreenSize ( x, y );
+    float cx = ScreenX / 2.f;
+    float cy = ScreenY / 2.f;
 	//VGSHelper::Get().DrawCircle(cx, cy, spread, 35, Settings::Visual::SpreadCircleColor);
 	VGSHelper::Get().DrawFilledCircle(cx, cy, spread, 35, Settings::Visual::SpreadCircleColor);
 }
@@ -1055,16 +1058,16 @@ void Visuals::RenderNoScoopeOverlay()
 
     static int cx;
     static int cy;
-    static int w, h;
+    //static int w, h;
 
-    g_EngineClient->GetScreenSize ( w, h );
-    cx = w / 2;
-    cy = h / 2;
+   // g_EngineClient->GetScreenSize ( w, h );
+    cx = ScreenX / 2;
+    cy = ScreenY / 2;
 
     if ( g_LocalPlayer->m_bIsScoped() )
     {
-        VGSHelper::Get().DrawLine ( 0, cy, w, cy, Color::Black );
-        VGSHelper::Get().DrawLine ( cx, 0, cx, h, Color::Black );
+        VGSHelper::Get().DrawLine ( 0, cy, ScreenX, cy, Color::Black );
+        VGSHelper::Get().DrawLine ( cx, 0, cx, ScreenY, Color::Black );
     }
 }
 
@@ -1075,11 +1078,11 @@ void Visuals::RenderHitmarker()
 
     static int cx;
     static int cy;
-    static int w, h;
+    //static int w, h;
 
-    g_EngineClient->GetScreenSize ( w, h );
-    cx = w / 2;
-    cy = h / 2;
+    //g_EngineClient->GetScreenSize ( w, h );
+    cx = ScreenX / 2;
+    cy = ScreenY / 2;
 
     //g_Saver.HitmarkerInfo.HitTime
     if ( g_GlobalVars->realtime - g_Saver.HitmarkerInfo.HitTime > .5f )
@@ -1104,8 +1107,14 @@ void Visuals::RenderHitmarker()
     VGSHelper::Get().DrawLine ( cx - 3.f - addsize, cy + 3.f + addsize, cx + 3.f + addsize, cy - 3.f - addsize, clr, 1.f );
 }
 
+
+
 void Visuals::AddToDrawList()
 {
+	
+
+	g_EngineClient->GetScreenSize(ScreenX, ScreenY);
+
     if ( !g_EngineClient->IsConnected() || !g_LocalPlayer || !g_EngineClient->IsInGame() )
         return;
 
@@ -1227,6 +1236,7 @@ void Visuals::AddToDrawList()
 
 	bool esp_dropped_weapons = Settings::Visual::GlobalESP.DropedWeaponsEnabled;
 	bool esp_planted_c4 = Settings::Visual::GlobalESP.BombEnabled;
+
 
     for ( auto i = 1; i <= g_EntityList->GetHighestEntityIndex(); ++i )
     {

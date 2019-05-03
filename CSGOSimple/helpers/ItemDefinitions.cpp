@@ -4,7 +4,7 @@ const std::map<size_t, weapon_info> k_weapon_info =
 {
 	{WEAPON_KNIFE,{"models/weapons/v_knife_default_ct.mdl", "knife_default_ct"}},
 	{WEAPON_KNIFE_T,{"models/weapons/v_knife_default_t.mdl", "knife_t"}},
-	{WEAPON_BAYONET, {"models/weapons/v_knife_bayonet.mdl", "bayonet"}},
+	{WEAPON_KNIFE_BAYONET, {"models/weapons/v_knife_bayonet.mdl", "bayonet"}},
 	{WEAPON_KNIFE_FLIP, {"models/weapons/v_knife_flip.mdl", "knife_flip"}},
 	{WEAPON_KNIFE_GUT, {"models/weapons/v_knife_gut.mdl", "knife_gut"}},
 	{WEAPON_KNIFE_KARAMBIT, {"models/weapons/v_knife_karam.mdl", "knife_karambit"}},
@@ -31,7 +31,7 @@ const std::map<size_t, weapon_info> k_weapon_info =
 const std::vector<weapon_name> k_knife_names =
 {
 	{0, "Default"},
-	{WEAPON_BAYONET, "Bayonet"},
+	{WEAPON_KNIFE_BAYONET, "Bayonet"},
 	{WEAPON_KNIFE_FLIP, "Flip Knife"},
 	{WEAPON_KNIFE_GUT, "Gut Knife"},
 	{WEAPON_KNIFE_KARAMBIT, "Karambit"},

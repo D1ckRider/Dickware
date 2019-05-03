@@ -9,7 +9,10 @@
 #include "menu_helpers.hpp"
 #include "options.hpp"
 #include "droid.hpp"
+#include "Settings.h"
 #include "helpers/math.hpp"
+#include <ctime>
+#include <chrono>
 
 ImFont* g_pDefaultFont;
 ImFont* g_pC4Font;
@@ -28,6 +31,42 @@ Render::Render()
 ImDrawListSharedData _data;
 
 std::mutex render_mutex;
+
+
+int GetFPS()
+{
+	static int fps = 0;
+	static int count = 0;
+	using namespace std::chrono;
+	auto now = high_resolution_clock::now();
+	static auto last = high_resolution_clock::now();
+	count++;
+
+	if (duration_cast<milliseconds> (now - last).count() > 1000)
+	{
+		fps = count;
+		count = 0;
+		last = now;
+	}
+
+	return fps;
+}
+
+void Render::DrawWatermark()
+{
+	// Watermark
+	int x, y;
+	std::time_t cur_sec = std::time(0);
+	std::tm* now = std::localtime(&cur_sec);
+	std::string watermark = "DickWare | fps: " + std::to_string(GetFPS()) + " | time: " + std::to_string(now->tm_hour) + ":" + std::to_string(now->tm_min) + ":" + std::to_string(now->tm_sec);
+	g_EngineClient->GetScreenSize(x, y);
+	ImVec2 t = g_pDefaultFont->CalcTextSizeA(12.f, FLT_MAX, 0.0f, watermark.data());
+
+	Render::Get().RenderBoxFilled(x - 187, y / 2 - 354, x - 173 + t.x, y / 2 - 346 + t.y, Color(13, 9, 9, 50));
+	//Render::Get().RenderBox(x - 185.f, y / 2 - 352.f, x - 175 + t.x, y / 2 - 348 + t.y, Color::White);
+	Render::Get().RenderBoxFilled(x - 185, y / 2 - 352, x - 175 + t.x, y / 2 - 348 + t.y, Color(13, 9, 9, 150));
+	Render::Get().RenderTextNoOutline(watermark.data(), ImVec2(x - 180, y / 2 - 350.f), 12.f, Color::White);
+}
 
 void Render::Initialize()
 {
@@ -67,7 +106,8 @@ void Render::BeginScene()
     draw_list->Clear();
     draw_list->PushClipRectFullScreen();
 
-    //if (g_Options.esp_misc_enabled)
+	if(Settings::Misc::WatermarkEnabled)
+		DrawWatermark();
     Visuals::Get().AddToDrawList();
 
     render_mutex.lock();
