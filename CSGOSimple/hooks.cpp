@@ -702,7 +702,8 @@ namespace Hooks
         vec3 _sim_pos = rotate_vec(m_localplayer->m_origin(), _angle, 18);
         */
         ofunc ( g_MdlRender, ctx, state, pInfo, pCustomBoneToWorld );
-        g_MdlRender->ForcedMaterialOverride ( nullptr );
+
+        //g_MdlRender->ForcedMaterialOverride ( nullptr );
     }
 
     auto dwCAM_Think = Utils::PatternScan ( GetModuleHandleW ( L"client_panorama.dll" ), "85 C0 75 30 38 86" );
