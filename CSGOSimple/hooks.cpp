@@ -369,7 +369,7 @@ namespace Hooks
 		if ( Settings::Misc::BuyBot )
             BuyBot::Get().OnCreateMove();
 
-		if ( Settings::Misc::Clantag )
+		if ( Settings::Misc::ClantagType > 0 )
             ClantagChanger::Get().OnCreateMove();
 
         prediction->end_prediction ( cmd );
@@ -485,7 +485,8 @@ namespace Hooks
     {
         auto oDoPostScreenEffects = clientmode_hook.get_original<DoPostScreenEffects> ( index::DoPostScreenSpaceEffects );
 
-        if ( g_LocalPlayer && g_Config.GetBool ( "glow_enabled" ) && !g_Unload && g_EngineClient->IsConnected() && g_EngineClient->IsInGame() )
+        //if ( g_LocalPlayer && g_Config.GetBool ( "glow_enabled" ) && !g_Unload && g_EngineClient->IsConnected() && g_EngineClient->IsInGame() )
+		if (g_LocalPlayer && !g_Unload && g_EngineClient->IsConnected() && g_EngineClient->IsInGame())
             Glow::Get().Run();
 
         return oDoPostScreenEffects ( g_ClientMode, a1 );
@@ -607,6 +608,7 @@ namespace Hooks
                         // if ( !Moving && !InAir )
                         //    g_LocalPlayer->m_fFlags = ACT_FLY;
 
+						
                         //ThirdpersonAngleHelper::Get().SetThirdpersonAngle();
                     }
                     else
@@ -702,7 +704,7 @@ namespace Hooks
         vec3 _sim_pos = rotate_vec(m_localplayer->m_origin(), _angle, 18);
         */
         ofunc ( g_MdlRender, ctx, state, pInfo, pCustomBoneToWorld );
-
+		//Chams::Get().DrawModelExecute(ctx, state, pInfo, pCustomBoneToWorld);
         //g_MdlRender->ForcedMaterialOverride ( nullptr );
     }
 

@@ -18,16 +18,29 @@ namespace Settings
 	void Initialize();
 	void CreateConfig(std::string fileName);
 	void RefreshConfigList(); 
-	void ResetConfig();
+	/* Settings Save section */
 	void SaveSettings(std::string fileName);
-	void LoadSettings(std::string fileName);
+	void SaveRageBot(json& j);
+	void SaveLegitBot(json& j);
+	void SaveVisual(json& j);
+	void SaveMisc(json& j);
 	void SaveSkinsSettings();
+	/* Settings Load Section */
+	void LoadSettings(std::string fileName);
+	void LoadRageBot(json& j);
+	void LoadLegitBot(json& j);
+	void LoadVisual(json& j);
+	void LoadMisc(json& j);
 	void LoadSkinsSettings();
+	std::string LoadGameCfg();
+	/* Settings reset section */
+	void ResetConfig();
 	void ResetRagebot();
 	void ResetAimbot();
 	void ResetTriggerbot();
 	void ResetVisuals();
 	void ResetMisc();
+	/* Values section */
 	template <typename T>
 	void SaveValue(json &j, std::string name, const T& value);
 	template <typename T>
@@ -38,7 +51,7 @@ namespace Settings
 	void LoadNestedValue(json &j, std::string name1, std::string name2, T& value);
 	void SaveColorValue(json &j, std::string name, const Color& value);
 	void LoadColorValue(json &j, std::string name, Color& value);
-	std::string LoadGameCfg();
+	
 
 	enum WeaponType
 	{
@@ -189,6 +202,13 @@ namespace Settings
 			Color Invisible;
 		};
 
+		struct Glow
+		{
+			bool Enabled;
+			Color Visible;
+			Color Invisible;
+		};
+
 		struct PlayerESP
 		{
 			bool Enabled;
@@ -205,6 +225,7 @@ namespace Settings
 			bool SnaplineEnabled;
 			Color SnaplineColor;
 		};
+
 		struct OtherESP
 		{
 			bool Enabled;
@@ -225,10 +246,12 @@ namespace Settings
 		extern Color GhostColor;
 		extern PlayerESP LocalESP;
 		extern Chams EnemyChams;
+		extern Glow EnemyGlow;
 		extern PlayerESP EnemyESP;
 		extern bool OffscreenESPEnabled;
 		extern Color OffscreenESPColor;
 		extern Chams TeamChams;
+		extern Glow TeamGlow;
 		extern PlayerESP TeamESP;
 
 		extern bool ThirdPersonEnabled;
@@ -281,11 +304,22 @@ namespace Settings
 			bool NadeHE;
 			bool NadeSmoke;
 		};
+
+		enum ClantagsType
+		{
+			None,
+			Static,
+			Dynamic,
+			CustomStatic,
+			CustomSlide
+		};
+
 		extern bool BHop;
 		extern bool AutoStrafe;
 		extern bool RankReveal;
 		extern bool NoCrouchCooldown;
 		extern bool Clantag;
+		extern int ClantagType;
 		extern bool SpectatorsEnabled;
 		extern bool AutoAccept;
 		extern bool BuyBot;

@@ -413,14 +413,14 @@ mstudiobbox_t* C_BasePlayer::GetHitbox(int hitbox_id)
 			if (hitbox)
 			{
 				return hitbox;
-				//auto
-				//	min = Vector{},
-				//	max = Vector{};
+				/*auto
+					min = Vector{},
+					max = Vector{};
 
-				//Math::VectorTransform(hitbox->bbmin, boneMatrix[hitbox->bone], min);
-				//Math::VectorTransform(hitbox->bbmax, boneMatrix[hitbox->bone], max);
+				Math::VectorTransform(hitbox->bbmin, boneMatrix[hitbox->bone], min);
+				Math::VectorTransform(hitbox->bbmax, boneMatrix[hitbox->bone], max);
 
-				//return (min + max) / 2.0f;
+				return (min + max) / 2.0f;*/
 			}
 		}
 	}

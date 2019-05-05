@@ -3,6 +3,8 @@
 
 #include "../valve_sdk/csgostructs.hpp"
 #include "../ConfigSystem.h"
+#include "../Settings.h"
+
 
 Glow::Glow()
 {
@@ -52,9 +54,7 @@ void Glow::Shutdown()
 void Glow::Run()
 {
     if (!g_LocalPlayer)
-    {
         return;
-    }
 
 
     for(auto i = 0; i < g_GlowObjManager->m_GlowObjectDefinitions.Count(); i++)
@@ -63,14 +63,10 @@ void Glow::Run()
         auto entity = reinterpret_cast<C_BasePlayer*>(glowObject.m_pEntity);
 
         if(glowObject.IsUnused())
-        {
             continue;
-        }
 
         if(!entity || entity->IsDormant())
-        {
             continue;
-        }
 
         auto class_id = entity->GetClientClass()->m_ClassID;
         auto color = Color{};
@@ -81,58 +77,56 @@ void Glow::Run()
             {
                 auto is_enemy = entity->IsEnemy();
 
-                if(entity->HasC4() && is_enemy && g_Config.GetBool("glow_c4_carrier"))
+                /*if(entity->HasC4() && is_enemy && g_Config.GetBool("glow_c4_carrier"))
                 {
                     color = g_Config.GetColor("color_glow_c4_carrier");
                     break;
-                }
+                }*/
 
-                if(!g_Config.GetBool("glow_players") || !entity->IsAlive())
-                {
+                //if(!g_Config.GetBool("glow_players") || !entity->IsAlive())
+				if(!Settings::Visual::TeamGlow.Enabled || !Settings::Visual::EnemyGlow.Enabled || !entity->IsAlive())
                     continue;
-                }
 
-                if(!is_enemy && g_Config.GetBool("glow_enemies_only"))
-                {
+                //if(!is_enemy && g_Config.GetBool("glow_enemies_only"))
+				if(!is_enemy && !Settings::Visual::TeamGlow.Enabled)
                     continue;
-                }
 
-                color = is_enemy ? g_Config.GetColor("color_glow_enemy") : g_Config.GetColor("color_glow_ally");
+                color = is_enemy ? Settings::Visual::EnemyGlow.Visible : Settings::Visual::TeamGlow.Visible;
 
                 break;
             }
             case ClassId::CChicken:
-                if(!g_Config.GetBool("glow_chickens"))
+                /*if(!g_Config.GetBool("glow_chickens"))
                 {
                     continue;
                 }
                 entity->m_bShouldGlow() = true;
                 color = g_Config.GetColor("color_glow_chickens");
-                break;
+                break;*/
             case ClassId::CBaseAnimating:
-                if(!g_Config.GetBool("glow_defuse_kits"))
+                /*if(!g_Config.GetBool("glow_defuse_kits"))
                 {
                     continue;
                 }
                 color = g_Config.GetColor("color_glow_defuse");
-                break;
+                break;*/
             case ClassId::CPlantedC4:
-                if(!g_Config.GetBool("glow_planted_c4"))
+                /*if(!g_Config.GetBool("glow_planted_c4"))
                 {
                     continue;
                 }
                 color = g_Config.GetColor("color_glow_planted_c4");
-                break;
+                break;*/
             default:
             {
-                if(entity->IsWeapon())
+                /*if(entity->IsWeapon())
                 {
                     if(!g_Config.GetBool("glow_weapons"))
                     {
                         continue;
                     }
                     color = g_Config.GetColor("color_glow_weapons");
-                }
+                }*/
             }
         }
 

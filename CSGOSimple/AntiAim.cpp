@@ -12,6 +12,14 @@
 
 using AAState = Settings::RageBot::AntiAimType;
 
+enum DesyncAA
+{
+	Still = 1,
+	Balance,
+	Stretch,
+	Jitter
+};
+
 void AntiAim::OnCreateMove ( CUserCmd* cmd, bool& bSendPacket )
 {
     if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive())
@@ -422,7 +430,7 @@ float AntiAim::GetMaxDesyncYaw()
 
 void AntiAim::LbyBreakerPrediction ( CUserCmd* cmd, bool& bSendPacket )
 {
-    return;
+    //return;
 
 	if (!Settings::RageBot::Desync || !Settings::RageBot::Enabled || !g_LocalPlayer || !g_LocalPlayer->IsAlive())
         return;
@@ -615,19 +623,26 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
 
 		b_switch ? fake_yaw = cmd->viewangles.yaw - negative_delta : fake_yaw = cmd->viewangles.yaw + delta;
 		
+
+
         if ( !bSendPacket && !( cmd->buttons & IN_ATTACK ) )
         {
 			cmd->viewangles.yaw = fake_yaw;
 			g_Saver.AADesyncAngle = cmd->viewangles;
         }
 
-        if ( bSendPacket )
-            LastRealAngle = cmd->viewangles;
+		//DesyncAnimation(cmd, bSendPacket, Balance);
 
-		// LBY Prediction
-		//if (true)
-			//cmd->viewangles.yaw = (180 - fake_yaw);
+		if (bSendPacket)
+		{
+			LastRealAngle = cmd->viewangles;
+			//g_Saver.AADesyncAngle = cmd->viewangles;
+		}
 
+		if (g_Saver.NextLbyUpdate >= g_GlobalVars->curtime)
+			cmd->viewangles.yaw += 120.f;
+		else
+			cmd->viewangles.yaw -= desync_delta + 30.f;
 
         g_Saver.FakelagData.ang = LastRealAngle;
     }
@@ -1151,6 +1166,90 @@ void AntiAim::YawAdd ( CUserCmd* cmd, bool fake )
             cmd->viewangles.yaw += Math::RandomFloat ( -YawAddRange, YawAddRange );
             break;
     }
+}
+
+
+
+void AntiAim::DesyncAnimation(CUserCmd* cmd, bool& bSendPacket, int type)
+{
+	if (!type)
+		return;
+
+	cmd->viewangles.yaw = Math::NormalizeAngle(cmd->viewangles.yaw);
+
+	if (type == Jitter) { /* TODO */ }
+	else
+	{
+		float desync = g_LocalPlayer->GetMaxDesyncAngle();
+		float balance = 1.0f;
+		if (type == Balance)
+			balance = -1.0f;
+
+		if (g_Saver.NextLbyUpdate >= g_GlobalVars->curtime) 
+		{
+			if (!bSendPacket && g_ClientState->chokedcommands >= 2) 
+			{
+				cmd->viewangles.yaw = Math::NormalizeAngle(cmd->viewangles.yaw);
+				return;
+			}
+
+			if (type == Still)
+				cmd->viewangles.yaw -= 100.0f;
+			else
+				cmd->viewangles.yaw += (balance * 120.0f);
+		}
+		else if (type != Still)
+			// lby breaker
+			cmd->viewangles.yaw -= (desync + 30.0f) * balance;
+
+		bSendPacket = true;
+
+	}
+	cmd->viewangles.yaw = Math::NormalizeAngle(cmd->viewangles.yaw);
+}
+
+
+bool AntiAim::DesyncRotate(float rotation, int direction, CUserCmd* cmd, bool& bSendPacket)
+{
+	CBasePlayerAnimState* animState = g_LocalPlayer->GetBasePlayerAnimState();
+	float feetYaw = DEG2RAD(animState->m_flGoalFeetYaw);
+	m_flCurrentFeetYaw = animState->m_flGoalFeetYaw;
+
+	float feetSin, feetCos;
+	DirectX::XMScalarSinCos(&feetSin, &feetCos, feetYaw);
+
+	float feetSin1, feetCos1;
+	DirectX::XMScalarSinCos(&feetSin1, &feetCos1, m_flCurrentFeetYaw);
+
+	float feetSin2, feetCos2;
+	DirectX::XMScalarSinCos(&feetSin2, &feetCos2, m_flPreviousFeetYaw);
+
+	m_flPreviousFeetYaw = m_flCurrentFeetYaw;
+	m_flCurrentFeetYaw = animState->m_flGoalFeetYaw;
+
+	float totalRotation = atan2(feetSin1 + feetSin + feetSin2, feetCos1 + feetCos + feetCos2);
+	totalRotation = Math::NormalizeAngle(RAD2DEG(totalRotation) - rotation); //Math::AngleNormalize(RAD2DEG(totalRotation) - rotation);
+	if (direction == 1) {
+		if (totalRotation >= 0.0f) {
+			m_iRotateIteration = 1;
+			return false;
+		}
+	}
+	else if (totalRotation <= 0.0f) {
+		m_iRotateIteration = 1;
+		return false;
+	}
+
+	float rotate = static_cast<float>(30 * (m_iRotateIteration % 12));
+	if (direction == 1)
+		cmd->viewangles.yaw -= rotate;
+	else
+		cmd->viewangles.yaw += rotate;
+
+	cmd->viewangles.yaw = Math::NormalizeAngle(cmd->viewangles.yaw); //Math::AngleNormalize(cmd->viewangles.yaw);
+	bSendPacket = true;
+	++m_iRotateIteration;
+	return true;
 }
 
 bool AntiAim::GetEdgeDetectAngle ( C_BasePlayer* entity, float& yaw )

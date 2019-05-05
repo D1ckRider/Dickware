@@ -67,6 +67,8 @@ private:
     void Pitch(CUserCmd* cmd);
     void Yaw(CUserCmd* cmd, bool fake);
     void YawAdd(CUserCmd* cmd, bool fake);
+	void DesyncAnimation(CUserCmd* cmd, bool& bSendPacket, int type);
+	bool DesyncRotate(float rotation, int direction, CUserCmd* cmd, bool& bSendPacket);
     int GetFPS();
 
     //freestanding
@@ -85,6 +87,16 @@ private:
     bool allocate = false, change = false, reset = false;
 
     float GetMaxDesyncYaw();
+
+	int m_iRotate = 0;
+	int m_iRotateIteration = 0;
+
+	float m_flCurrentFeetYaw = 0.0f;
+	float m_flPreviousFeetYaw = 0.0f;
+
+	bool m_bAutomaticDir = false;
+	int m_iAutoDirection = 0;
+
 
     //void Friction(Vector &outVel);
 };

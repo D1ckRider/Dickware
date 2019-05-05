@@ -7,6 +7,9 @@ class ClantagChanger : public Singleton<ClantagChanger>
 {
 public:
     void OnCreateMove();
+	void SetCustomSlide(std::string clantag);
 private:
+	void DynamicClantag();
+	void CustomSilde();
     void Marquee(std::string& clantag);
 };

@@ -41,8 +41,6 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 	if (weapon->IsKnife())
 		return;
 
-
-
 	if (weapon->IsZeus())
 	{
 		ZeusBot(cmd, weapon);
@@ -67,7 +65,7 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 			SlowWalk(cmd, 34);
 
 	if (Settings::RageBot::FakeDuck && InputSys::Get().IsKeyDown(Settings::RageBot::FakeDuckHotkey))
-		FakeDuck(cmd);
+		FakeDuck(cmd, bSendPacket);
 
 
 	//Console.WriteLine(g_GlobalVars->curtime - weapon->m_flNextPrimaryAttack());
@@ -312,7 +310,7 @@ bool Rbot::InFakeLag ( C_BasePlayer* player )
 
 void Rbot::FakeDuck(CUserCmd * cmd, bool &bSendPackets)
 {
-	if (cmd->buttons & IN_DUCK) 
+	/*if (cmd->buttons & IN_DUCK) 
 	{
 		static bool counter = false;
 		static int counte = 0;
@@ -329,6 +327,25 @@ void Rbot::FakeDuck(CUserCmd * cmd, bool &bSendPackets)
 		}
 		else 
 			cmd->buttons &= ~IN_DUCK;
+	}*/
+
+	int fakelag_limit = Settings::RageBot::AntiAimSettings[0].FakelagTicks;
+	int choked_goal = fakelag_limit / 2;
+	bool should_crouch = g_ClientState->chokedcommands >= choked_goal;
+
+	if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
+	{
+		cmd->buttons |= IN_BULLRUSH;
+		if (should_crouch)
+		{
+			cmd->buttons |= IN_DUCK;
+			bSendPackets = true;
+		}
+		else
+		{
+			cmd->buttons &= ~IN_DUCK;
+			bSendPackets = false;
+		}
 	}
 }
 

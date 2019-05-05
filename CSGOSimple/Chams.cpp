@@ -3,6 +3,7 @@
 #include "RuntimeSaver.h"
 #include "AntiAim.h"
 #include "Settings.h"
+#include "hooks.hpp"
 
 void Chams::OnSceneEnd()
 {
@@ -116,4 +117,9 @@ void Chams::OnSceneEnd()
 		g_LocalPlayer->SetAngle2(OrigAng);
 	}
     g_MdlRender->ForcedMaterialOverride(nullptr);
+}
+
+void Chams::DrawModelExecute(IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
+{
+	
 }

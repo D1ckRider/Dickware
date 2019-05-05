@@ -10,6 +10,7 @@
 #include "definitions.h"
 #include "Media\Player.h"
 #include "RuntimeSaver.h"
+#include "ClantagChanger.h"
 
 
 using WeaponType = Settings::WeaponType;
@@ -695,6 +696,8 @@ void Menu::RenderVisuals()
 			Components.Label("Chams");
 			Components.ColorCheckbox2("Enable", Settings::Visual::EnemyChams.Enabled, Settings::Visual::EnemyChams.Visible, Settings::Visual::EnemyChams.Invisible);
 			Components.ComboBox("Chams Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), Settings::Visual::EnemyChams.Mode);
+			Components.Label("Glow");
+			Components.ColorCheckbox("Glow Enabled", Settings::Visual::EnemyGlow.Enabled, Settings::Visual::EnemyGlow.Visible);
 			Components.NextColumn();
 
 			Components.Label("ESP");
@@ -717,6 +720,8 @@ void Menu::RenderVisuals()
 			Components.Label("Chams");
 			Components.ColorCheckbox2("Enable", Settings::Visual::TeamChams.Enabled, Settings::Visual::TeamChams.Visible, Settings::Visual::TeamChams.Invisible);
 			Components.ComboBox("Chams Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), Settings::Visual::TeamChams.Mode);
+			Components.Label("Glow");
+			Components.ColorCheckbox("Glow Enabled", Settings::Visual::TeamGlow.Enabled, Settings::Visual::TeamGlow.Visible);
 			Components.NextColumn();
 
 			Components.Label("ESP");
@@ -828,9 +833,26 @@ void Menu::RenderMisc()
 	Components.Checkbox("No crouch cooldown",  Settings::Misc::NoCrouchCooldown);
 	Components.Checkbox("AutoAccept", Settings::Misc::AutoAccept);
 
-	Components.Checkbox("Clantag changer",  Settings::Misc::Clantag);
-	Components.Checkbox("Spectator List", Settings::Misc::SpectatorsEnabled);
+	//Components.Checkbox("Clantag changer",  Settings::Misc::Clantag);
+	static const char* Clantags[]{ "None", "Static", "Dynamic", "Custom Static", "Custom Slide"};
+	static char str0[128] = "";
+	Components.ComboBox("Clantag Changer", Clantags, IM_ARRAYSIZE(Clantags), Settings::Misc::ClantagType);
+	if (Settings::Misc::ClantagType == Settings::Misc::CustomStatic)
+	{
+		ImGui::InputText(" ", str0, IM_ARRAYSIZE(str0));
+		Components.SameLine();
+		if (ImGui::Button("Apply"))
+			Utils::SetClantag(str0);
+	}
+	else if (Settings::Misc::ClantagType == Settings::Misc::CustomSlide)
+	{
+		ImGui::InputText(" ", str0, IM_ARRAYSIZE(str0));
+		Components.SameLine();
+		if (ImGui::Button("Apply"))
+			ClantagChanger::Get().SetCustomSlide(str0);
+	}
 
+	Components.Checkbox("Spectator List", Settings::Misc::SpectatorsEnabled);
     Components.Spacing();
 
     //buybot
