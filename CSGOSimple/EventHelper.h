@@ -63,19 +63,11 @@ public:
 					DmgIndicator.flEraseTime = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick + 3.f;
 					DmgIndicator.bInitialized = false;
 
+					g_LocalPlayer->m_flHealthShotBoostExpirationTime() = g_GlobalVars->curtime + 1.f;
 					g_Saver.DamageIndicators.push_back(DmgIndicator);
 				}
 
                 g_Saver.HitmarkerInfo = HitmarkerInfoStruct{ g_GlobalVars->realtime, 0.f };
-                /*switch (g_Config.GetInt("vis_misc_hitmarker_sound"))
-                {
-                    case 0:
-                        PlaySoundA((g_Config.AppdataFolder + "hitsound1.wav").data(), NULL, SND_ASYNC | SND_NODEFAULT | SND_NOSTOP);
-                        break;
-                    case 1:
-                        PlaySoundA((g_Config.AppdataFolder + "hitsound2.wav").data(), NULL, SND_ASYNC | SND_NODEFAULT | SND_NOSTOP);
-                        break;
-                }*/
 
 				if(Settings::Visual::HitmarkerSound)
 					g_VGuiSurface->PlaySound_("buttons\\arena_switch_press_02.wav");

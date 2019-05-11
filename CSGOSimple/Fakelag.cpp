@@ -7,10 +7,8 @@
 
 void Fakelag::OnCreateMove(CUserCmd* cmd, bool& bSendPacket)
 {
-    if (!g_LocalPlayer || !g_LocalPlayer->IsAlive()/* || g_Saver.InFakewalk*/)
-    {
+    if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
         return;
-    }
 
     int choked_commands = g_ClientState->chokedcommands + 1;
     static bool WasLastInFakelag = false;
@@ -21,21 +19,14 @@ void Fakelag::OnCreateMove(CUserCmd* cmd, bool& bSendPacket)
     int ticks = 0;
     int mode = 0;
     if (Standing)
-    {
-        //ticks = g_Config.GetInt("misc_fakelag_ticks_standing");
 		ticks = Settings::RageBot::AntiAimSettings[Settings::RageBot::AntiAimType::STANDING].FakelagTicks;
-    }
     else if (InAir)
     {
-        //ticks = g_Config.GetInt("misc_fakelag_ticks_air");
 		ticks = Settings::RageBot::AntiAimSettings[Settings::RageBot::AntiAimType::AIR].FakelagTicks;
 		mode = Settings::RageBot::AntiAimSettings[Settings::RageBot::AntiAimType::AIR].FakelagMode;
-       // mode = g_Config.GetInt("misc_fakelag_mode_air");
     }
     else
     {
-        //ticks = g_Config.GetInt("misc_fakelag_ticks_moving");
-        //mode = g_Config.GetInt("misc_fakelag_mode_moving");
 		ticks = Settings::RageBot::AntiAimSettings[Settings::RageBot::AntiAimType::MOVING].FakelagTicks;
 		mode = Settings::RageBot::AntiAimSettings[Settings::RageBot::AntiAimType::MOVING].FakelagMode;
     }
@@ -59,27 +50,20 @@ void Fakelag::OnCreateMove(CUserCmd* cmd, bool& bSendPacket)
                 bSendPacket = false;
             }
             else
-            {
                 WasLastInFakelag = false;
-            }
             break;
         }
         case 1:
         {
-            //int fakelagticks = g_Config.GetInt("misc_fakelag_ticks");
             int PacketsToChoke = 0;
             if (g_LocalPlayer->m_vecVelocity().Length() > 0.f)
             {
                 PacketsToChoke = (int)(64.f / g_GlobalVars->interval_per_tick / g_LocalPlayer->m_vecVelocity().Length()) + 1;
                 if (PacketsToChoke >= 16)
-                {
                     PacketsToChoke = 15;
-                }
 
                 if (PacketsToChoke >= ticks)
-                {
                     PacketsToChoke = ticks;
-                }
             }
 
             if (choked_commands <= PacketsToChoke)
@@ -88,10 +72,7 @@ void Fakelag::OnCreateMove(CUserCmd* cmd, bool& bSendPacket)
                 bSendPacket = false;
             }
             else
-            {
                 WasLastInFakelag = false;
-            }
-            //g_Saver.FakelagCurrentlyEnabled = bSendPacket;
         }
     }
 

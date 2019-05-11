@@ -34,6 +34,7 @@ public:
 	int     GetRawColor() const;
 	void    SetColor(int _r, int _g, int _b, int _a = 0);
 	void    SetColor(float _r, float _g, float _b, float _a = 0);
+	void    SetAlpha(int alpha) { _CColor[3] = alpha; }
 	void    GetColor(int &_r, int &_g, int &_b, int &_a) const;
 
 	std::string GetNormalnijHexColor() const;

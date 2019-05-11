@@ -70,6 +70,8 @@ private:
 	void DesyncAnimation(CUserCmd* cmd, bool& bSendPacket, int type);
 	bool DesyncRotate(float rotation, int direction, CUserCmd* cmd, bool& bSendPacket);
     int GetFPS();
+	int GetTickBase(CUserCmd* cmd);
+
 
     //freestanding
     float fov_player(Vector ViewOffSet, QAngle View, C_BasePlayer* entity);
@@ -79,10 +81,12 @@ private:
 
     bool InLbyUpdate = false;
     bool NextTickInLbyUpdate = false;
+	bool BreakLowerBody = false;
     float NextLbyUpdate = 0.f;
+	float_t SpawnTime = 0.f;
 
     CBaseHandle* m_ulEntHandle = nullptr;
-    CCSGOPlayerAnimState* m_serverAnimState = nullptr;
+	CCSGOPlayerAnimState* m_serverAnimState = nullptr;
 
     bool allocate = false, change = false, reset = false;
 

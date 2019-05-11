@@ -11,6 +11,8 @@
 #include "RuntimeSaver.h"
 #include "Settings.h"
 #include "ConsoleHelper.h"
+#include "features\LagCompensation.h"
+#include "features\EventLogger.h"
 
 RbotMatrixData matrixData[128];
 
@@ -103,7 +105,7 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 
 	//if (tdmg == -1.f) return;
 
-	if (weapon->IsSniper() && !g_LocalPlayer->m_bIsScoped() && (g_LocalPlayer->m_fFlags() & FL_ONGROUND) && g_Config.GetBool("rbot_autoscope"))
+	if (weapon->IsSniper() && !g_LocalPlayer->m_bIsScoped() && (g_LocalPlayer->m_fFlags() & FL_ONGROUND) && Settings::RageBot::AutoScope)
 	{
 		if (!(cmd->buttons & IN_ZOOM))
 			cmd->buttons |= IN_ZOOM;
@@ -157,17 +159,40 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		return;
 
 	DidShotLastTick = true;
-	cmd->viewangles = newAng;
-	if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_REVOLVER)
+
+	if (Settings::RageBot::AimStepEnabled)
 	{
-		static int delay = 0;
+		QAngle vResult = newAng / Settings::RageBot::AimStepValue;
+
+		for (auto i = 0; i <= Settings::RageBot::AimStepValue; i++)
+		{
+			Math::NormalizeAngles(vResult * i);
+			Math::ClampAngles(vResult * i);
+			g_EngineClient->SetViewAngles(vResult * i);
+		}
+	}
+	else
+		cmd->viewangles = newAng;
+
+	if (!CockRevolver(cmd, weapon))
+		return;
+
+	/*if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_REVOLVER)
+	{
+		cmd->buttons |= IN_ATTACK;
+		float fireReady = weapon->m_flPostponeFireReadyTime();
+		if (fireReady > 0 && fireReady < g_GlobalVars->curtime)
+			cmd->buttons &= ~IN_ATTACK;
+
+		/*static int delay;
 		delay++;
 
 		if (delay <= 15)
 			cmd->buttons |= IN_ATTACK;
 		else
-			delay = 0;
-	}
+			delay = 0;*/
+	//}
+	
 
 	cmd->buttons |= IN_ATTACK;
 	
@@ -225,11 +250,7 @@ void Rbot::OnFireEvent ( IGameEvent* event )
     static float lastEventTime = 0.f;
 
     /*
-
-
     needs fix for getting old eye pos (g_saver.lastshoteyepos)
-
-
     */
     if ( !strcmp ( event->GetName(), "bullet_impact" ) )
     {
@@ -262,6 +283,7 @@ void Rbot::OnFireEvent ( IGameEvent* event )
         if ( Dmg == -1.f )
         {
             g_Logger.Error ( "MISS", "missed due to spread" );
+			EventLogger::Get().AddEvent("MISS", "missed due to spread", Color(255, 55, 0));
             //LastMissedDueToSpread = true;
         }
         else
@@ -308,27 +330,81 @@ bool Rbot::InFakeLag ( C_BasePlayer* player )
     return rBool;
 }
 
+bool Rbot::CockRevolver(CUserCmd* cmd, C_BaseCombatWeapon* weapon)
+{
+	// 0.234375f to cock and shoot, 15 ticks in 64 servers, 30(31?) in 128
+
+	// THIS DOESNT WORK, WILL WORK ON LATER AGAIN WHEN I FEEL LIKE KILLING MYSELF
+
+	// DONT USE TIME_TO_TICKS as these values aren't good for it. it's supposed to be 0.2f but that's also wrong
+	constexpr float REVOLVER_COCK_TIME = 0.2421875f;
+	const int count_needed = floor(REVOLVER_COCK_TIME / g_GlobalVars->interval_per_tick);
+	static int cocks_done = 0;
+
+	if (!weapon ||
+		weapon->m_iItemDefinitionIndex() != WEAPON_REVOLVER ||
+		g_LocalPlayer->m_flNextAttack() > g_GlobalVars->curtime ||
+		weapon->IsReloading())
+	{
+		if (weapon && weapon->m_iItemDefinitionIndex() == WEAPON_REVOLVER)
+			cmd->buttons &= ~IN_ATTACK;
+		cocks_done = 0;
+		return true;
+	}
+
+	if (cocks_done < count_needed)
+	{
+		cmd->buttons |= IN_ATTACK;
+		++cocks_done;
+		return false;
+	}
+	else
+	{
+		cmd->buttons &= ~IN_ATTACK;
+		cocks_done = 0;
+		return true;
+	}
+
+	// 0.0078125 - 128ticks - 31 - 0.2421875
+	// 0.015625  - 64 ticks - 16 - 0.234375f
+
+	cmd->buttons |= IN_ATTACK;
+
+	/*
+		3 steps:
+
+		1. Come, not time for update, cock and return false;
+
+		2. Come, completely outdated, cock and set time, return false;
+
+		3. Come, time is up, cock and return true;
+
+		Notes:
+			Will I not have to account for high ping when I shouldn't send another update?
+			Lower framerate than ticks = riperino? gotta check if lower then account by sending earlier | frametime memes
+	*/
+
+	float curtime = TICKS_TO_TIME(g_LocalPlayer->m_nTickBase());
+	static float next_shoot_time = 0.f;
+
+	bool ret = false;
+
+	if (next_shoot_time - curtime < -0.5f)
+		next_shoot_time = curtime + 0.2f - g_GlobalVars->interval_per_tick; // -1 because we already cocked THIS tick ???
+
+	if (next_shoot_time - curtime - g_GlobalVars->interval_per_tick <= 0.f) {
+		next_shoot_time = curtime + 0.2f;
+		ret = true;
+
+		// should still go for one more tick but if we do, we're gonna shoot sooo idk how2do rn, its late
+		// the aimbot should decide whether to shoot or not yeh
+	}
+
+	return ret;
+}
+
 void Rbot::FakeDuck(CUserCmd * cmd, bool &bSendPackets)
 {
-	/*if (cmd->buttons & IN_DUCK) 
-	{
-		static bool counter = false;
-		static int counte = 0;
-		if (counte == 9) 
-		{
-			counte = 0;
-			counter = !counter;
-		}
-		counte++;
-		if (counter) 
-		{
-			cmd->buttons |= IN_DUCK;
-			bSendPackets = true;
-		}
-		else 
-			cmd->buttons &= ~IN_DUCK;
-	}*/
-
 	int fakelag_limit = Settings::RageBot::AntiAimSettings[0].FakelagTicks;
 	int choked_goal = fakelag_limit / 2;
 	bool should_crouch = g_ClientState->chokedcommands >= choked_goal;
@@ -346,22 +422,6 @@ void Rbot::FakeDuck(CUserCmd * cmd, bool &bSendPackets)
 			cmd->buttons &= ~IN_DUCK;
 			bSendPackets = false;
 		}
-	}
-}
-
-void Rbot::FakeDuck(CUserCmd * cmd)
-{
-	int fakelag_limit = Settings::RageBot::AntiAimSettings[0].FakelagTicks;
-	int choked_goal = fakelag_limit / 2;
-	bool should_crouch = g_ClientState->chokedcommands >= choked_goal;
-
-	if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
-	{
-		cmd->buttons |= IN_BULLRUSH;
-		if (should_crouch)
-			cmd->buttons |= IN_DUCK;
-		else
-			cmd->buttons &= ~IN_DUCK;
 	}
 }
 
@@ -548,6 +608,76 @@ bool Rbot::HitChance ( QAngle angles, C_BasePlayer* ent, float chance )
     return false;
 }
 
+bool Rbot::HitChance(QAngle angles, C_BasePlayer* ent)
+{
+	auto weapon = g_LocalPlayer->m_hActiveWeapon().Get();
+
+	if (!weapon)
+		return false;
+
+	Vector forward, right, up;
+	Vector src = g_LocalPlayer->GetEyePos();
+	Math::AngleVectors(angles, forward, right, up);
+
+	int cHits = 0;
+	int cNeededHits = static_cast<int> (150.f * (Hitchance / 100.f));
+
+	weapon->UpdateAccuracyPenalty();
+	float weap_spread = weapon->GetSpread();
+	float weap_inaccuracy = weapon->GetInaccuracy();
+
+	for (int i = 0; i < 150; i++)
+	{
+		float a = Math::RandomFloat(0.f, 1.f);
+		float b = Math::RandomFloat(0.f, 2.f * PI_F);
+		float c = Math::RandomFloat(0.f, 1.f);
+		float d = Math::RandomFloat(0.f, 2.f * PI_F);
+
+		float inaccuracy = a * weap_inaccuracy;
+		float spread = c * weap_spread;
+
+		if (weapon->m_Item().m_iItemDefinitionIndex() == 64)
+		{
+			a = 1.f - a * a;
+			a = 1.f - c * c;
+		}
+
+		Vector spreadView((cos(b) * inaccuracy) + (cos(d) * spread), (sin(b) * inaccuracy) + (sin(d) * spread), 0), direction;
+
+		direction.x = forward.x + (spreadView.x * right.x) + (spreadView.y * up.x);
+		direction.y = forward.y + (spreadView.x * right.y) + (spreadView.y * up.y);
+		direction.z = forward.z + (spreadView.x * right.z) + (spreadView.y * up.z);
+		direction.Normalized();
+
+		QAngle viewAnglesSpread;
+		Math::VectorAngles(direction, up, viewAnglesSpread);
+		viewAnglesSpread.Normalize();
+
+		Vector viewForward;
+		Math::AngleVectors(viewAnglesSpread, viewForward);
+		viewForward.NormalizeInPlace();
+
+		viewForward = src + (viewForward * weapon->GetCSWeaponData()->flRange);
+
+		trace_t tr;
+		Ray_t ray;
+
+		ray.Init(src, viewForward);
+		g_EngineTrace->ClipRayToEntity(ray, MASK_SHOT | CONTENTS_GRATE, ent, &tr);
+
+		if (tr.hit_entity == ent)
+			++cHits;
+
+		if (static_cast<int> ((static_cast<float> (cHits) / 150.f) * 100.f) >= Hitchance)
+			return true;
+
+		if ((150 - i + cHits) < cNeededHits)
+			return false;
+	}
+
+	return false;
+}
+
 BaimMode* Rbot::GetBAimStatus()
 {
 	return &baim;
@@ -563,7 +693,6 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
     bool BestBacktrack = false;
     TickRecord BestBacktrackRecord;
 
-    bool rbot_lagcompensation = g_Config.GetBool ( "rbot_lagcompensation" );
 	bool rbot_force_unlage = Settings::RageBot::ForceUnlag;
 	bool rbot_resolver = Settings::RageBot::Resolver; 
 	int rbot_baimmode = Settings::RageBot::BAimMode; 
@@ -627,15 +756,19 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
         //if(g_Resolver.GResolverData[i].ForceBaim) { baim = BaimMode::FORCE_BAIM; }
 
         bool WillKillEntity = false;
+		bool LagComp_Hitchanced = false;
 
-        if ( !rbot_lagcompensation )
+#ifdef _DEBUG
+        if ( !Settings::RageBot::LagComp )
         {
             if ( !GetBestHitboxPoint ( entity, CDamage, CHitpos, baim, WillKillEntity ) )
                 continue;
         }
         else
         {
-            bool ShouldSkip = true;
+			NBacktrack::Get().RageBacktrack(entity, cmd, CHitpos, LagComp_Hitchanced);
+
+            /*bool ShouldSkip = true;
             Vector NormalHitpos = Vector ( 0, 0, 0 );
             float NormalDamage = 0.f;
             bool GotNormal = false;
@@ -677,11 +810,14 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
                 CDamage = BacktrackDamage;
                 CHitpos = BacktrackHitpos;
                 CUsingBacktrack = true;
-            }
+            }*/
 
             //CUsingBacktrack = true;
         }
-
+#else
+	if (!GetBestHitboxPoint(entity, CDamage, CHitpos, baim, WillKillEntity))
+		continue;
+#endif
         //g_Logger.Add("FindBestEntity", std::to_string(CDamage));
 
         if ( CDamage > BestDamage )

@@ -128,6 +128,8 @@ class VGSHelper : public Singleton<VGSHelper>
 public:
 	void Init();
 	void DrawText(std::string text, float x, float y, Color color, int size = 15);
+	void DrawLogHeader(std::string text, float x, float y, Color color, int size = 15);
+	void DrawLogBase(std::string text, float x, float y, Color color, int size = 15);
 	void DrawLine(float x1, float y1, float x2, float y2, Color color, float size = 1.f);
 	void DrawBox(float x1, float y1, float x2, float y2, Color clr, float size = 1.f);
 	void DrawFilledBox(float x1, float y1, float x2, float y2, Color clr);
@@ -139,10 +141,11 @@ public:
 	void Draw3DCircle(Vector position, float radius, int seg, Color clr);
 	void DrawIcon(wchar_t code, float x, float y, Color color, int size = 15);
 	void DrawWave(Vector pos, Color clr);
-
 	ImVec2 GetSize(std::string text, int size = 15);
 private:
 	bool Inited = false;
 	vgui::HFont Fonts[128];
 	vgui::HFont WeaponFonts[128];
+	vgui::HFont LogBase[128];
+	vgui::HFont LogHeader[128];
 };

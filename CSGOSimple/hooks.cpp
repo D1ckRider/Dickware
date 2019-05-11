@@ -38,6 +38,8 @@
 #include "features\Radar.h"
 //#include "Asuswalls.h"
 #include "NoSmoke.h"
+#include "features\LagCompensation.h"
+#include "features\EventLogger.h"
 #pragma intrinsic(_ReturnAddress)
 
 namespace Hooks
@@ -55,6 +57,7 @@ namespace Hooks
     vfunc_hook ViewRender_hook;
     vfunc_hook gameevents_hook;
     vfunc_hook clientstate_hook;
+	vfunc_hook firebullets_hook;
 
 	float flAngle = 0.f;
 
@@ -74,9 +77,11 @@ namespace Hooks
         clientmode_hook.setup ( g_ClientMode, "client_panorama.dll" );
         ConVar* sv_cheats_con = g_CVar->FindVar ( "sv_cheats" );
         sv_cheats.setup ( sv_cheats_con );
+		auto dwFireBullets = *(DWORD**)(Utils::PatternScan(GetModuleHandleW(L"client_panorama.dll"), "55 8B EC 51 53 56 8B F1 BB ? ? ? ? B8") + 0x131);
         RenderView_hook.setup ( g_RenderView, "engine.dll" );
         gameevents_hook.setup ( g_GameEvents, "engine.dll" );
         ViewRender_hook.setup ( g_ViewRender, "client_panorama.dll" );
+		firebullets_hook.setup(dwFireBullets, "client_panorama.dll");
 		sequence_hook = new recv_prop_hook(C_BaseViewModel::m_nSequence(), hkRecvProxy);
 
         direct3d_hook.hook_index ( index::EndScene, hkEndScene );
@@ -96,10 +101,11 @@ namespace Hooks
         clientmode_hook.hook_index ( index::OverrideView, hkOverrideView );
 
         sv_cheats.hook_index ( index::SvCheatsGetBool, hkSvCheatsGetBool );
-
+		firebullets_hook.hook_index(index::FireBullets, hkTEFireBulletsPostDataUpdate);
         RenderView_hook.hook_index ( index::SceneEnd, hkSceneEnd );
         ViewRender_hook.hook_index ( index::SmokeOverlay, Hooked_RenderSmokeOverlay );
         gameevents_hook.hook_index ( index::FireEvent, hkFireEvent );
+		//hlclient_hook.hook_index(index::WriteUsercmdDeltaToBuffer, hkWriteUsercmdDeltaToBuffer);
 
         g_Logger.Success ( "cheat", "cheat initialized" );
 
@@ -464,6 +470,9 @@ namespace Hooks
 			if ( g_LocalPlayer && InputSys::Get().IsKeyDown(VK_TAB) && Settings::Misc::RankReveal )
                 Utils::RankRevealAll();
 
+			if(Settings::Misc::EventLogEnabled)
+				EventLogger::Get().PaintTraverse();
+
             Render::Get().BeginScene();
 			GrenadeHint::Get().Paint();
 			//if ( g_LocalPlayer && flAngle )
@@ -504,6 +513,9 @@ namespace Hooks
 
         if ( !g_Unload )
             Misc::Get().OnFrameStageNotify ( stage );
+
+		QAngle vecAimPunch;
+		QAngle vecViewPunch;
 
         switch ( stage )
         {
@@ -554,6 +566,11 @@ namespace Hooks
             }
 
             case FRAME_NET_UPDATE_END:
+
+				if (Settings::RageBot::LagComp)
+					NBacktrack::Get().FrameUpdatePostEntityThink();
+
+
 				// add Sound ESP check
 				/*if (true)
 				{
@@ -617,6 +634,20 @@ namespace Hooks
                             g_LocalPlayer->m_bClientSideAnimation() = true;
                     }
 
+					if (Settings::Misc::NoVisualRecoil)
+					{
+						if (g_LocalPlayer && g_LocalPlayer->IsAlive())
+						{
+							// Store their current values..
+							vecAimPunch = g_LocalPlayer->m_aimPunchAngle();
+							vecViewPunch = g_LocalPlayer->m_viewPunchAngle();
+
+							// ..then replace them with zero.
+							g_LocalPlayer->m_aimPunchAngle() = QAngle(0, 0, 0);
+							g_LocalPlayer->m_viewPunchAngle() = QAngle(0, 0, 0);
+						}
+					}
+
                     auto old_curtime = g_GlobalVars->curtime;
                     auto old_frametime = g_GlobalVars->frametime;
 
@@ -653,6 +684,11 @@ namespace Hooks
         }
 
         ofunc ( g_CHLClient, stage );
+		if (Settings::Misc::NoVisualRecoil)
+		{
+			g_LocalPlayer->m_aimPunchAngle() = vecAimPunch;
+			g_LocalPlayer->m_viewPunchAngle() = vecViewPunch;
+		}
     }
     //--------------------------------------------------------------------------------
     void __stdcall hkOverrideView ( CViewSetup* vsView )
@@ -722,6 +758,85 @@ namespace Hooks
 
         return ofunc ( pConVar );
     }
+
+
+
+	void __stdcall FireBullets_PostDataUpdate(C_TEFireBullets* thisptr, DataUpdateType_t updateType)
+	{
+		static auto ofunc = firebullets_hook.get_original<FireBullets>(index::FireBullets);
+
+		if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
+			return ofunc(thisptr, updateType);
+
+		if (Settings::RageBot::LagComp && thisptr)
+		{
+			int iPlayer = thisptr->m_iPlayer + 1;
+			if (iPlayer < 64)
+			{
+				auto player = C_BasePlayer::GetPlayerByIndex(iPlayer);
+
+				if (player && player != g_LocalPlayer && !player->IsDormant() && player->m_iTeamNum() != g_LocalPlayer->m_iTeamNum())
+				{
+					QAngle eyeAngles = QAngle(thisptr->m_vecAngles.pitch, thisptr->m_vecAngles.yaw, thisptr->m_vecAngles.roll);
+					QAngle calcedAngle = Math::CalcAngle(player->GetEyePos(), g_LocalPlayer->GetEyePos());
+
+					thisptr->m_vecAngles.pitch = calcedAngle.pitch;
+					thisptr->m_vecAngles.yaw = calcedAngle.yaw;
+					thisptr->m_vecAngles.roll = 0.f;
+
+					float
+						event_time = g_GlobalVars->tickcount,
+						player_time = player->m_flSimulationTime();
+
+					// Extrapolate tick to hit scouters etc
+					auto lag_records = NBacktrack::Get().m_LagRecord[iPlayer];
+
+					float shot_time = TICKS_TO_TIME(event_time);
+					for (auto& record : lag_records)
+					{
+						if (record.m_iTickCount <= event_time)
+						{
+							shot_time = record.m_flSimulationTime + TICKS_TO_TIME(event_time - record.m_iTickCount); // also get choked from this
+#ifdef _DEBUG
+							g_CVar->ConsoleColorPrintf(Color(0, 255, 0, 255), "Found <<exact>> shot time: %f, ticks choked to get here: %d\n", shot_time, event_time - record.m_iTickCount);
+#endif
+							break;
+						}
+#ifdef _DEBUG
+						else
+							g_CVar->ConsolePrintf("Bad curtime difference, EVENT: %f, RECORD: %f\n", event_time, record.m_iTickCount);
+#endif
+					}
+					//#ifdef _DEBUG
+					g_CVar->ConsolePrintf("Calced angs: %f %f, Event angs: %f %f, CURTIME_TICKOUNT: %f, SIMTIME: %f, CALCED_TIME: %f\n", calcedAngle.pitch, calcedAngle.yaw, eyeAngles.pitch, eyeAngles.yaw, event_time, player_time, shot_time);
+					//#endif
+									/*if (!lag_records.empty())
+									{
+										int choked = floorf((event_time - player_time) / g_GlobalVars->interval_per_tick) + 0.5;
+										choked = (choked > 14 ? 14 : choked < 1 ? 0 : choked);
+										player->m_vecOrigin() = (lag_records.begin()->m_vecOrigin + (g_GlobalVars->interval_per_tick * lag_records.begin()->m_vecVelocity * choked));
+									}*/
+
+					NBacktrack::Get().SetOverwriteTick(player, calcedAngle, shot_time, 1);
+				}
+			}
+		}
+
+		ofunc(thisptr, updateType);
+	}
+
+
+	__declspec (naked) void __stdcall hkTEFireBulletsPostDataUpdate(DataUpdateType_t updateType)
+	{
+		__asm
+		{
+			push[esp + 4]
+			push ecx
+			call FireBullets_PostDataUpdate
+			retn 4
+		}
+	}
+
     //--------------------------------------------------------------------------------
     void __fastcall hkSceneEnd ( void* pEcx, void* pEdx )
     {
@@ -740,13 +855,15 @@ namespace Hooks
         // code here
         Chams::Get().OnSceneEnd();
     }
+
+
     //--------------------------------------------------------------------------------
 	bool __stdcall hkFireEvent(IGameEvent* pEvent)
 	{
-		static auto oFireEvent = gameevents_hook.get_original<FireEvent>(index::FireEvent);
+		static auto ofunc = gameevents_hook.get_original<FireEvent>(index::FireEvent);
 
 		if (!g_EngineClient->IsConnected() || !g_EngineClient->IsInGame())
-			return oFireEvent(g_GameEvents, pEvent);
+			return ofunc(g_GameEvents, pEvent);
 
 		// -->
 		Rbot::Get().OnFireEvent(pEvent);
@@ -761,10 +878,10 @@ namespace Hooks
 			Visuals::Get().RenderSoundESP(pEvent);
 		}*/
 			
-
+		EventLogger::Get().OnFireEvent(pEvent);
         HitPossitionHelper::Get().OnFireEvent ( pEvent );
 
-        return oFireEvent ( g_GameEvents, pEvent );
+        return ofunc( g_GameEvents, pEvent );
     }
 
 	static auto random_sequence(const int low, const int high) -> int
@@ -900,7 +1017,7 @@ namespace Hooks
 
 	void hkRecvProxy(const CRecvProxyData* pData, void* entity, void* output)
 	{
-		static auto original_fn = sequence_hook->get_original_function();
+		static auto ofunc = sequence_hook->get_original_function();
 		const auto local = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(g_EngineClient->GetLocalPlayer()));
 		if (local && local->IsAlive())
 		{
@@ -928,11 +1045,128 @@ namespace Hooks
 				}
 			}
 		}
-		original_fn(pData, entity, output);
+		ofunc(pData, entity, output);
 	}
 
     //--------------------------------------------------------------------------------
     void __stdcall Hooked_RenderSmokeOverlay ( bool unk ) { /* no need to call :) we want to remove the smoke overlay */ }
+
+	int32_t nTickBaseShift = 0;
+	int32_t nSinceUse = 0;
+	bool bInSendMove = false, bFirstSendMovePack = false;
+
+	bool __fastcall hkWriteUsercmdDeltaToBuffer(IBaseClientDLL* ECX, void* EDX, int nSlot, bf_write* buf, int from, int to, bool isNewCmd)
+	{
+		static auto ofunc = hlclient_hook.get_original<WriteUsercmdDeltaToBuffer_t>(index::WriteUsercmdDeltaToBuffer);
+		return true;
+		//static DWORD WriteUsercmdDeltaToBufferReturn = (DWORD)Utils::PatternScan(GetModuleHandle("engine.dll"), "84 C0 74 04 B0 01 EB 02 32 C0 8B FE 46 3B F3 7E C9 84 C0 0F 84 ? ? ? ?"); //     84 DB 0F 84 ? ? ? ? 8B 8F ? ? ? ? 8B 01 8B 40 1C FF D0
+
+		/*if (nTickBaseShift <= 0 || (DWORD)_ReturnAddress() != ((DWORD)GetModuleHandleA("engine.dll") + 0xCCCA6))
+			return ofunc(ECX, nSlot, buf, from, to, isNewCmd);
+
+		if (from != -1)
+			return true;
+
+		// CL_SendMove function
+		auto CL_SendMove = []()
+		{
+			using CL_SendMove_t = void(__fastcall*)(void);
+			static CL_SendMove_t CL_SendMoveF = (CL_SendMove_t)Utils::PatternScan(GetModuleHandleW(L"engine.dll"), ("55 8B EC A1 ? ? ? ? 81 EC ? ? ? ? B9 ? ? ? ? 53 8B 98"));
+
+			CL_SendMoveF();
+		};
+
+		// WriteUsercmd function
+		auto WriteUsercmd = [](bf_write * buf, CUserCmd * in, CUserCmd * out)
+		{
+			//using WriteUsercmd_t = void(__fastcall*)(bf_write*, CUserCmd*, CUserCmd*);
+			//static DWORD WriteUsercmdF = (DWORD)Utils::PatternScan(GetModuleHandleW(L"client_panorama.dll"), ("55 8B EC 83 E4 F8 51 53 56 8B D9 8B 0D"));
+			static auto WriteUsercmdFn = (bool(__fastcall*)(bf_write*, CUserCmd*, CUserCmd*))Utils::PatternScan(GetModuleHandleA("client_panorama.dll"), ("55 8B EC 83 E4 F8 51 53 56 8B D9 8B 0D"));
+			return WriteUsercmdFn(buf, in, out);
+
+			/*__asm
+			{
+				mov     ecx, buf
+				mov     edx, in
+				push	out
+				call    WriteUsercmdF
+				add     esp, 4
+			}*/
+		//};
+
+		/*uintptr_t framePtr;
+		__asm mov framePtr, ebp;
+		auto msg = reinterpret_cast<CCLCMsg_Move_t*>(framePtr + 0xFCC);*/
+		/*int* pNumBackupCommands = (int*)(reinterpret_cast<uintptr_t>(buf) - 0x30);
+		int* pNumNewCommands = (int*)(reinterpret_cast<uintptr_t>(buf) - 0x2C);
+		auto net_channel = g_ClientState->m_NetChannel;
+
+		int32_t new_commands = *pNumNewCommands;
+
+		if (!bInSendMove)
+		{
+			if (new_commands <= 0)
+				return false;
+
+			bInSendMove = true;
+			bFirstSendMovePack = true;
+			nTickBaseShift += new_commands;
+
+			while (nTickBaseShift > 0)
+			{
+				CL_SendMove();
+				net_channel->Transmit(false);
+				bFirstSendMovePack = false;
+			}
+
+			bInSendMove = false;
+			return false;
+		}
+
+		if (!bFirstSendMovePack)
+		{
+			int32_t loss = std::min(nTickBaseShift, 10);
+
+			nTickBaseShift -= loss;
+			net_channel->m_nOutSequenceNr += loss;
+		}
+
+		int32_t next_cmdnr = g_ClientState->lastoutgoingcommand + g_ClientState->chokedcommands + 1;
+		int32_t total_new_commands = std::min(nTickBaseShift, 62);
+		nTickBaseShift -= total_new_commands;
+
+		from = -1;
+		*pNumNewCommands = total_new_commands;
+		*pNumBackupCommands = 0;
+
+		for (to = next_cmdnr - new_commands + 1; to <= next_cmdnr; to++)
+		{
+			if (!ofunc(ECX, nSlot, buf, from, to, true))
+				return false;
+
+			from = to;
+		}
+
+		CUserCmd* last_realCmd = g_Input->GetUserCmd(nSlot, from);
+		CUserCmd fromCmd;
+
+		if (last_realCmd)
+			fromCmd = *last_realCmd;
+
+		CUserCmd toCmd = fromCmd;
+		toCmd.command_number++;
+		toCmd.tick_count += 200;
+
+		for (int i = new_commands; i <= total_new_commands; i++)
+		{
+			WriteUsercmd(buf, &toCmd, &fromCmd);
+			fromCmd = toCmd;
+			toCmd.command_number++;
+			toCmd.tick_count++;
+		}
+
+		return true;*/
+	}
     //--------------------------------------------------------------------------------
 
     /*

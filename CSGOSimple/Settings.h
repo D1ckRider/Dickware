@@ -89,6 +89,16 @@ namespace Settings
 			AIR = 2
 		};
 
+		enum DesyncAAType
+		{
+			NONE = 0,
+			LEGACY = 1,
+			STATIC = 2,
+			BALANCE = 3,
+			STRETCH = 4,
+			JITTER = 5
+		};
+
 		struct RBotWeaponSetting
 		{
 			float Hitchance;
@@ -122,13 +132,14 @@ namespace Settings
 		extern bool AirBAim;
 		extern int BAimHotkey;
 
-		extern RBotHitbox Hitboxes[7];
+		extern RBotHitbox Hitboxes[8];
 
 		extern bool EnabledAA;
 		extern AntiAim AntiAimSettings[3];
 		extern float SpinBotSpeed;
 		extern bool SlideWalk;
 		extern bool Desync;
+		extern int DesyncType;
 		extern int ManualAAState;
 		extern int ManualAALeftKey;
 		extern int ManualAARightKey;
@@ -148,7 +159,11 @@ namespace Settings
 		extern bool FakelagPrediction;
 		extern int ShootingMode;
 		extern bool ForceUnlag;
+		extern bool LagComp;
 		extern bool Resolver;
+
+		extern bool AimStepEnabled;
+		extern int AimStepValue;
 
 		int GetWeaponType(C_BaseCombatWeapon* weapon);
 	}
@@ -270,12 +285,14 @@ namespace Settings
 		extern Color DamageIndicatorColor;
 		extern bool DisableScopeZoom;
 		extern bool NightMode;
+		extern float NightModeBrighthness;
 		extern bool DisablePP;
 		extern int ViewModelFOV;
 		extern int FOV;
 		extern bool NoSmoke;
 		extern bool Hitmarker;
 		extern bool HitmarkerSound;
+		extern bool DebugInfoEnabled;
 		extern int RagdollForce;
 
 		extern int HealthPos;
@@ -321,6 +338,7 @@ namespace Settings
 		extern bool Clantag;
 		extern int ClantagType;
 		extern bool SpectatorsEnabled;
+		extern bool NoVisualRecoil;
 		extern bool AutoAccept;
 		extern bool BuyBot;
 		extern int BuyBotPistol;
@@ -335,7 +353,7 @@ namespace Settings
 		extern int RadioVolume;
 		extern int RadioPauseHotkey;
 		extern bool WatermarkEnabled;
-
+		extern bool EventLogEnabled;
 
 		extern bool SkinchangerEnabled;
 	}
@@ -363,8 +381,10 @@ namespace Settings
 		}
 		catch (json::exception& ex)
 		{
+#ifdef _DEBUG
 			//g_Logger.Warning("CONFIG", "Loading error: " + std::to_string(ex.what()));
 			g_Logger.Warning("CONFIG", ex.what());
+#endif
 		}
 	}
 
@@ -377,7 +397,9 @@ namespace Settings
 		}
 		catch (json::exception& ex)
 		{
+#ifdef _DEBUG
 			g_Logger.Warning("CONFIG", ex.what());
+#endif
 			value = 0;
 			//g_Logger.Warning( "CONFIG", "Loading error: " + std::to_string(ex.what()) );
 		}

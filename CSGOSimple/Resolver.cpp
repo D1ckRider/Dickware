@@ -16,11 +16,10 @@ is fakelag --> set first tick angle
 
 void Resolver::OnCreateMove ( QAngle OrgViewang )
 {
-    return;
-    /*
+    //return;
     if (!g_LocalPlayer) return;
 
-    for (int i = 1; i < g_EngineClient->GetMaxClients(); i++)
+    /*for (int i = 1; i < g_EngineClient->GetMaxClients(); i++)
     {
     	auto entity = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(i));
     	if (!entity || !g_LocalPlayer || !entity->IsPlayer() || entity == g_LocalPlayer || entity->IsDormant()
@@ -40,11 +39,10 @@ void Resolver::OnCreateMove ( QAngle OrgViewang )
     	bool CanUseBackwards = AtTargetSim(entity, BackwardsAng);
 
     	SimulatedAAs[i] = { CanFreestand, FreestandAng, CanEdge, Edge, CanDistance, Distance, CanUseBackwards, BackwardsAng };
-    }
-    */
+    }*/
 }
-#ifdef FakeAnglesEnabled
 
+#ifdef FakeAnglesEnabled
 void Resolver::OnFramestageNotify()
 {
     return;
@@ -645,6 +643,7 @@ void Resolver::OnFramestageNotify()
     }
 }
 #else
+
 void Resolver::OnFramestageNotify()
 {
     for ( int i = 1; i < g_EngineClient->GetMaxClients(); i++ )
@@ -747,23 +746,25 @@ void Resolver::OnFramestageNotify()
 
             if ( fake && g_Resolver.GResolverData[i].Shots >= 1 )
             {
-                switch ( g_Resolver.GResolverData[i].Shots % 4 )
+                switch ( g_Resolver.GResolverData[i].Shots % 2 )
                 {
                     case 0:
-                        entity->m_angEyeAngles().yaw = Yaw + 58.f;
+                        //entity->m_angEyeAngles().yaw = Yaw + 58.f;
+						entity->GetBasePlayerAnimState()->m_flGoalFeetYaw = Yaw + entity->GetMaxDesyncAngle();
                         break;
 
                     case 1:
-                        entity->m_angEyeAngles().yaw = Yaw - 58.f;
+                        //entity->m_angEyeAngles().yaw = Yaw - 58.f;
+						entity->GetBasePlayerAnimState()->m_flGoalFeetYaw = Yaw - entity->GetMaxDesyncAngle();
                         break;
 
-                    case 2:
+                    /*case 2:
                         entity->m_angEyeAngles().yaw = Yaw + 29;
                         break;
 
                     case 3:
                         entity->m_angEyeAngles().yaw = Yaw - 29;
-                        break;
+                        break;*/
                 }
             }
         }
@@ -1350,6 +1351,7 @@ bool Resolver::IsRandomAngle ( C_BasePlayer* player, int i, float tolerance )
     return !IsStaticAngle ( player, i ) && !IsUsingSpinbot ( player, i, 35.f, tolerance );
 }
 #else
+
 void Resolver::AddCurrentYaw ( C_BasePlayer* pl, int i )
 {
     LastYaws[i].push_back ( pl->m_angEyeAngles().yaw );

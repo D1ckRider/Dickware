@@ -43,6 +43,7 @@ public:
     bool GetBestHitboxPoint ( C_BasePlayer* entity, float& damage, Vector& hitbox, BaimMode baim, bool& WillKill, matrix3x4_t matrix[MAXSTUDIOBONES] = nullptr, mstudiohitboxset_t* StudioSet = nullptr, bool NoPointscale = false );
     void PrecacheShit();
     bool HitChance ( QAngle angles, C_BasePlayer* ent, float chance );
+	bool HitChance(QAngle angles, C_BasePlayer* ent);
 	BaimMode* GetBAimStatus();
 private:
 	void UpdateWeaponConfig(C_BaseCombatWeapon* weapon);
@@ -50,11 +51,12 @@ private:
     float Simtimes[128];
 
 
-	void FakeDuck	( CUserCmd* cmd, bool &bSendPackets);
-	void FakeDuck	( CUserCmd* cmd );
-    void AutoStop	( CUserCmd* cmd );
-    void AutoCrouch ( CUserCmd* cmd );
-	void SlowWalk	( CUserCmd* cmd, float speed );
+	bool CockRevolver ( CUserCmd* cmd, C_BaseCombatWeapon* weapon );
+	void FakeDuck	  ( CUserCmd* cmd, bool &bSendPackets);
+	void FakeDuck	  ( CUserCmd* cmd );
+    void AutoStop	  ( CUserCmd* cmd );
+    void AutoCrouch   ( CUserCmd* cmd );
+	void SlowWalk	  ( CUserCmd* cmd, float speed );
 
     CUserCmd* CurrentCmd = nullptr;
 

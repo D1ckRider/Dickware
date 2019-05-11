@@ -27,9 +27,7 @@ void HitPossitionHelper::PlayerHurt(IGameEvent* event)
     C_BasePlayer* hurt = GetPlayer(event->GetInt("userid"));
 
     if (!attacker || !hurt || attacker != g_LocalPlayer)
-    {
         return;
-    }
 
     Vector EPosition = hurt->m_vecOrigin();
     ImpactInfoStruct BestImpact;

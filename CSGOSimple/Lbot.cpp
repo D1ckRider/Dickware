@@ -25,30 +25,18 @@ void Lbot::OnCreateMove(CUserCmd* cmd)
     std::deque<int> hb_enabled;
 
     if (WeaponHitboxHead)
-    {
         hb_enabled.push_back(HITBOX_HEAD);
-    }
     if (WeaponHitboxNeck)
-    {
         hb_enabled.push_back(HITBOX_NECK);
-    }
     if (WeaponHitboxChest)
-    {
         hb_enabled.push_back(HITBOX_CHEST);
-    }
     if (WeaponHitboxPelvis)
-    {
         hb_enabled.push_back(HITBOX_PELVIS);
-    }
     if (WeaponHitboxStomach)
-    {
         hb_enabled.push_back(HITBOX_STOMACH);
-    }
 
 	if(Settings::Aimbot::Backtrack)
-    {
         Backtrack::Get().LegitOnCreateMove(hb_enabled);
-    }
 
 	bool bAttack = (cmd->buttons & IN_ATTACK);
 
@@ -183,21 +171,15 @@ int Lbot::GetBestTarget(C_BasePlayer* local, C_BaseCombatWeapon* weapon, CUserCm
                 case HITBOX_LEFT_UPPER_ARM:
                 case HITBOX_LEFT_FOREARM:
                     if (!WeaponHitboxArm)
-                    {
                         continue;
-                    }
                     break;
             }
 
             Vector pos;
             if (!entity->GetOptimizedHitboxPos(hitbox, pos))
-            {
                 continue;
-            }
             if (!local->CanSeePlayer(local, pos))
-            {
                 continue;
-            }
 
 			if (Settings::Aimbot::SmokeCheck && Utils::LineThroughSmoke(local->GetEyePos(), pos))
 				continue;
@@ -225,35 +207,25 @@ int Lbot::GetBestTarget(C_BasePlayer* local, C_BaseCombatWeapon* weapon, CUserCm
                     {
                         case HITBOX_HEAD:
                             if (!WeaponHitboxHead)
-                            {
                                 continue;
-                            }
                             break;
                         case HITBOX_NECK:
                             if (!WeaponHitboxNeck)
-                            {
                                 continue;
-                            }
                             break;
                         case HITBOX_PELVIS:
                             if (!WeaponHitboxPelvis)
-                            {
                                 continue;
-                            }
                             break;
                         case HITBOX_STOMACH:
                             if (!WeaponHitboxStomach)
-                            {
                                 continue;
-                            }
                             break;
                         case HITBOX_LOWER_CHEST:
                         case HITBOX_CHEST:
                         case HITBOX_UPPER_CHEST:
                             if (!WeaponHitboxChest)
-                            {
                                 continue;
-                            }
                             break;
                         case HITBOX_RIGHT_THIGH:
                         case HITBOX_LEFT_THIGH:
@@ -272,9 +244,7 @@ int Lbot::GetBestTarget(C_BasePlayer* local, C_BaseCombatWeapon* weapon, CUserCm
                     }
 
                     if (!local->CanSeePlayer(local, record->hitboxes[hitbox]))
-                    {
                         continue;
-                    }
                     float fov = Math::GetFOV(viewangles, Math::CalcAngle(local->GetEyePos(), record->hitboxes[hitbox]));
 
 

@@ -36,10 +36,15 @@ void NightMode::Apply(bool ForceUpdate)
 					CEnvTonemapController* tonemapper = static_cast<CEnvTonemapController*>(ent);
 					tonemapper->m_bUseCustomAutoExposureMin() = 1;
 					tonemapper->m_bUseCustomAutoExposureMax() = 1;
-					tonemapper->m_flCustomAutoExposureMax() = 0.08f;
-					tonemapper->m_flCustomAutoExposureMin() = 0.08f;
+					tonemapper->m_flCustomAutoExposureMax() = Settings::Visual::NightModeBrighthness;//0.08f;
+					tonemapper->m_flCustomAutoExposureMin() = Settings::Visual::NightModeBrighthness;//0.08f;
 					Active = true;
 				}
+				/*if (ent->GetClientClass()->m_ClassID == ClassId::CPostProcessController)
+				{
+					CPostProcessController* controller = static_cast<CPostProcessController*>(ent);
+					controller->m_flSetScreenBlurStrength() = 1;
+				}*/
 			}
 		}
 	}

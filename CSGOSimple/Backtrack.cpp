@@ -4,7 +4,7 @@
 #include "Rbot.h"
 #include "ConsoleHelper.h"
 #include "Autowall.h"
-#include "ConfigSystem.h"
+#include "Settings.h"
 
 void Backtrack::OnCreateMove()
 {
@@ -89,9 +89,7 @@ bool Backtrack::RageBacktrack ( C_BasePlayer* player, int i, float& damage, Vect
     std::deque<TickRecord> bestRecords = GetBestTicks ( i );
 
     if ( bestRecords.size() == 0 )
-    {
         return false;
-    }
 
     OriginalRecord orgData = OriginalRecord ( player );
 
@@ -99,7 +97,7 @@ bool Backtrack::RageBacktrack ( C_BasePlayer* player, int i, float& damage, Vect
     float bestDamage = 0.f;
     Vector bestHitpos = Vector ( 0, 0, 0 );
     TickRecord bestRecord;
-    float MinDamage = g_Config.GetFloat ( "rbot_mindamage" );
+	float MinDamage = Settings::RageBot::WeaponSettings[0].MinDamage; //g_Config.GetFloat ( "rbot_mindamage" );
     //bool foundKillable = false;
 
     if ( bestRecords.size() > 4 )
@@ -191,20 +189,17 @@ void Backtrack::LegitOnCreateMove ( std::deque<int> hb_enabled )
 void Backtrack::FinishLegitBacktrack ( CUserCmd* cmd )
 {
     if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive() )
-    {
         return;
-    }
+
 
     if ( ! ( cmd->buttons & IN_ATTACK ) && ! ( cmd->buttons & IN_ATTACK2 ) )
-    {
         return;
-    }
 
     int BestEntity = -1;
     LegitTickRecord BestRecord;
     float BestFov = FLT_MAX;
 
-    float lbot_backtrack_ms = g_Config.GetFloat ( "lbot_backtrack_ms" );
+	float lbot_backtrack_ms = Settings::Aimbot::BacktrackTick;//g_Config.GetFloat ( "lbot_backtrack_ms" );
 
     for ( int i = 1; i < g_EngineClient->GetMaxClients(); i++ )
     {

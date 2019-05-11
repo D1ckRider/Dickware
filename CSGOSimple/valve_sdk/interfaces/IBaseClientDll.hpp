@@ -37,3 +37,43 @@ public:
     virtual void             LevelShutdown(void) = 0;
     virtual ClientClass*     GetAllClasses(void) = 0;
 };
+
+// Used by firebullets hook, move somewhere else if u want to cleanup
+class C_TEFireBullets
+{
+public:
+	char	pad[12];
+	int	    m_iPlayer; //12
+	int		_m_iItemDefinitionIndex;
+	Vector	_m_vecOrigin;
+	QAngle	m_vecAngles;
+	int		_m_iWeaponID;
+	int		m_iMode;
+	int		m_iSeed;
+	float	m_flSpread;
+
+	/*
+	char pad[16];
+	int m_iPlayer; //0x10
+	int m_iItemDefinitionIndex;
+	Vector m_vecOrigin;
+	QAngle m_vecAngles;
+	int m_iWeapon;
+	int m_iWeaponID;
+	int m_iMode;
+	int m_iSeed;
+	float m_flInaccuracy;
+	float m_flRecoilIndex;
+	float m_flSpread;
+	int m_iSoundType; //0x4C
+	*/
+};
+
+enum DataUpdateType_t
+{
+	DATA_UPDATE_CREATED = 0,
+	//	DATA_UPDATE_ENTERED_PVS,
+	DATA_UPDATE_DATATABLE_CHANGED
+	//	DATA_UPDATE_LEFT_PVS,
+	//DATA_UPDATE_DESTROYED,
+};

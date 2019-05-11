@@ -21,119 +21,6 @@ void Settings::Initialize()
 	RefreshConfigList();
 
 	ResetConfig();
-
-	/* Setting up variables */
-	/* Init weapon settings for RBot */
-	/*for (size_t i = 0; i < 11; i++)
-	{
-		RageBot::WeaponSettings[i].Hitchance = 0.f;
-		RageBot::WeaponSettings[i].MinDamage = 0.f;
-		RageBot::WeaponSettings[i].BAimAfterShots = 0;
-		RageBot::WeaponSettings[i].ForceBAimAfterShots = 0;
-		RageBot::WeaponSettings[i].BAimWhileMoving = false;
-	}*/
-	/* Init Hitbox settings */
-	/*for (size_t i = 0; i < 7; i++)
-	{
-		RageBot::Hitboxes[i].Enabled = false;
-		RageBot::Hitboxes[i].Scale = 0.f;
-
-	}*/
-	/* Init AA settings */
-	/*for (size_t i = 0; i < 3; i++)
-	{
-		RageBot::AntiAimSettings[i].Pitch = 0;
-		RageBot::AntiAimSettings[i].Yaw = 0;
-		RageBot::AntiAimSettings[i].YawCustom = 0.f;
-		RageBot::AntiAimSettings[i].YawAdd = 0;
-		RageBot::AntiAimSettings[i].YawAddCustom = 0.f;
-		RageBot::AntiAimSettings[i].FakelagTicks = 0;
-		RageBot::AntiAimSettings[i].FakelagMode = 0;
-	}
-	/* Init weapon settings for LBot */
-	/*for (size_t i = 0; i < 11; i++)
-	{
-		Aimbot::WeaponAimSetting[i].FOV = 0.f;
-		Aimbot::WeaponAimSetting[i].Smooth = 1.f;
-		Aimbot::WeaponAimSetting[i].Randomize = 0.f;
-		Aimbot::WeaponAimSetting[i].Delay = 0.f;
-		Aimbot::WeaponAimSetting[i].Autopistol = false;
-
-		Aimbot::WeaponAimSetting[i].RCS = false;
-		Aimbot::WeaponAimSetting[i].RCS_X = 0.f;
-		Aimbot::WeaponAimSetting[i].RCS_Y = 0.f;
-		
-		Aimbot::WeaponAimSetting[i].HitboxHead = false;
-		Aimbot::WeaponAimSetting[i].HitboxNeck = false;
-		Aimbot::WeaponAimSetting[i].HitboxChest = false;
-		Aimbot::WeaponAimSetting[i].HitboxPelvis = false;
-		Aimbot::WeaponAimSetting[i].HitboxStomach = false;
-		Aimbot::WeaponAimSetting[i].HitboxArm = false;
-		Aimbot::WeaponAimSetting[i].HitboxLeg = false;
-		Aimbot::WeaponAimSetting[i].HitboxFoot = false;
-	}
-	Visual::LocalChams.Enabled = false;
-	Visual::LocalChams.Mode = 0;
-	Visual::LocalChams.Visible = Color::Red;
-	Visual::LocalChams.Invisible = Color::Black;
-	Visual::LocalESP.Enabled = false;
-	Visual::LocalESP.BoxEnabled = false;
-	Visual::LocalESP.BoxType = 0;
-	Visual::LocalESP.BoxColor = Color::Black;
-	Visual::LocalESP.NameEnabled = false;
-	Visual::LocalESP.NameColor = Color::White;
-	Visual::LocalESP.HealthEnabled = false;
-	Visual::LocalESP.ArmorEnabled = false;
-	Visual::LocalESP.ArmorColor = Color::White;
-	Visual::LocalESP.WeaponEnabled = false;
-	Visual::LocalESP.WeaponColor = Color::White;
-	Visual::LocalESP.SnaplineEnabled = false;
-	Visual::LocalESP.SnaplineColor = Color::White;
-
-	Visual::TeamChams.Enabled = false;
-	Visual::TeamChams.Mode = 0;
-	Visual::TeamChams.Visible = Color::Red;
-	Visual::TeamChams.Invisible = Color::Black;
-	Visual::TeamESP.Enabled = false;
-	Visual::TeamESP.BoxEnabled = false;
-	Visual::TeamESP.BoxType = 0;
-	Visual::TeamESP.BoxColor = Color::Black;
-	Visual::TeamESP.NameEnabled = false;
-	Visual::TeamESP.NameColor = Color::White;
-	Visual::TeamESP.HealthEnabled = false;
-	Visual::TeamESP.ArmorEnabled = false;
-	Visual::TeamESP.ArmorColor = Color::White;
-	Visual::TeamESP.WeaponEnabled = false;
-	Visual::TeamESP.WeaponColor = Color::White;
-	Visual::TeamESP.SnaplineEnabled = false;
-	Visual::TeamESP.SnaplineColor = Color::White;
-
-	Visual::EnemyChams.Enabled = false;
-	Visual::EnemyChams.Mode = 0;
-	Visual::EnemyChams.Visible = Color::Red;
-	Visual::EnemyChams.Invisible = Color::Black;
-	Visual::EnemyESP.Enabled = false;
-	Visual::EnemyESP.BoxEnabled = false;
-	Visual::EnemyESP.BoxType = 0;
-	Visual::EnemyESP.BoxColor = Color::Black;
-	Visual::EnemyESP.NameEnabled = false;
-	Visual::EnemyESP.NameColor = Color::White;
-	Visual::EnemyESP.HealthEnabled = false;
-	Visual::EnemyESP.ArmorEnabled = false;
-	Visual::EnemyESP.ArmorColor = Color::White;
-	Visual::EnemyESP.WeaponEnabled = false;
-	Visual::EnemyESP.WeaponColor = Color::White;
-	Visual::EnemyESP.SnaplineEnabled = false;
-	Visual::EnemyESP.SnaplineColor = Color::White;
-
-	Visual::GlobalESP.Enabled = false;
-	Visual::GlobalESP.GrenadeEnabled = false;
-	Visual::GlobalESP.BombEnabled = false;
-	Visual::GlobalESP.DropedWeaponsEnabled = false;
-	Visual::GlobalESP.BombColor = Color::Green;
-	Visual::GlobalESP.DZEnabled = false;
-	Visual::GlobalESP.DZRange = 100.f;
-	Visual::GlobalESP.SoundESPEnabled = false;*/
 }
 
 void Settings::CreateConfig(std::string fileName)
@@ -231,6 +118,7 @@ void Settings::SaveRageBot(json& j)
 	SaveValue(j, "rbot_spinbot_speed", RageBot::SpinBotSpeed);
 	SaveValue(j, "rbot_slidewalk", RageBot::SlideWalk);
 	SaveValue(j, "rbot_desync", RageBot::Desync);
+	SaveValue(j, "rbot_desync_type", RageBot::DesyncType);
 	SaveValue(j, "rbot_manual_leftkey", RageBot::ManualAALeftKey);
 	SaveValue(j, "rbot_manual_rightkey", RageBot::ManualAARightKey);
 	SaveValue(j, "rbot_manual_backkey", RageBot::ManualAABackKey);
@@ -249,6 +137,10 @@ void Settings::SaveRageBot(json& j)
 	SaveValue(j, "rbot_shooting_mode", RageBot::ShootingMode);
 	SaveValue(j, "rbot_force_unlag", RageBot::ForceUnlag);
 	SaveValue(j, "rbot_resolver", RageBot::Resolver);
+	SaveValue(j, "rbot_lagcomp", RageBot::LagComp);
+
+	SaveValue(j, "rbot_aimstep_enabled", RageBot::AimStepEnabled);
+	SaveValue(j, "rbot_aimstep_value", RageBot::AimStepValue);
 }
 
 void Settings::SaveLegitBot(json& j)
@@ -370,6 +262,7 @@ void Settings::SaveVisual(json& j)
 	SaveValue(j, "vis_bullet_tracers", Visual::BulletTracers);
 	SaveValue(j, "vis_noflash", Visual::NoFlash);
 	SaveValue(j, "vis_nightmode", Visual::NightMode);
+	SaveValue(j, "vis_nightmode_bright", Visual::NightModeBrighthness);
 	SaveValue(j, "vis_disabe_pp", Visual::DisablePP);
 	SaveValue(j, "vis_nadetracer_enabled", Visual::NadeTracerEnabled);
 	SaveColorValue(j, "vis_nadetracer_color", Visual::NadeTracerColor);
@@ -406,6 +299,8 @@ void Settings::SaveMisc(json& j)
 	SaveValue(j, "misc_buybot_defuser", Misc::BuyBotDefuser);
 	SaveValue(j, "misc_skin_enabled", Misc::SkinchangerEnabled);
 	SaveValue(j, "misc_watermark_enabled", Misc::WatermarkEnabled);
+	SaveValue(j, "misc_event_log_enabled", Misc::EventLogEnabled);
+	SaveValue(j, "misc_novisrecoil", Misc::NoVisualRecoil);
 	/* Radio */
 	SaveValue(j, "misc_radio_enabled", Misc::RadioEnabled);
 	SaveValue(j, "misc_radio_selected", Misc::RadioSelected);
@@ -468,6 +363,7 @@ void Settings::LoadRageBot(json& j)
 	LoadValue(j, "rbot_spinbot_speed", RageBot::SpinBotSpeed);
 	LoadValue(j, "rbot_slidewalk", RageBot::SlideWalk);
 	LoadValue(j, "rbot_desync", RageBot::Desync);
+	LoadValue(j, "rbot_desync_type", RageBot::DesyncType);
 	LoadValue(j, "rbot_manual_leftkey", RageBot::ManualAALeftKey);
 	LoadValue(j, "rbot_manual_rightkey", RageBot::ManualAARightKey);
 	LoadValue(j, "rbot_manual_backkey", RageBot::ManualAABackKey);
@@ -486,6 +382,10 @@ void Settings::LoadRageBot(json& j)
 	LoadValue(j, "rbot_shooting_mode", RageBot::ShootingMode);
 	LoadValue(j, "rbot_force_unlag", RageBot::ForceUnlag);
 	LoadValue(j, "rbot_resolver", RageBot::Resolver);
+	LoadValue(j, "rbot_lagcomp", RageBot::LagComp);
+
+	LoadValue(j, "rbot_aimstep_enabled", RageBot::AimStepEnabled);
+	LoadValue(j, "rbot_aimstep_value", RageBot::AimStepValue);
 }
 
 void Settings::LoadLegitBot(json& j)
@@ -608,6 +508,7 @@ void Settings::LoadVisual(json& j)
 	LoadValue(j, "vis_noflash", Visual::NoFlash);
 	LoadValue(j, "vis_disabe_pp", Visual::DisablePP);
 	LoadValue(j, "vis_nightmode", Visual::NightMode);
+	LoadValue(j, "vis_nightmode_bright", Visual::NightModeBrighthness);
 	LoadValue(j, "vis_nadetracer_enabled", Visual::NadeTracerEnabled);
 	LoadColorValue(j, "vis_nadetracer_color", Visual::NadeTracerColor);
 	LoadValue(j, "vis_spread_cirlce_enabled", Visual::SpreadCircleEnabled);
@@ -643,6 +544,8 @@ void Settings::LoadMisc(json& j)
 	LoadValue(j, "misc_buybot_defuser", Misc::BuyBotDefuser);
 	LoadValue(j, "misc_skin_enabled", Misc::SkinchangerEnabled);
 	LoadValue(j, "misc_watermark_enabled", Misc::WatermarkEnabled);
+	LoadValue(j, "misc_event_log_enabled", Misc::EventLogEnabled);
+	LoadValue(j, "misc_novisrecoil", Misc::NoVisualRecoil);
 	/* Radio */
 	LoadValue(j, "misc_radio_enabled", Misc::RadioEnabled);
 	LoadValue(j, "misc_radio_selected", Misc::RadioSelected);
@@ -740,6 +643,7 @@ void Settings::ResetRagebot()
 	RageBot::SpinBotSpeed = 0.f;
 	RageBot::SlideWalk = false;
 	RageBot::Desync = false;
+	RageBot::DesyncType = 0;
 	RageBot::ManualAAState = 0;
 	RageBot::ManualAALeftKey = 0x0;
 	RageBot::ManualAARightKey = 0x0;
@@ -759,6 +663,11 @@ void Settings::ResetRagebot()
 	RageBot::ShootingMode = 0;
 	RageBot::ForceUnlag = false;
 	RageBot::Resolver = false;
+	RageBot::LagComp = false;
+
+	RageBot::AimStepEnabled = false;
+	RageBot::AimStepValue = 0;
+
 	/* Init weapon settings for RBot */
 	for (size_t i = 0; i < 11; i++)
 	{
@@ -847,6 +756,7 @@ void Settings::ResetVisuals()
 	Visual::FOV = 80;
 	Visual::DisablePP = false;
 	Visual::NightMode = false;
+	Visual::NightModeBrighthness = 0.075f;
 	Visual::NoSmoke = false;
 	Visual::Hitmarker = false;
 	Visual::HitmarkerSound = false;
@@ -942,6 +852,8 @@ void Settings::ResetMisc()
 	Misc::BuyBotDefuser = false;
 	Misc::SkinchangerEnabled = false;
 	Misc::WatermarkEnabled = true;
+	Misc::EventLogEnabled = false;
+	Misc::NoVisualRecoil = false;
 
 	Misc::RadioEnabled = false;
 	Misc::RadioSelected = -1;
@@ -960,8 +872,10 @@ void Settings::SaveColorValue(json & j, std::string name, const Color & value)
 	}
 	catch (json::exception& ex)
 	{
+#ifdef _DEBUG
 		g_Logger.Warning("CONFIG", ex.what());
 		//g_Logger.Warning( "CONFIG", "Loading error: " + std::to_string(ex.what()) );
+#endif // _DEBUG
 	}
 }
 
@@ -978,8 +892,10 @@ void Settings::LoadColorValue(json & j, std::string name, Color & value)
 	}
 	catch (json::exception& ex)
 	{
+#ifdef _DEBUG
 		g_Logger.Warning("CONFIG", ex.what());
 		//g_Logger.Warning( "CONFIG", "Loading error: " + std::to_string(ex.what()) );
+#endif // DEBUG
 	}
 }
 
@@ -1009,13 +925,14 @@ namespace Settings::RageBot
 	bool AirBAim = false;
 	int BAimHotkey = 0x0;
 
-	RBotHitbox Hitboxes[7] = { 0 };
+	RBotHitbox Hitboxes[8] = { 0 };
 
 	bool EnabledAA = false;
 	AntiAim AntiAimSettings[3] = { 0 };
 	float SpinBotSpeed= 0.f;
 	bool SlideWalk= false;
 	bool Desync = false;
+	int DesyncType = 0;
 	int ManualAAState = 0;
 	int ManualAALeftKey = 0x0;
 	int ManualAARightKey = 0x0;
@@ -1034,7 +951,11 @@ namespace Settings::RageBot
 	bool FakelagPrediction = false;
 	int ShootingMode = 0;
 	bool ForceUnlag = false;
+	bool LagComp = false;
 	bool Resolver = false;
+
+	bool AimStepEnabled = false;
+	int AimStepValue = 0;
 
 	int GetWeaponType(C_BaseCombatWeapon * weapon)
 	{
@@ -1137,9 +1058,11 @@ namespace Settings::Visual
 	int FOV = 80;
 	bool NoSmoke = false;
 	bool NightMode = false;
+	float NightModeBrighthness = 0.075f;
 	bool DisablePP = false;
 	bool Hitmarker = false;
-	bool HitmarkerSound = false;
+	bool HitmarkerSound = false; 
+	bool DebugInfoEnabled = false;
 	int RagdollForce = 0;
 
 	int HealthPos = 0;
@@ -1157,6 +1080,7 @@ namespace Settings::Misc
 	int ClantagType = 0;
 	bool BuyBot = false;
 	bool SpectatorsEnabled = false;
+	bool NoVisualRecoil = false;
 	int BuyBotPistol = 0;
 	int BuyBotWeapon = 0;
 	bool BuyBotArmor = false;
@@ -1168,4 +1092,5 @@ namespace Settings::Misc
 	int RadioVolume = 20;
 	int RadioPauseHotkey = 0x0;
 	bool WatermarkEnabled = true;
+	bool EventLogEnabled = true;
 }

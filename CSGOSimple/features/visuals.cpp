@@ -255,6 +255,7 @@ void Visuals::Player::RenderSnapline()
 
     VGSHelper::Get().DrawLine ( screen_w / 2.f, ( float ) screen_h, ctx.feet_pos.x, ctx.feet_pos.y, ctx.SnaplineClr );
 }
+
 void Visuals::Player::DrawPlayerDebugInfo()
 {
     if ( !g_LocalPlayer || ctx.pl == g_LocalPlayer )
@@ -1100,6 +1101,8 @@ void Visuals::RenderHitmarker()
     percent = 1.f - percent;
     float addsize = percent2 * 5.f;
 
+	//g_LocalPlayer->m_flHealthShotBoostExpirationTime() = 2.f;
+	//Console.WriteLine(g_LocalPlayer->m_flHealthShotBoostExpirationTime());
 
     Color clr = Color ( 255, 255, 255, ( int ) ( percent * 255.f ) );
 
@@ -1111,8 +1114,6 @@ void Visuals::RenderHitmarker()
 
 void Visuals::AddToDrawList()
 {
-	
-
 	g_EngineClient->GetScreenSize(ScreenX, ScreenY);
 
     if ( !g_EngineClient->IsConnected() || !g_LocalPlayer || !g_EngineClient->IsInGame() )
@@ -1221,7 +1222,7 @@ void Visuals::AddToDrawList()
     bool esp_misc_dangerzone_item_esp = false;
     float esp_misc_dangerzone_item_esp_dist = 0.f;
     #ifdef _DEBUG
-    bool misc_debug_overlay = g_Config.GetBool ( "misc_debug_overlay" );
+	bool misc_debug_overlay = Settings::Visual::DebugInfoEnabled;//g_Config.GetBool ( "misc_debug_overlay" );
     #endif // _DEBUG
     bool IsDangerzone = g_LocalPlayer && g_LocalPlayer->InDangerzone();
 
@@ -1399,6 +1400,18 @@ void VGSHelper::Init()
 		g_VGuiSurface->SetFontGlyphSet(WeaponFonts[size], "undefeated", size, 700, 0, 0, FONTFLAG_ANTIALIAS);
 	}
 
+	for (size_t size = 1; size < 128; size++)
+	{
+		LogBase[size] = g_VGuiSurface->CreateFont_();
+		g_VGuiSurface->SetFontGlyphSet(LogBase[size], "Open Sans Light", size, 700, 0, 0, FONTFLAG_DROPSHADOW);
+	}
+
+	for (size_t size = 1; size < 128; size++)
+	{
+		LogHeader[size] = g_VGuiSurface->CreateFont_();
+		g_VGuiSurface->SetFontGlyphSet(LogHeader[size], "Open Sans SemiBold", size, 700, 0, 0, FONTFLAG_DROPSHADOW);
+	}
+
 	Inited = true;
 }
 
@@ -1419,6 +1432,43 @@ void VGSHelper::DrawText ( std::string text, float x, float y, Color color, int 
         g_VGuiSurface->DrawPrintText ( buf, wcslen ( buf ) );
     }
 }
+
+void VGSHelper::DrawLogHeader(std::string text, float x, float y, Color color, int size)
+{
+	if (!Inited)
+		Init();
+
+	//int size = text.size() + 1;
+	g_VGuiSurface->DrawClearApparentDepth();
+	wchar_t buf[256];
+	g_VGuiSurface->DrawSetTextFont(LogHeader[size]);
+	g_VGuiSurface->DrawSetTextColor(color);
+
+	if (MultiByteToWideChar(CP_UTF8, 0, text.c_str(), -1, buf, 256))
+	{
+		g_VGuiSurface->DrawSetTextPos(x, y);
+		g_VGuiSurface->DrawPrintText(buf, wcslen(buf));
+	}
+}
+
+void VGSHelper::DrawLogBase(std::string text, float x, float y, Color color, int size)
+{
+	if (!Inited)
+		Init();
+
+	//int size = text.size() + 1;
+	g_VGuiSurface->DrawClearApparentDepth();
+	wchar_t buf[256];
+	g_VGuiSurface->DrawSetTextFont(LogBase[size]);
+	g_VGuiSurface->DrawSetTextColor(color);
+
+	if (MultiByteToWideChar(CP_UTF8, 0, text.c_str(), -1, buf, 256))
+	{
+		g_VGuiSurface->DrawSetTextPos(x, y);
+		g_VGuiSurface->DrawPrintText(buf, wcslen(buf));
+	}
+}
+
 void VGSHelper::DrawLine ( float x1, float y1, float x2, float y2, Color color, float size )
 {
     /*

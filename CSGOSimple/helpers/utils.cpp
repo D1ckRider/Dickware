@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <thread>
 
 #include "../valve_sdk/csgostructs.hpp"
 #include "Math.hpp"
@@ -331,6 +332,11 @@ exit:
 	{
 		static auto LineGoesThroughSmokeFn = (bool(*)(Vector vStartPos, Vector vEndPos))Utils::PatternScan(GetModuleHandleA("client_panorama.dll"), ("55 8B EC 83 EC 08 8B 15 ? ? ? ? 0F 57 C0"));
 		return LineGoesThroughSmokeFn(vecStart, vecEnd);
+	}
+
+	int EpochTime()
+	{
+		return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 	}
 
 }

@@ -96,4 +96,15 @@ namespace Math
     bool WorldToScreen(const Vector& in, Vector& out);
 
 	//float TicksToTime(int tick);
+
+	template<class T, class U>
+	static T Clamp(T in, U low, U high) {
+		if (in <= low)
+			return low;
+
+		if (in >= high)
+			return high;
+
+		return in;
+	}
 }

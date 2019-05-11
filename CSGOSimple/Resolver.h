@@ -69,6 +69,8 @@ enum class DetectionModes : int
     Static,
     Random
 };
+
+
 struct ResolverDetectionData
 {
     std::deque<float> AllLbys;
@@ -151,6 +153,7 @@ struct GlobalResolverDataStruct
     float NextPredictedLbyBreak = 0.f;
 };
 #else
+
 struct GlobalResolverDataStruct
 {
     bool Resolved = false;
@@ -166,6 +169,7 @@ struct GlobalResolverDataStruct
     bool Fake = true;
     bool Moving = false;
     bool InAir = false;
+	bool Desync = false;
     int ShotsAtMode[(int)ResolverModes::MAX];
     int OverallShotsAtMode[(int)ResolverModes::MAX];
     int OverallShots = 0;

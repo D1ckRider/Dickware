@@ -17,6 +17,13 @@
         return (type*)((uintptr_t)this + _##name);                 \
     }
 
+#define NETVARADDOFFS(type, name, table, netvar, offs)                           \
+    type& name##() const {                                          \
+        static int _##name = NetvarSys::Get().GetOffset(table, netvar) + offs;     \
+        return *(type*)((uintptr_t)this + _##name);                 \
+	}
+
+
 #define NETPROP(name, table, netvar) static RecvProp* name() \
 { \
 	static auto prop_ptr = NetvarSys::Get().GetNetvarProp(table,netvar); \
@@ -169,6 +176,13 @@ public:
 	NETVAR(float_t, m_flTonemapRate, "DT_EnvTonemapController", "m_flTonemapRate");
 };
 
+class CPostProcessController : public C_BaseEntity
+{
+public:
+	NETVAR(float_t, m_flSetFilmGrainStrength, "DT_PostProcessController", "m_flSetFilmGrainStrength");
+	NETVAR(float_t, m_flSetScreenBlurStrength, "DT_PostProcessController", "m_flSetScreenBlurStrength");
+};
+
 class C_PlantedC4
 {
 public:
@@ -278,11 +292,11 @@ public:
 	NETVAR(bool, m_bGunGameImmunity, "DT_CSPlayer", "m_bGunGameImmunity");
 	NETVAR(int32_t, m_iShotsFired, "DT_CSPlayer", "m_iShotsFired");
 	NETVAR(QAngle, m_angEyeAngles, "DT_CSPlayer", "m_angEyeAngles[0]");
-	NETVAR(int, m_ArmorValue, "DT_CSPlayer", "m_ArmorValue");
+	NETVAR(int32_t, m_ArmorValue, "DT_CSPlayer", "m_ArmorValue");
 	NETVAR(bool, m_bHasHeavyArmor, "DT_CSPlayer", "m_bHasHeavyArmor");
 	NETVAR(bool, m_bHasHelmet, "DT_CSPlayer", "m_bHasHelmet");
 	NETVAR(bool, m_bIsScoped, "DT_CSPlayer", "m_bIsScoped");;
-	NETVAR(float, m_flLowerBodyYawTarget, "DT_CSPlayer", "m_flLowerBodyYawTarget");
+	NETVAR(float_t, m_flLowerBodyYawTarget, "DT_CSPlayer", "m_flLowerBodyYawTarget");
 	NETVAR(int32_t, m_iHealth, "DT_BasePlayer", "m_iHealth");
 	NETVAR(int32_t, m_lifeState, "DT_BasePlayer", "m_lifeState");
 	NETVAR(int32_t, m_fFlags, "DT_BasePlayer", "m_fFlags");
@@ -292,24 +306,27 @@ public:
 	NETVAR(QAngle, m_aimPunchAngle, "DT_BasePlayer", "m_aimPunchAngle");
 	NETVAR(CHandle<C_BaseViewModel>, m_hViewModel, "DT_BasePlayer", "m_hViewModel[0]");
 	NETVAR(Vector, m_vecVelocity, "DT_BasePlayer", "m_vecVelocity[0]");
-	NETVAR(float, m_flMaxspeed, "DT_BasePlayer", "m_flMaxspeed");
+	NETVAR(float_t, m_flMaxspeed, "DT_BasePlayer", "m_flMaxspeed");
+	NETVAR(float_t, m_flNextAttack, "CBaseCombatCharacter", "m_flNextAttack");
 	NETVAR(CHandle<C_BasePlayer>, m_hObserverTarget, "DT_BasePlayer", "m_hObserverTarget");
-	NETVAR(float, m_flFlashMaxAlpha, "DT_CSPlayer", "m_flFlashMaxAlpha");
+	NETVAR(float_t, m_flFlashMaxAlpha, "DT_CSPlayer", "m_flFlashMaxAlpha");
 	NETVAR(int32_t, m_nHitboxSet, "DT_BaseAnimating", "m_nHitboxSet");
 	NETVAR(CHandle<C_BaseCombatWeapon>, m_hActiveWeapon, "DT_BaseCombatCharacter", "m_hActiveWeapon");
 	NETVAR(int32_t, m_iAccount, "DT_CSPlayer", "m_iAccount");
 	NETVAR(int32_t, m_iObserverMode, "DT_BasePlayer", "m_iObserverMode");
 	NETVAR(float_t, m_flFlashDuration, "DT_CSPlayer", "m_flFlashDuration");
-	NETVAR(float, m_flSimulationTime, "DT_BaseEntity", "m_flSimulationTime");
-	NETVAR(float, m_flCycle, "DT_ServerAnimationData", "m_flCycle");
-	NETVAR(int, m_nSequence, "DT_BaseViewModel", "m_nSequence");
+	NETVAR(float_t, m_flSimulationTime, "DT_BaseEntity", "m_flSimulationTime");
+	NETVAR(float_t, m_flCycle, "DT_ServerAnimationData", "m_flCycle");
+	NETVAR(int32_t, m_nSequence, "DT_BaseViewModel", "m_nSequence");
 	PNETVAR(char, m_szLastPlaceName, "DT_BasePlayer", "m_szLastPlaceName");
 	NETPROP(m_flLowerBodyYawTargetProp, "DT_CSPlayer", "m_flLowerBodyYawTarget");
 	NETVAR(bool, m_bClientSideAnimation, "DT_BaseAnimating", "m_bClientSideAnimation");
 	NETVAR(Vector, m_ragPos, "DT_Ragdoll", "m_ragPos");
+	NETVARADDOFFS(float_t, m_flOldSimulationTime, "CBaseEntity", "m_flSimulationTime", 0x4);
 	NETVAR(bool, m_bFreezePeriod, "DT_CSGameRulesProxy", "m_bFreezePeriod");
 	//NETVAR(float, m_flSurvivalStartTime, "DT_CSGameRulesProxy", "m_flSurvivalStartTime");
-	NETVAR(int, m_nSurvivalTeam, "DT_CSPlayer", "m_nSurvivalTeam");
+	NETVAR(int32_t, m_nSurvivalTeam, "DT_CSPlayer", "m_nSurvivalTeam");
+	NETVAR(float_t, m_flHealthShotBoostExpirationTime, "DT_CSPlayer", "m_flHealthShotBoostExpirationTime");
 	//m_nSurvivalTeam
 
 	VarMapping_t* VarMapping();
@@ -390,6 +407,9 @@ public:
 	static void UpdateAnimationState(CCSGOPlayerAnimState* state, QAngle angle);
 	static void ResetAnimationState(CCSGOPlayerAnimState* state);
 	void CreateAnimationState(CCSGOPlayerAnimState* state);
+	void CreateAnimationState(CBasePlayerAnimState* state);
+	static void UpdateAnimationState(CBasePlayerAnimState* state, QAngle angle);
+	static void ResetAnimationState(CBasePlayerAnimState* state);
 
 	float_t& m_surfaceFriction()
 	{
@@ -402,11 +422,25 @@ public:
 		return *(Vector*)((uintptr_t)this + _m_vecBaseVelocity);
 	}
 
+	Vector& m_vecAbsVelocity()
+	{
+		static unsigned int _m_vecAbsVelocity = Utils::FindInDataMap(GetPredDescMap(), "m_vecAbsVelocity");
+		return *(Vector*)((uintptr_t)this + _m_vecAbsVelocity);
+	}
+
 	float_t& m_flMaxspeed()
 	{
 		static unsigned int _m_flMaxspeed = Utils::FindInDataMap(GetPredDescMap(), "m_flMaxspeed");
 		return *(float_t*)((uintptr_t)this + _m_flMaxspeed);
 	}
+
+	uint32_t& m_iEFlags()
+	{
+		static unsigned int _m_iEFlags = Utils::FindInDataMap(GetPredDescMap(), "m_iEFlags");
+		return *(uint32_t*)((uintptr_t)this + _m_iEFlags);
+	}
+
+	bool SetupBones2(matrix3x4_t* pBoneToWorldOut, int nMaxBones, int boneMask, float currentTime);
 
 	/*QAngle &m_angAbsRotation()
 	{

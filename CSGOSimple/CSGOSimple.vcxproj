@@ -113,7 +113,9 @@
     <ClCompile Include="EventHelper.cpp" />
     <ClCompile Include="Fakelag.cpp" />
     <ClCompile Include="features\bhop.cpp" />
+    <ClCompile Include="features\EventLogger.cpp" />
     <ClCompile Include="features\GrenadeTrajectory.cpp" />
+    <ClCompile Include="features\LagCompensation.cpp" />
     <ClCompile Include="features\MaterialManager.cpp" />
     <ClCompile Include="features\glow.cpp" />
     <ClCompile Include="features\NightMode.cpp" />
@@ -184,7 +186,9 @@
     <ClInclude Include="EventHelper.h" />
     <ClInclude Include="Fakelag.h" />
     <ClInclude Include="features\bhop.hpp" />
+    <ClInclude Include="features\EventLogger.h" />
     <ClInclude Include="features\GrenadeTrajectory.h" />
+    <ClInclude Include="features\LagCompensation.h" />
     <ClInclude Include="features\MaterialManager.hpp" />
     <ClInclude Include="features\glow.hpp" />
     <ClInclude Include="features\NightMode.h" />

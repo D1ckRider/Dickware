@@ -31,6 +31,15 @@ void EventHelper::listener::Start()
 		throw std::exception("Failed to register the event");
 	if (!g_GameEvents->AddListener(this, "player_jump", false))
 		throw std::exception("Failed to register the event");
+
+	if (!g_GameEvents->AddListener(this, "bomb_beginplant", false))
+		throw std::exception("Failed to register the event");
+	if (!g_GameEvents->AddListener(this, "bomb_begindefuse", false))
+		throw std::exception("Failed to register the event");
+	if (!g_GameEvents->AddListener(this, "round_prestart", false))
+		throw std::exception("Failed to register the event");
+	if (!g_GameEvents->AddListener(this, "round_freeze_end", false))
+		throw std::exception("Failed to register the event");
 }
 
 void EventHelper::listener::Stop()

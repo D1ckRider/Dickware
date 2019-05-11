@@ -17,7 +17,7 @@ using WeaponType = Settings::WeaponType;
 using HitboxType = Settings::HitboxType;
 using AntiAimState = Settings::RageBot::AntiAimType;
 
-const std::string Version = "190308.01b";
+const std::string Version = "190505.01b";
 std::string CurrentConfig = "None";
 
 ImFont* IconsFont;
@@ -99,6 +99,7 @@ void Menu::RenderRagebot()
 	static const char* YawAAs[] = { "none", "backwards", "spinbot", "lower body yaw", "random", "freestanding", "custom" };
 	static const char* YawAddAAs[] = { "none", "jitter", "switch", "spin", "random" };
 	static const char* PitchAAs[] = { "none", "emotion", "down", "up", "zero", "jitter", "down jitter", "up jitter", "zero jitter", "spin", "up spin", "down spin", "random", "switch", "down switch", "up switch", "fake up", "fake down", "custom" };
+	static const char* DesyncAA[] = { "none", "legacy", "static", "balance", "stretch", "jitter" };
 	static char* AntiAimMenus[] = { "stand", "move", "air", "misc" };
 	static const char* FakelagModes[] = { "normal", "adaptive" };
 	static int AAMenuSelected = 0;
@@ -131,6 +132,9 @@ void Menu::RenderRagebot()
 		Components.Checkbox("Auto Stop", Settings::RageBot::AutoStop);
 		Components.Checkbox("Auto Crouch", Settings::RageBot::AutoCrouch);
 
+		Components.Checkbox("Aim Step", Settings::RageBot::AimStepEnabled);
+		Components.SliderInt("Aim Step Value", Settings::RageBot::AimStepValue, 0, 20);
+
 		//Components.Checkbox("Lby prediction", "rbot_lby_prediction");
 #ifdef _DEBUG
 	//Components.Checkbox("Fakelag prediction", "rbot_flag_prediction");
@@ -139,12 +143,15 @@ void Menu::RenderRagebot()
 
 		Components.ComboBox("Shooting Mode", ShootingModes, IM_ARRAYSIZE(ShootingModes), Settings::RageBot::ShootingMode);
 #ifdef _DEBUG
-		//Components.Checkbox("Lagcompensation", "rbot_lagcompensation");
-		//Components.Checkbox("Lag compensation",  Settings::RageBot::);
+		//Components.Checkbox("Lag compensation",  Settings::RageBot::LagComp);
+		Components.Checkbox("Resolver", Settings::RageBot::Resolver);
 #endif // _DEBUG
+
+		Components.Checkbox("Lag compensation", Settings::RageBot::LagComp);
 		Components.Checkbox("Force unlag", Settings::RageBot::ForceUnlag);
 
-		Components.Checkbox("Resolver", Settings::RageBot::Resolver);
+		
+
 		Components.NextColumn();
 
 		Components.Checkbox("Enable AA", Settings::RageBot::EnabledAA);
@@ -204,8 +211,9 @@ void Menu::RenderRagebot()
 
 			Components.SliderFloat("Spinbot speed", Settings::RageBot::SpinBotSpeed, -20.f, 20.f);
 			Components.Checkbox("SlideWalk", Settings::RageBot::SlideWalk);
-			Components.Checkbox("Desync", Settings::RageBot::Desync);
-			Components.Hotkey("Desync Hotkey", Settings::RageBot::DesyncFlipHotkey, (int)HotkeyType::Tap);
+			//Components.Checkbox("Desync", Settings::RageBot::Desync);
+			Components.ComboBox("Desync AntiAim", DesyncAA, IM_ARRAYSIZE(DesyncAA), Settings::RageBot::DesyncType);
+			//Components.Hotkey("Desync Hotkey", Settings::RageBot::DesyncFlipHotkey, (int)HotkeyType::Tap);
 
 			//Components.Checkbox("Lby breaker", "rbot_aa_lby_breaker");
 			//Components.Checkbox("Fake lby break", "rbot_aa_fake_lby_breaker");
@@ -711,6 +719,10 @@ void Menu::RenderVisuals()
 			Components.ColorCheckbox("Weapon", Settings::Visual::EnemyESP.WeaponEnabled, Settings::Visual::EnemyESP.WeaponColor);
 			Components.ColorCheckbox("Snapline", Settings::Visual::EnemyESP.SnaplineEnabled, Settings::Visual::EnemyESP.SnaplineColor);
 			Components.ColorCheckbox("Offscreen ESP", Settings::Visual::OffscreenESPEnabled, Settings::Visual::OffscreenESPColor);
+#ifdef _DEBUG
+			Components.Checkbox("Debug overlay info", Settings::Visual::DebugInfoEnabled);
+#endif // _DEBUG
+
 			break;
         }
 
@@ -771,6 +783,8 @@ void Menu::RenderVisuals()
 			Components.Checkbox("No Smoke",  Settings::Visual::NoSmoke);
 			Components.Checkbox("Disable Post-processing", Settings::Visual::DisablePP);
 			Components.Checkbox("Night Mode", Settings::Visual::NightMode);
+			if(Settings::Visual::NightMode)
+				Components.SliderFloat("Brightness", Settings::Visual::NightModeBrighthness, 0.075f, 0.1f);
 			Components.ColorCheckbox("Nade Trajectory", Settings::Visual::NadeTracerEnabled, Settings::Visual::NadeTracerColor);
 			Components.ColorCheckbox("Spread Circle", Settings::Visual::SpreadCircleEnabled, Settings::Visual::SpreadCircleColor);
 			Components.ColorCheckbox("Damage Indicators", Settings::Visual::DamageIndicator, Settings::Visual::DamageIndicatorColor);
@@ -819,6 +833,7 @@ void Menu::RenderMisc()
     //Components.Checkbox("No hands", "misc_no_hands");
 
 	Components.Checkbox("Watermark", Settings::Misc::WatermarkEnabled);
+	Components.Checkbox("Event Log", Settings::Misc::EventLogEnabled);
 
 	Components.Checkbox("BHop",  Settings::Misc::BHop);
 	Components.Checkbox("Autostrafe",  Settings::Misc::AutoStrafe);
@@ -831,6 +846,7 @@ void Menu::RenderMisc()
 
 	Components.Checkbox("Rank reveal",  Settings::Misc::RankReveal);
 	Components.Checkbox("No crouch cooldown",  Settings::Misc::NoCrouchCooldown);
+	Components.Checkbox("No Visual Recoil", Settings::Misc::NoVisualRecoil);
 	Components.Checkbox("AutoAccept", Settings::Misc::AutoAccept);
 
 	//Components.Checkbox("Clantag changer",  Settings::Misc::Clantag);
