@@ -371,7 +371,8 @@ namespace Hooks
 		if ( rbot && Settings::RageBot::Resolver )
             Resolver::Get().OnCreateMove ( OldViewangles );
 
-        //if ( g_Config.GetBool ( "misc_buybot" ) )
+		//NResolver::Get().CreateMove();
+
 		if ( Settings::Misc::BuyBot )
             BuyBot::Get().OnCreateMove();
 
@@ -506,6 +507,7 @@ namespace Hooks
         static auto ofunc = hlclient_hook.get_original<FrameStageNotify> ( index::FrameStageNotify );
 
 		Skinchanger::Get().OnFrameStageNotify(stage);
+		//NResolver::Get().FrameStage(stage);
 
         //if (g_ClientState->m_nDeltaTick != -1) return  ofunc(g_CHLClient, stage);
         if ( !g_EngineClient->IsConnected() || !g_EngineClient->IsInGame() )
@@ -540,8 +542,8 @@ namespace Hooks
 
 				bool rbot = Settings::RageBot::Enabled;
 
-				if ( rbot && Settings::RageBot::Resolver )
-                    Resolver::Get().OnFramestageNotify();
+				//if ( rbot && Settings::RageBot::Resolver )
+                //    Resolver::Get().OnFramestageNotify();
 
                 NoSmoke::Get().OnFrameStageNotify();
 

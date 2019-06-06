@@ -510,8 +510,7 @@ public:
 class CBasePlayerAnimState
 {
 public:
-	char pad[4];
-	char bUnknown; //0x4
+	void* pThis;
 	char pad2[91];
 	void* pBaseEntity; //0x60
 	void* pActiveWeapon; //0x64
@@ -533,8 +532,8 @@ public:
 	float m_fDuckAmount; //0xA4
 	float m_fLandingDuckAdditiveSomething; //0xA8
 	float m_fUnknown3; //0xAC
-	vec_t m_vOrigin; //0xB0, 0xB4, 0xB8
-	vec_t m_vLastOrigin; //0xBC, 0xC0, 0xC4
+	Vector m_vOrigin; //0xB0, 0xB4, 0xB8
+	Vector m_vLastOrigin; //0xBC, 0xC0, 0xC4
 	float m_vVelocityX; //0xC8
 	float m_vVelocityY; //0xCC
 	char pad5[4];
@@ -551,7 +550,7 @@ public:
 	float m_flTimeSinceStartedMoving; //0x100
 	float m_flTimeSinceStoppedMoving; //0x104
 	unsigned char m_bOnGround; //0x108
-	int8_t m_bInHitGroundAnimation; //0x109
+	unsigned char m_bInHitGroundAnimation; //0x109
 	char pad7[10];
 	float m_flLastOriginZ; //0x114
 	float m_flHeadHeightOrOffsetFromHittingGroundAnimation; //0x118 from 0 to 1, is 1 when standing

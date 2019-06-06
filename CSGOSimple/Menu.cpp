@@ -95,11 +95,16 @@ void Menu::RenderRagebot()
 	const char* BaimModes[] = { "never", "auto" };
 	const char* ShootingModes[] = { "normal", "in fakelag", "fakelag while shooting" };
 
-
+	static const char* PitchAAs[] = { "none", "emotion", "down", "up", "zero", "jitter", "down jitter", "up jitter", "zero jitter", "spin", "up spin", "down spin", "random", "switch", "down switch", "up switch", "fake up", "fake down", "custom" };
 	static const char* YawAAs[] = { "none", "backwards", "spinbot", "lower body yaw", "random", "freestanding", "custom" };
 	static const char* YawAddAAs[] = { "none", "jitter", "switch", "spin", "random" };
-	static const char* PitchAAs[] = { "none", "emotion", "down", "up", "zero", "jitter", "down jitter", "up jitter", "zero jitter", "spin", "up spin", "down spin", "random", "switch", "down switch", "up switch", "fake up", "fake down", "custom" };
-	static const char* DesyncAA[] = { "none", "legacy", "static", "balance", "stretch", "jitter" };
+#ifdef DEBUG
+	static const char* DesyncAA[] = { "none", "static", "balance", "stretch", "jitter" };
+#else
+	static const char* DesyncAA[] = { "none", "static", "balance" };
+#endif // DEBUG
+
+	
 	static char* AntiAimMenus[] = { "stand", "move", "air", "misc" };
 	static const char* FakelagModes[] = { "normal", "adaptive" };
 	static int AAMenuSelected = 0;
@@ -145,13 +150,11 @@ void Menu::RenderRagebot()
 #ifdef _DEBUG
 		//Components.Checkbox("Lag compensation",  Settings::RageBot::LagComp);
 		Components.Checkbox("Resolver", Settings::RageBot::Resolver);
+		Components.Checkbox("Lag compensation", Settings::RageBot::LagComp);
+		Components.Checkbox("Backtrack", Settings::RageBot::Backtrack);
 #endif // _DEBUG
 
-		Components.Checkbox("Lag compensation", Settings::RageBot::LagComp);
 		Components.Checkbox("Force unlag", Settings::RageBot::ForceUnlag);
-
-		
-
 		Components.NextColumn();
 
 		Components.Checkbox("Enable AA", Settings::RageBot::EnabledAA);
@@ -161,15 +164,9 @@ void Menu::RenderRagebot()
 		switch ( (RbotAntiAimAvailable)AAMenuSelected )
 		{
 		case RbotAntiAimAvailable::STANDING:
-			//if(g_Config.GetInt())
-			//Components.SliderFloat("real add angel", "", -180.f, 180.f);
-			//Components.ComboBox("fake yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), "rbot_aa_stand_fake_yaw");
-
 			Components.ComboBox("Pitch AA", PitchAAs, IM_ARRAYSIZE(PitchAAs), Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].Pitch);
 			Components.ComboBox("Yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].Yaw);
 
-			//Components.ComboBox("fake add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), "rbot_aa_stand_fake_add_yaw_add");
-			//Components.SliderFloat("range ", "rbot_aa_stand_fake_add_yaw_add_range", 0.f, 360.f);
 			Components.ComboBox("Yaw Add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].YawAdd);
 			Components.SliderFloat("Range", Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].Range, 0.f, 360.f);
 
@@ -177,12 +174,8 @@ void Menu::RenderRagebot()
 			Components.SliderInt("Fakelag Ticks", Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].FakelagTicks, 0, 14);
 			break;
 		case RbotAntiAimAvailable::MOVING:
-			//Components.ComboBox("fake yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), "rbot_aa_move_fake_yaw");
 			Components.ComboBox("Pitch AA", PitchAAs, IM_ARRAYSIZE(PitchAAs), Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].Pitch);
 			Components.ComboBox("Yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].Yaw);
-
-			//Components.ComboBox("fake add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), "rbot_aa_move_fake_add_yaw_add");
-			//Components.SliderFloat("range ", "rbot_aa_move_fake_add_yaw_add_range", 0.f, 360.f);
 
 			Components.ComboBox("Yaw Add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].YawAdd);
 			Components.SliderFloat("Range", Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].Range, 0.f, 360.f);
@@ -193,7 +186,6 @@ void Menu::RenderRagebot()
 			break;
 
 		case RbotAntiAimAvailable::AIR:
-			//Components.ComboBox("fake yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), "rbot_aa_air_fake_yaw");
 			Components.ComboBox("Pitch AA", PitchAAs, IM_ARRAYSIZE(PitchAAs), Settings::RageBot::AntiAimSettings[AntiAimState::AIR].Pitch);
 			Components.ComboBox("Yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), Settings::RageBot::AntiAimSettings[AntiAimState::AIR].Yaw);
 
@@ -203,18 +195,16 @@ void Menu::RenderRagebot()
 			Components.Spacing();
 			Components.ComboBox("Fakelag mode", FakelagModes, IM_ARRAYSIZE(FakelagModes), Settings::RageBot::AntiAimSettings[AntiAimState::AIR].FakelagMode);
 			Components.SliderInt("Fakelag Ticks", Settings::RageBot::AntiAimSettings[AntiAimState::AIR].FakelagTicks, 0, 14);
-			//Components.ComboBox("fake add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), "rbot_aa_air_fake_add_yaw_add");
-			//Components.SliderFloat("range ", "rbot_aa_air_fake_add_yaw_add_range", 0.f, 360.f);
 			break;
 
 		case RbotAntiAimAvailable::MISC:
 
 			Components.SliderFloat("Spinbot speed", Settings::RageBot::SpinBotSpeed, -20.f, 20.f);
 			Components.Checkbox("SlideWalk", Settings::RageBot::SlideWalk);
-			//Components.Checkbox("Desync", Settings::RageBot::Desync);
 			Components.ComboBox("Desync AntiAim", DesyncAA, IM_ARRAYSIZE(DesyncAA), Settings::RageBot::DesyncType);
-			//Components.Hotkey("Desync Hotkey", Settings::RageBot::DesyncFlipHotkey, (int)HotkeyType::Tap);
-
+#ifdef _DEBUG
+			Components.Hotkey("Desync Hotkey", Settings::RageBot::DesyncFlipHotkey, (int)HotkeyType::Tap);
+#endif
 			//Components.Checkbox("Lby breaker", "rbot_aa_lby_breaker");
 			//Components.Checkbox("Fake lby break", "rbot_aa_fake_lby_breaker");
 			//Components.Checkbox("Lby breaker auto", "rbot_aa_lby_breaker_freestanding");
@@ -229,9 +219,10 @@ void Menu::RenderRagebot()
 			}
 			*/
 			Components.Spacing();
-			Components.Hotkey("Manual AA Right", Settings::RageBot::ManualAARightKey, (int)HotkeyType::Tap);
-			Components.Hotkey("Manual AA Left", Settings::RageBot::ManualAALeftKey, (int)HotkeyType::Tap);
-			Components.Hotkey("Manual AA Back", Settings::RageBot::ManualAABackKey, (int)HotkeyType::Tap);
+			Components.Label("Manual AA Binds: ");
+			Components.Hotkey("Right", Settings::RageBot::ManualAARightKey, (int)HotkeyType::Tap);
+			Components.Hotkey("Left", Settings::RageBot::ManualAALeftKey, (int)HotkeyType::Tap);
+			Components.Hotkey("Back", Settings::RageBot::ManualAABackKey, (int)HotkeyType::Tap);
 			
 
 			break;
@@ -668,6 +659,7 @@ void Menu::RenderVisuals()
     Components.Navbar ( VisualsCategories, IM_ARRAYSIZE ( VisualsCategories ), SelectedMenu );
 
     static const char* ChamsTypes[] = { "normal", "flat", "wireframe", "glass", "metallic",  "xqz", "metallic xqz", "flat xqz" };
+	static const char* GlowTypes[] = { "outline outer", "cover", "outline inner" };
     static const char* BoxTypes[] = { "normal", "edge" };
 
 	static const char* RadarTypes[] = { "none", "in-game", "external" };
@@ -703,9 +695,10 @@ void Menu::RenderVisuals()
             //Components.ColorCheckbox ( "Lby timer", "esp_enemy_lby_timer", "color_esp_enemy_lby_timer" );
 			Components.Label("Chams");
 			Components.ColorCheckbox2("Enable", Settings::Visual::EnemyChams.Enabled, Settings::Visual::EnemyChams.Visible, Settings::Visual::EnemyChams.Invisible);
-			Components.ComboBox("Chams Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), Settings::Visual::EnemyChams.Mode);
+			Components.ComboBox("Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), Settings::Visual::EnemyChams.Mode);
 			Components.Label("Glow");
-			Components.ColorCheckbox("Glow Enabled", Settings::Visual::EnemyGlow.Enabled, Settings::Visual::EnemyGlow.Visible);
+			Components.ColorCheckbox("Enabled ", Settings::Visual::EnemyGlow.Enabled, Settings::Visual::EnemyGlow.Visible);
+			Components.ComboBox("Type ", GlowTypes, IM_ARRAYSIZE(GlowTypes), Settings::Visual::EnemyGlow.Type);
 			Components.NextColumn();
 
 			Components.Label("ESP");
@@ -731,9 +724,10 @@ void Menu::RenderVisuals()
 			Components.Columns(3, false);
 			Components.Label("Chams");
 			Components.ColorCheckbox2("Enable", Settings::Visual::TeamChams.Enabled, Settings::Visual::TeamChams.Visible, Settings::Visual::TeamChams.Invisible);
-			Components.ComboBox("Chams Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), Settings::Visual::TeamChams.Mode);
+			Components.ComboBox("Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), Settings::Visual::TeamChams.Mode);
 			Components.Label("Glow");
-			Components.ColorCheckbox("Glow Enabled", Settings::Visual::TeamGlow.Enabled, Settings::Visual::TeamGlow.Visible);
+			Components.ColorCheckbox("Enabled ", Settings::Visual::TeamGlow.Enabled, Settings::Visual::TeamGlow.Visible);
+			Components.ComboBox("Type ", GlowTypes, IM_ARRAYSIZE(GlowTypes), Settings::Visual::TeamGlow.Type);
 			Components.NextColumn();
 
 			Components.Label("ESP");
@@ -797,10 +791,9 @@ void Menu::RenderVisuals()
             Components.ComboBox ( "Hitmarker sound", hitmarkersounds, IM_ARRAYSIZE ( hitmarkersounds ), "vis_misc_hitmarker_sound" );*/
             //Components.SliderInt("Asuswalls", "vis_misc_asuswalls_percent", 0, 100);
             //Components.Checkbox("Autowall crosshair", "vis_misc_autowall_crosshair");
-            #ifdef _DEBUG
+#ifdef _DEBUG
 			Components.SliderInt("Ragdoll Force", Settings::Visual::RagdollForce, 0, 10);
-            //Components.SliderInt ( "Ragdoll force", "misc_add_force", 0, 10 );
-            #endif // _DEBUG
+#endif // _DEBUG
 
             break;
         }
@@ -809,8 +802,6 @@ void Menu::RenderVisuals()
         {
             Components.Columns ( 3, false );
             static const char* ItemPositions[] = { "top", "right", "bottom", "left" };
-            //Components.ComboBox("Name pos", ItemPositions, IM_ARRAYSIZE(ItemPositions), "esp_name_pos");
-            //Components.ComboBox("Weapon name pos", ItemPositions, IM_ARRAYSIZE(ItemPositions), "esp_weapons_pos");
 			Components.ComboBox("Health Position", ItemPositions, IM_ARRAYSIZE(ItemPositions), Settings::Visual::HealthPos);
 			Components.ComboBox("Armor Position", ItemPositions, IM_ARRAYSIZE(ItemPositions), Settings::Visual::ArmorPos);
             //Components.Checkbox("Esp outline", "esp_misc_outline");
@@ -849,7 +840,6 @@ void Menu::RenderMisc()
 	Components.Checkbox("No Visual Recoil", Settings::Misc::NoVisualRecoil);
 	Components.Checkbox("AutoAccept", Settings::Misc::AutoAccept);
 
-	//Components.Checkbox("Clantag changer",  Settings::Misc::Clantag);
 	static const char* Clantags[]{ "None", "Static", "Dynamic", "Custom Static", "Custom Slide"};
 	static char str0[128] = "";
 	Components.ComboBox("Clantag Changer", Clantags, IM_ARRAYSIZE(Clantags), Settings::Misc::ClantagType);
@@ -891,9 +881,9 @@ void Menu::RenderMisc()
 	}
 
 	Components.NextColumn();
-
-	Components.Checkbox("Radio Enabled", Settings::Misc::RadioEnabled);
 	// Radio feature
+	Components.Checkbox("Radio Enabled", Settings::Misc::RadioEnabled);
+	
 	static RadioPlayer player;
 	static bool radioInit = false;
 	
@@ -944,10 +934,6 @@ void Menu::RenderMisc()
 		if (radioInit)
 			player.PausePlayer();
 	}
-	
-    #ifdef _DEBUG
-    //Components.Checkbox ( "misc_debug_overlay", "misc_debug_overlay" );
-    #endif // _DEBUG
 
     Components.EndChild();
 }

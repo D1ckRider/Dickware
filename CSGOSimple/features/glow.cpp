@@ -76,6 +76,7 @@ void Glow::Run()
             case ClassId::CCSPlayer:
             {
                 auto is_enemy = entity->IsEnemy();
+				bool glow_enabled = Settings::Visual::TeamGlow.Enabled || Settings::Visual::EnemyGlow.Enabled;
 
                 /*if(entity->HasC4() && is_enemy && g_Config.GetBool("glow_c4_carrier"))
                 {
@@ -84,7 +85,7 @@ void Glow::Run()
                 }*/
 
                 //if(!g_Config.GetBool("glow_players") || !entity->IsAlive())
-				if(!Settings::Visual::TeamGlow.Enabled || !Settings::Visual::EnemyGlow.Enabled || !entity->IsAlive())
+				if(!glow_enabled || !entity->IsAlive())
                     continue;
 
                 //if(!is_enemy && g_Config.GetBool("glow_enemies_only"))
@@ -92,7 +93,8 @@ void Glow::Run()
                     continue;
 
                 color = is_enemy ? Settings::Visual::EnemyGlow.Visible : Settings::Visual::TeamGlow.Visible;
-
+				
+				glowObject.m_nGlowStyle = is_enemy ? Settings::Visual::EnemyGlow.Type : Settings::Visual::TeamGlow.Type;
                 break;
             }
             case ClassId::CChicken:
@@ -136,5 +138,6 @@ void Glow::Run()
         glowObject.m_flAlpha = color.a() / 255.0f;
         glowObject.m_bRenderWhenOccluded = true;
         glowObject.m_bRenderWhenUnoccluded = false;
+		
     }
 }

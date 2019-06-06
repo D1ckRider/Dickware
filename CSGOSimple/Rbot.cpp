@@ -759,7 +759,7 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
 		bool LagComp_Hitchanced = false;
 
 #ifdef _DEBUG
-        if ( !Settings::RageBot::LagComp )
+        if ( !Settings::RageBot::Backtrack )
         {
             if ( !GetBestHitboxPoint ( entity, CDamage, CHitpos, baim, WillKillEntity ) )
                 continue;

@@ -750,12 +750,12 @@ void Resolver::OnFramestageNotify()
                 {
                     case 0:
                         //entity->m_angEyeAngles().yaw = Yaw + 58.f;
-						entity->GetBasePlayerAnimState()->m_flGoalFeetYaw = Yaw + entity->GetMaxDesyncAngle();
+						entity->GetBasePlayerAnimState()->m_flGoalFeetYaw +=  entity->GetMaxDesyncAngle();
                         break;
 
                     case 1:
                         //entity->m_angEyeAngles().yaw = Yaw - 58.f;
-						entity->GetBasePlayerAnimState()->m_flGoalFeetYaw = Yaw - entity->GetMaxDesyncAngle();
+						entity->GetBasePlayerAnimState()->m_flGoalFeetYaw -= entity->GetMaxDesyncAngle();
                         break;
 
                     /*case 2:

@@ -138,6 +138,7 @@ void Settings::SaveRageBot(json& j)
 	SaveValue(j, "rbot_force_unlag", RageBot::ForceUnlag);
 	SaveValue(j, "rbot_resolver", RageBot::Resolver);
 	SaveValue(j, "rbot_lagcomp", RageBot::LagComp);
+	SaveValue(j, "rbot_backtrack", RageBot::Backtrack);
 
 	SaveValue(j, "rbot_aimstep_enabled", RageBot::AimStepEnabled);
 	SaveValue(j, "rbot_aimstep_value", RageBot::AimStepValue);
@@ -199,9 +200,11 @@ void Settings::SaveVisual(json& j)
 	SaveValue(j, "vis_glow_enemy_enabled", Visual::EnemyGlow.Enabled);
 	SaveColorValue(j, "vis_glow_enemy_visible", Visual::EnemyGlow.Visible);
 	SaveColorValue(j, "vis_glow_enemy_invisible", Visual::EnemyGlow.Invisible);
+	SaveValue(j, "vis_glow_enemy_type", Visual::EnemyGlow.Type);
 	SaveValue(j, "vis_glow_team_enabled", Visual::TeamGlow.Enabled);
 	SaveColorValue(j, "vis_glow_team_visible", Visual::TeamGlow.Visible);
 	SaveColorValue(j, "vis_glow_team_invisible", Visual::TeamGlow.Invisible);
+	SaveValue(j, "vis_glow_team_type", Visual::TeamGlow.Type);
 	// Player ESP
 	SaveValue(j, "vis_esp_local_enabled", Visual::LocalESP.Enabled);
 	SaveValue(j, "vis_esp_local_box_enabled", Visual::LocalESP.BoxEnabled);
@@ -383,6 +386,7 @@ void Settings::LoadRageBot(json& j)
 	LoadValue(j, "rbot_force_unlag", RageBot::ForceUnlag);
 	LoadValue(j, "rbot_resolver", RageBot::Resolver);
 	LoadValue(j, "rbot_lagcomp", RageBot::LagComp);
+	LoadValue(j, "rbot_backtrack", RageBot::Backtrack);
 
 	LoadValue(j, "rbot_aimstep_enabled", RageBot::AimStepEnabled);
 	LoadValue(j, "rbot_aimstep_value", RageBot::AimStepValue);
@@ -444,9 +448,11 @@ void Settings::LoadVisual(json& j)
 	LoadValue(j, "vis_glow_enemy_enabled", Visual::EnemyGlow.Enabled);
 	LoadColorValue(j, "vis_glow_enemy_visible", Visual::EnemyGlow.Visible);
 	LoadColorValue(j, "vis_glow_enemy_invisible", Visual::EnemyGlow.Invisible);
+	LoadValue(j, "vis_glow_enemy_type", Visual::EnemyGlow.Type);
 	LoadValue(j, "vis_glow_team_enabled", Visual::TeamGlow.Enabled);
 	LoadColorValue(j, "vis_glow_team_visible", Visual::TeamGlow.Visible);
 	LoadColorValue(j, "vis_glow_team_invisible", Visual::TeamGlow.Invisible);
+	LoadValue(j, "vis_glow_team_type", Visual::TeamGlow.Type);
 	// Player ESP
 	LoadValue(j, "vis_esp_local_enabled", Visual::LocalESP.Enabled);
 	LoadValue(j, "vis_esp_local_box_enabled", Visual::LocalESP.BoxEnabled);
@@ -664,6 +670,7 @@ void Settings::ResetRagebot()
 	RageBot::ForceUnlag = false;
 	RageBot::Resolver = false;
 	RageBot::LagComp = false;
+	RageBot::Backtrack = false;
 
 	RageBot::AimStepEnabled = false;
 	RageBot::AimStepValue = 0;
@@ -800,6 +807,10 @@ void Settings::ResetVisuals()
 	Visual::TeamESP.WeaponColor = Color::White;
 	Visual::TeamESP.SnaplineEnabled = false;
 	Visual::TeamESP.SnaplineColor = Color::White;
+	Visual::TeamGlow.Enabled = false;
+	Visual::TeamGlow.Visible = Color::Black;
+	Visual::TeamGlow.Invisible = Color::Black;
+	Visual::TeamGlow.Type = 0;
 
 	Visual::EnemyChams.Enabled = false;
 	Visual::EnemyChams.Mode = 0;
@@ -820,6 +831,11 @@ void Settings::ResetVisuals()
 	Visual::EnemyESP.SnaplineColor = Color::White;
 	Visual::OffscreenESPEnabled = false;
 	Visual::OffscreenESPColor = Color::Red;
+	Visual::EnemyGlow.Enabled = false;
+	Visual::EnemyGlow.Visible = Color::Black;
+	Visual::EnemyGlow.Invisible = Color::Black;
+	Visual::EnemyGlow.Type = 0;
+
 
 	Visual::GlobalESP.Enabled = false;
 	Visual::GlobalESP.GrenadeEnabled = false;
@@ -953,6 +969,7 @@ namespace Settings::RageBot
 	bool ForceUnlag = false;
 	bool LagComp = false;
 	bool Resolver = false;
+	bool Backtrack = false;
 
 	bool AimStepEnabled = false;
 	int AimStepValue = 0;

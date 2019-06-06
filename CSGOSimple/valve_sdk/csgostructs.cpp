@@ -215,7 +215,7 @@ bool* C_BaseCombatWeapon::m_bCustomMaterialInitialized()
 
 float C_BasePlayer::GetMaxDesyncAngle()
 {
-	auto animstate = this->GetBasePlayerAnimState();
+	/*auto animstate = this->GetBasePlayerAnimState();
 	float speedfactor = std::clamp(animstate->m_flFeetSpeedForwardsOrSideWays, 0.f, 1.f);
 	float unk1 = ((animstate->m_flStopToFullRunningFraction * -.3f) - .2f) * speedfactor;
 	float unk2 = unk1 + 1.f;
@@ -227,7 +227,25 @@ float C_BasePlayer::GetMaxDesyncAngle()
 		unk2 += (duck_speed * (0.5f - unk2));
 	}
 
-	return *(float*)((uintptr_t)animstate + 0x334) * unk2;
+	return *(float*)((uintptr_t)animstate + 0x334) * unk2;*/
+
+	if (!this)
+		return 0.f;
+
+	auto anim_state = this->GetBasePlayerAnimState();
+	if (!anim_state)
+		return 0.f;
+
+	float duck_amount = anim_state->m_fDuckAmount;
+	float speed_fraction = Math::Maximum<float>(0, Math::Minimum<float>(anim_state->m_flFeetSpeedForwardsOrSideWays, 1));
+	float speed_factor = Math::Maximum<float>(0, Math::Minimum<float>(1, anim_state->m_flFeetSpeedUnknownForwardOrSideways));
+
+	float yaw_modifier = (((anim_state->m_flStopToFullRunningFraction * -0.3f) - 0.2f) * speed_fraction) + 1.0f;
+
+	if (duck_amount > 0.f)
+		yaw_modifier += ((duck_amount * speed_factor) * (0.5f - yaw_modifier));
+
+	return *(float*)((uintptr_t)anim_state + 0x334) * yaw_modifier;
 }
 
 CUserCmd*& C_BasePlayer::m_pCurrentCommand()
@@ -261,9 +279,7 @@ int C_BasePlayer::GetSequenceActivity(int sequence)
 	auto hdr = g_MdlInfo->GetStudiomodel(this->GetModel());
 
 	if (!hdr)
-	{
 		return -1;
-	}
 
 	// sig for stuidohdr_t version: 53 56 8B F1 8B DA 85 F6 74 55
 	// sig for C_BaseAnimating version: 55 8B EC 83 7D 08 FF 56 8B F1 74 3D

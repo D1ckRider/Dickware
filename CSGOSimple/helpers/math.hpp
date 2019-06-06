@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../valve_sdk/sdk.hpp"
-
+#include <intrin.h>
 #include <DirectXMath.h>
 
 #define RAD2DEG(x) DirectX::XMConvertToDegrees(x)
@@ -23,6 +23,13 @@ namespace Math
 		// approximation of square root
 		i >>= 1;
 		return *(float*)&i;
+	}
+
+	//--------------------------------------------------------------------------------
+	void FixAngles(QAngle& angles) 
+	{
+		NormalizeAngles(angles);
+		ClampAngles(angles);
 	}
 
 	inline float NormalizeAngle(float flAng)
@@ -97,8 +104,9 @@ namespace Math
 
 	//float TicksToTime(int tick);
 
-	template<class T, class U>
-	static T Clamp(T in, U low, U high) {
+	template <class T, class U>
+	static T Clamp(T in, U low, U high) 
+	{
 		if (in <= low)
 			return low;
 
@@ -106,5 +114,30 @@ namespace Math
 			return high;
 
 		return in;
+	}
+
+
+	// SIMD Math
+
+	template <typename T = float>
+	static T Minimum(const T & a, const T & b)
+	{
+		// check type.
+		static_assert(std::is_arithmetic<T>::value, "Math::Minimum only supports integral types.");
+		return (T)_mm_cvtss_f32(
+			_mm_min_ss(_mm_set_ss((float)a),
+				_mm_set_ss((float)b))
+		);
+	}
+
+	template <typename T = float>
+	static T Maximum(const T & a, const T & b) 
+	{
+		// check type.
+		static_assert(std::is_arithmetic<T>::value, "Math::Maximum only supports integral types.");
+		return (T)_mm_cvtss_f32(
+			_mm_max_ss(_mm_set_ss((float)a),
+				_mm_set_ss((float)b))
+		);
 	}
 }

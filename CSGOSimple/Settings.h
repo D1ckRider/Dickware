@@ -92,11 +92,10 @@ namespace Settings
 		enum DesyncAAType
 		{
 			NONE = 0,
-			LEGACY = 1,
-			STATIC = 2,
-			BALANCE = 3,
-			STRETCH = 4,
-			JITTER = 5
+			STATIC = 1,
+			BALANCE = 2,
+			STRETCH = 3,
+			JITTER = 4
 		};
 
 		struct RBotWeaponSetting
@@ -160,6 +159,7 @@ namespace Settings
 		extern int ShootingMode;
 		extern bool ForceUnlag;
 		extern bool LagComp;
+		extern bool Backtrack;
 		extern bool Resolver;
 
 		extern bool AimStepEnabled;
@@ -222,6 +222,7 @@ namespace Settings
 			bool Enabled;
 			Color Visible;
 			Color Invisible;
+			int Type;
 		};
 
 		struct PlayerESP
