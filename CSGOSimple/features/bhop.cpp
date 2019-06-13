@@ -2,6 +2,7 @@
 #include "bhop.hpp"
 #include "../helpers/math.hpp"
 #include "../MovementFix.h"
+#include "../Settings.h"
 
 void BunnyHop::OnCreateMove(CUserCmd* cmd)
 {
@@ -43,9 +44,7 @@ void BunnyHop::OnCreateMove(CUserCmd* cmd)
 void BunnyHop::AutoStrafe(CUserCmd* cmd, QAngle va)
 {
     if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
-    {
         return;
-    }
 
     static bool leftRight;
     bool inMove = cmd->buttons & IN_BACK || cmd->buttons & IN_MOVELEFT || cmd->buttons & IN_MOVERIGHT;

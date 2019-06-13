@@ -281,7 +281,7 @@ void GrenadeHint::Simulate(QAngle& Angles, C_BasePlayer* pLocal)
 
 	path.clear();
 	OtherCollisions.clear();
-	TracerColor = Color(255, 255, 0, 255);
+	TracerColor = Settings::Visual::NadeTracerColor;
 	for (unsigned int i = 0; i < path.max_size() - 1; ++i)
 	{
 		if (!logtimer)
@@ -364,7 +364,8 @@ bool GrenadeHint::CheckDetonate(const Vector& vecThrow, const trace_t& tr, int t
 		// OR we've been flying for too long
 
 	case (int)ClassId::CFlashbang:
-	case (int)ClassId::CHEGrenade: {
+	case (int)ClassId::CHEGrenade: 
+	{
 		// Pure timer based, detonate at 1.5s, checked every 0.2s
 		firegrenade_didnt_hit = static_cast<float>(tick)*interval > 1.5f && !(tick%static_cast<int>(0.2f / interval));
 		return firegrenade_didnt_hit;
@@ -441,9 +442,7 @@ void GrenadeHint::ResolveFlyCollisionCustom(trace_t& tr, Vector& vecVelocity, fl
 	float flSpeedSqr = vecAbsVelocity.LengthSqr();
 	static const float flMinSpeedSqr = 20.0f * 20.0f; // 30.0f * 30.0f in CSS
 	if (flSpeedSqr < flMinSpeedSqr)
-	{
 		vecAbsVelocity.Zero();
-	}
 
 	// Stop if on ground
 	if (tr.plane.normal.z > 0.7f)

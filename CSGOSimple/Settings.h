@@ -172,15 +172,30 @@ namespace Settings
 	{
 		struct LBotWeaponSetting
 		{
-			// Temporary settings
 			float FOV;
+			bool Silent;
+			float SilentFOV;
+			int AimType;
+			int FOVType;
+			int SmoothType;
 			float Smooth;
 			float Randomize;
-			float Delay;
+			int Delay;
+			int KillDelay;
 			bool Autopistol;
 			bool RCS;
-			float RCS_X;
-			float RCS_Y;
+			int RCSType;
+			bool RCS_SmoothEnabled;
+			bool RCS_FOVEnabled;
+			int RCS_X;
+			int RCS_Y;
+			float RCS_Smooth;
+			float RCS_FOV;
+			int RCS_Bullet;
+			int Hitbox;
+			bool AutowallEnabled;
+			int MinDamage;
+			bool Autofire;
 			bool HitboxHead;
 			bool HitboxNeck;
 			bool HitboxChest;
@@ -192,7 +207,18 @@ namespace Settings
 		};
 		extern bool Enabled;
 		extern int Hotkey;
+		extern int AutofireHotkey;
 		extern bool SmokeCheck;
+		extern bool JumpCheck;
+		extern bool FlashCheck;
+		extern bool DeathmatchMode;
+		extern int LegitAA;
+		extern float AaSide;
+		extern int AAFlipHotkey;
+		extern bool DrawFov;
+		
+		
+		extern int Priority;
 		extern LBotWeaponSetting WeaponAimSetting[11];
 		extern bool Backtrack;
 		extern bool BacktrackAtAim;
@@ -334,6 +360,7 @@ namespace Settings
 
 		extern bool BHop;
 		extern bool AutoStrafe;
+		extern float Retrack;
 		extern bool RankReveal;
 		extern bool NoCrouchCooldown;
 		extern bool Clantag;

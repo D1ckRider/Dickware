@@ -18,6 +18,7 @@
 #include "../Rbot.h"
 #include "../helpers/C_Texture.h"
 #include "../resource.h"
+#include "../Lbot.h"
 #include <chrono>
 #include <ctime>
 
@@ -603,6 +604,46 @@ void Visuals::RenderSoundESP()
 	}
 }
 
+void Visuals::DrawFOV()
+{
+	auto pWeapon = g_LocalPlayer->m_hActiveWeapon();
+	if (!pWeapon)
+		return;
+
+	int WeaponID = Settings::Aimbot::GetWeaponType(pWeapon);
+
+
+	//auto settings = g_Options.legitbot_items[pWeapon->m_Item().m_iItemDefinitionIndex()];
+
+	if (Settings::Aimbot::Enabled) 
+	{
+
+		float fov = static_cast<float>(g_LocalPlayer->GetFOV());
+
+		int w, h;
+		g_EngineClient->GetScreenSize(w, h);
+
+		Vector2D screenSize = Vector2D(w, h);
+		Vector2D center = screenSize * 0.5f;
+
+		float ratio = screenSize.x / screenSize.y;
+		float screenFov = atanf((ratio) * (0.75f) * tan(DEG2RAD(fov * 0.5f)));
+
+		float radiusFOV = tanf(DEG2RAD(Lbot::Get().GetFov())) / tanf(screenFov) * center.x;
+
+		Render::Get().RenderCircleFilled(center.x, center.y, radiusFOV, 32, Color(0, 0, 0, 50));
+		Render::Get().RenderCircle(center.x, center.y, radiusFOV, 32, Color(0, 0, 0, 100));
+
+		if (Settings::Aimbot::WeaponAimSetting[WeaponID].Silent) 
+		{
+			float silentRadiusFOV = tanf(DEG2RAD(Settings::Aimbot::WeaponAimSetting[WeaponID].SilentFOV)) / tanf(screenFov) * center.x;
+
+			Render::Get().RenderCircleFilled(center.x, center.y, silentRadiusFOV, 32, Color(255, 25, 10, 50));
+			Render::Get().RenderCircle(center.x, center.y, silentRadiusFOV, 32, Color(255, 25, 10, 100));
+		}
+	}
+}
+
 
 bool IsOnScreen(Vector origin, Vector& screen)
 {
@@ -919,7 +960,7 @@ void Visuals::DesyncIndicator()
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
 		return;
 
-	Color clr = Color::Green;
+	/*Color clr = Color::Green;
 	//int x, y;
 	//g_EngineClient->GetScreenSize(x, y);
 
@@ -927,6 +968,29 @@ void Visuals::DesyncIndicator()
 	ImVec2 t = g_pDefaultFont->CalcTextSizeA(34.f, FLT_MAX, 0.0f, text.data());
 
 	Render::Get().RenderTextNoOutline(text, ImVec2(10, ScreenY - 100.f - CurrentIndicatorHeight), 34.f, clr);
+	CurrentIndicatorHeight += 34.f;*/
+	Color clr = Color::Green;
+
+	float percent;
+
+	/*if (Moving || InAir || g_Saver.InFakewalk)
+		percent = 1.f;
+	else
+		percent = (g_Saver.NextLbyUpdate - g_GlobalVars->curtime) / 1.1f;*/
+
+	percent = 58.f / (g_LocalPlayer->GetMaxDesyncAngle() * 100.f);
+
+	percent = 1.f - percent;
+
+	ImVec2 t = g_pDefaultFont->CalcTextSizeA(34.f, FLT_MAX, 0.0f, "DESYNC");
+	float width = t.x * percent;
+
+	Render::Get().RenderLine(9.f, ScreenY - 100.f - (CurrentIndicatorHeight - 34.f), 11.f + t.x, ScreenY - 100.f - (CurrentIndicatorHeight - 34.f), Color(0, 0, 0, 25), 4.f);
+
+	if (width < t.x && width > 0.f)
+		Render::Get().RenderLine(10.f, ScreenY - 100.f - (CurrentIndicatorHeight - 34.f), 10.f + width, ScreenY - 100.f - (CurrentIndicatorHeight - 34.f), clr, 2.f);
+
+	Render::Get().RenderTextNoOutline("DESYNC", ImVec2(10, ScreenY - 100.f - CurrentIndicatorHeight), 34.f, clr);
 	CurrentIndicatorHeight += 34.f;
 }
 
@@ -1357,6 +1421,32 @@ void Visuals::AddToDrawList()
         PingIndicator();
 		BAimIndicator();
 		DesyncIndicator();
+		
+		auto drawAngleLine = [&](const Vector& origin, const Vector& w2sOrigin, const float& angle, const char* text, Color clr) {
+			Vector forward;
+			Math::AngleVectors(QAngle(0.0f, angle, 0.0f), forward);
+			float AngleLinesLength = 30.0f;
+
+			Vector w2sReal;
+			if (Math::WorldToScreen(origin + forward * AngleLinesLength, w2sReal)) {
+				Render::Get().RenderLine(w2sOrigin.x, w2sOrigin.y, w2sReal.x, w2sReal.y, Color::White, 1.0f);
+				Render::Get().RenderBoxFilled(w2sReal.x - 5.0f, w2sReal.y - 5.0f, w2sReal.x + 5.0f, w2sReal.y + 5.0f, Color::White);
+				//Render::Get().RenderText(text, w2sReal.x, w2sReal.y - 5.0f, 14.0f, clr, true, true);
+				Render::Get().RenderText(text, ImVec2(), 14.f, clr, true);
+			}
+		};
+
+		/*if (Settings::RageBot::Desync > 0)
+		{
+			Vector w2sOrigin;
+			if (Math::WorldToScreen(g_LocalPlayer->m_vecOrigin(), w2sOrigin)) 
+			{
+				drawAngleLine(g_LocalPlayer->m_vecOrigin(), w2sOrigin, g_Saver.DesyncYaw, "viewangles", Color(0.937f, 0.713f, 0.094f, 1.0f));
+				drawAngleLine(g_LocalPlayer->m_vecOrigin(), w2sOrigin, g_LocalPlayer->m_flLowerBodyYawTarget(), "lby", Color(0.0f, 0.0f, 1.0f, 1.0f));
+				drawAngleLine(g_LocalPlayer->m_vecOrigin(), w2sOrigin, g_Saver.RealYaw, "real", Color(0.0f, 1.0f, 0.0f, 1.0f));
+			}
+		}*/
+
 
         if ( g_Config.GetInt ( "misc_fakelag_mode" ) == 1 )
             LCIndicator();

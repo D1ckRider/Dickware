@@ -213,7 +213,7 @@ public:
 	uint32_t command_ack;			//0x4D30 
 	uint32_t m_nSoundSequence;		//0x4D34
 	char pad_4D38[80];				//0x4D38
-	Vector viewangles;				//0x4D88 
+	QAngle viewangles;				//0x4D88 
 	char pad_4D94[208];				//0x4D94
 	CEventInfo *events;				//0x4E64 
 };

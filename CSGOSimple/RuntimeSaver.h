@@ -120,6 +120,11 @@ public:
 
     Vector LastShotEyePos = Vector(0, 0, 0);
 
+	CBasePlayerAnimState AnimState;
+
+	float DesyncYaw = 0.f;
+	float RealYaw = 0.f;
+
     bool RbotDidLastShot = false;
 };
 

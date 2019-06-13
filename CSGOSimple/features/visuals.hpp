@@ -86,6 +86,7 @@ public:
 	void RenderDefuseKit(C_BaseEntity* ent);
 	void RenderPlantedC4(C_BaseEntity* ent);
 	void RenderSoundESP();
+	void DrawFOV();
 	void RenderOffscreenESP(C_BasePlayer* ent);
 	void DrawGrenade(C_BaseEntity* ent);
 	void DrawDangerzoneItem(C_BaseEntity* ent, float maxRange);

@@ -149,27 +149,43 @@ void Settings::SaveLegitBot(json& j)
 	SaveValue(j, "lbot_enabled", Aimbot::Enabled);
 	SaveValue(j, "lbot_key", Aimbot::Hotkey);
 	SaveValue(j, "lbot_smoke_check", Aimbot::SmokeCheck);
+	SaveValue(j, "lbot_jump_check", Aimbot::JumpCheck);
+	SaveValue(j, "lbot_flash_check", Aimbot::FlashCheck);
+	SaveValue(j, "lbot_priority_check", Aimbot::Priority);
+	SaveValue(j, "lbot_aa_type", Aimbot::LegitAA);
+	SaveValue(j, "lbot_aa_flip", Aimbot::AAFlipHotkey);
+	SaveValue(j, "lbot_autofire_hotkey", Aimbot::AutofireHotkey);
+	SaveValue(j, "lbot_draw_fov", Aimbot::DrawFov);
 	for (int i = 0; i < 11; i++)
 	{
 		/* Base Settings */
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "AimType", Aimbot::WeaponAimSetting[i].AimType);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "SmoothType", Aimbot::WeaponAimSetting[i].SmoothType);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "FOVType", Aimbot::WeaponAimSetting[i].FOVType);
 		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "FOV", Aimbot::WeaponAimSetting[i].FOV);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Silent", Aimbot::WeaponAimSetting[i].Silent);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "SilentFOV", Aimbot::WeaponAimSetting[i].SilentFOV);
 		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Smooth", Aimbot::WeaponAimSetting[i].Smooth);
 		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Randomize", Aimbot::WeaponAimSetting[i].Randomize);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "KillDelay", Aimbot::WeaponAimSetting[i].KillDelay);
 		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Delay", Aimbot::WeaponAimSetting[i].Delay);
 		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Autopistol", Aimbot::WeaponAimSetting[i].Autopistol);
 		/* RCS */
 		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS", Aimbot::WeaponAimSetting[i].RCS);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "RCSType", Aimbot::WeaponAimSetting[i].RCSType);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "RCSBullet", Aimbot::WeaponAimSetting[i].RCS_Bullet);
 		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_X", Aimbot::WeaponAimSetting[i].RCS_X);
 		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_Y", Aimbot::WeaponAimSetting[i].RCS_Y);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_FOV_Enabled", Aimbot::WeaponAimSetting[i].RCS_FOVEnabled);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_FOV", Aimbot::WeaponAimSetting[i].RCS_FOV);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_Smooth_Enabled", Aimbot::WeaponAimSetting[i].RCS_SmoothEnabled);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_Smooth", Aimbot::WeaponAimSetting[i].RCS_Smooth);
 		/* Hitboxes */
-		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Head", Aimbot::WeaponAimSetting[i].HitboxHead);
-		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Neck", Aimbot::WeaponAimSetting[i].HitboxNeck);
-		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Chest", Aimbot::WeaponAimSetting[i].HitboxChest);
-		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Pelvis", Aimbot::WeaponAimSetting[i].HitboxPelvis);
-		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Stomach", Aimbot::WeaponAimSetting[i].HitboxStomach);
-		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Arm", Aimbot::WeaponAimSetting[i].HitboxArm);
-		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Leg", Aimbot::WeaponAimSetting[i].HitboxLeg);
-		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Foot", Aimbot::WeaponAimSetting[i].HitboxFoot);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Hitboxes", Aimbot::WeaponAimSetting[i].Hitbox);
+
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Autofire", Aimbot::WeaponAimSetting[i].Autofire);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "Autowall", Aimbot::WeaponAimSetting[i].AutowallEnabled);
+		SaveNestedValue(j, "lbot_weapon" + std::to_string(i), "MinDamage", Aimbot::WeaponAimSetting[i].MinDamage);
 	}
 	SaveValue(j, "lbot_backtrack", Aimbot::Backtrack);
 	SaveValue(j, "lbot_backtrack_aim", Aimbot::BacktrackAtAim);
@@ -397,27 +413,43 @@ void Settings::LoadLegitBot(json& j)
 	LoadValue(j, "lbot_enabled", Aimbot::Enabled);
 	LoadValue(j, "lbot_key", Aimbot::Hotkey);
 	LoadValue(j, "lbot_smoke_check", Aimbot::SmokeCheck);
+	LoadValue(j, "lbot_jump_check", Aimbot::JumpCheck);
+	LoadValue(j, "lbot_flash_check", Aimbot::FlashCheck);
+	LoadValue(j, "lbot_priority_check", Aimbot::Priority);
+	LoadValue(j, "lbot_aa_type", Aimbot::LegitAA);
+	LoadValue(j, "lbot_aa_flip", Aimbot::AAFlipHotkey);
+	LoadValue(j, "lbot_autofire_hotkey", Aimbot::AutofireHotkey);
+	LoadValue(j, "lbot_draw_fov", Aimbot::DrawFov);
 	for (int i = 0; i < 11; i++)
 	{
-		/* Base Weapon Settings */
+		/* Base Settings */
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "AimType", Aimbot::WeaponAimSetting[i].AimType);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "SmoothType", Aimbot::WeaponAimSetting[i].SmoothType);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "FOVType", Aimbot::WeaponAimSetting[i].FOVType);
 		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "FOV", Aimbot::WeaponAimSetting[i].FOV);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Silent", Aimbot::WeaponAimSetting[i].Silent);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "SilentFOV", Aimbot::WeaponAimSetting[i].SilentFOV);
 		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Smooth", Aimbot::WeaponAimSetting[i].Smooth);
 		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Randomize", Aimbot::WeaponAimSetting[i].Randomize);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "KillDelay", Aimbot::WeaponAimSetting[i].KillDelay);
 		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Delay", Aimbot::WeaponAimSetting[i].Delay);
 		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Autopistol", Aimbot::WeaponAimSetting[i].Autopistol);
 		/* RCS */
 		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS", Aimbot::WeaponAimSetting[i].RCS);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "RCSType", Aimbot::WeaponAimSetting[i].RCSType);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "RCSBullet", Aimbot::WeaponAimSetting[i].RCS_Bullet);
 		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_X", Aimbot::WeaponAimSetting[i].RCS_X);
 		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_Y", Aimbot::WeaponAimSetting[i].RCS_Y);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_FOV_Enabled", Aimbot::WeaponAimSetting[i].RCS_FOVEnabled);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_FOV", Aimbot::WeaponAimSetting[i].RCS_FOV);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_Smooth_Enabled", Aimbot::WeaponAimSetting[i].RCS_SmoothEnabled);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "RCS_Smooth", Aimbot::WeaponAimSetting[i].RCS_Smooth);
 		/* Hitboxes */
-		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Head", Aimbot::WeaponAimSetting[i].HitboxHead);
-		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Neck", Aimbot::WeaponAimSetting[i].HitboxNeck);
-		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Chest", Aimbot::WeaponAimSetting[i].HitboxChest);
-		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Pelvis", Aimbot::WeaponAimSetting[i].HitboxPelvis);
-		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Stomach", Aimbot::WeaponAimSetting[i].HitboxStomach);
-		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Arm", Aimbot::WeaponAimSetting[i].HitboxArm);
-		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Leg", Aimbot::WeaponAimSetting[i].HitboxLeg);
-		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Foot", Aimbot::WeaponAimSetting[i].HitboxFoot);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Hitboxes", Aimbot::WeaponAimSetting[i].Hitbox);
+
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Autofire", Aimbot::WeaponAimSetting[i].Autofire);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "Autowall", Aimbot::WeaponAimSetting[i].AutowallEnabled);
+		LoadNestedValue(j, "lbot_weapon" + std::to_string(i), "MinDamage", Aimbot::WeaponAimSetting[i].MinDamage);
 	}
 	LoadValue(j, "lbot_backtrack", Aimbot::Backtrack);
 	LoadValue(j, "lbot_backtrack_aim", Aimbot::BacktrackAtAim);
@@ -998,12 +1030,21 @@ namespace Settings::RageBot
 namespace Settings::Aimbot
 {
 	bool Enabled = false;
-	int Hotkey = 0;
+	int Hotkey = 0x0;
+	int AutofireHotkey = 0x0;
+	bool JumpCheck = false;
 	bool SmokeCheck = false;
+	bool FlashCheck = false;
+	bool DeathmatchMode = false;
+	int Priority = 0;
 	LBotWeaponSetting WeaponAimSetting[11] = { 0 };
 	bool Backtrack = false;
 	bool BacktrackAtAim = false;
 	float BacktrackTick = false;
+	int LegitAA = 0;
+	int AAFlipHotkey = 0x0;
+	float AaSide = 1.0f;
+	bool DrawFov = false;
 
 	int GetWeaponType(C_BaseCombatWeapon* weapon)
 	{
@@ -1090,6 +1131,7 @@ namespace Settings::Misc
 {
 	bool BHop = false;
 	bool AutoStrafe = false;
+	float Retrack = 2.f;
 	bool RankReveal = false;
 	bool NoCrouchCooldown = false;
 	bool AutoAccept = false;
