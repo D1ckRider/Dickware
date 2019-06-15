@@ -42,6 +42,6 @@ private:
 	int type = 0;
 	std::vector<Vector> path;
 	std::vector<std::pair<Vector, QAngle>> OtherCollisions;
-	Color TracerColor = Color(255, 255, 0, 255);
+	Color TracerColor = Color(105, 158, 244, 255);
 	bool firegrenade_didnt_hit = false;
 };

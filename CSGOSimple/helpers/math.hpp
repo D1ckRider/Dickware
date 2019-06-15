@@ -25,12 +25,6 @@ namespace Math
 		return *(float*)&i;
 	}
 
-	//--------------------------------------------------------------------------------
-	void FixAngles(QAngle& angles) 
-	{
-		NormalizeAngles(angles);
-		ClampAngles(angles);
-	}
 
 	inline float NormalizeAngle(float flAng)
 	{
@@ -53,6 +47,26 @@ namespace Math
 		return flAng;
 	}
 
+	inline float AngleDiff(float destAngle, float srcAngle) 
+	{
+		float delta;
+
+		delta = fmodf(destAngle - srcAngle, 360.0f);
+		if (destAngle > srcAngle) 
+		{
+			if (delta >= 180)
+				delta -= 360;
+		}
+		else
+		{
+			if (delta <= -180)
+				delta += 360;
+		}
+		return delta;
+	}
+
+
+	void MovementFix(CUserCmd* cmd, QAngle desiredAngle, QAngle oldAngle);
 	float VectorDistance(const Vector& v1, const Vector& v2);
 	QAngle CalcAngle(const Vector& src, const Vector& dst);
 	Vector CalcAngleV(const Vector& src, const Vector& dst);
@@ -96,6 +110,7 @@ namespace Math
 	void AngleVector(const Vector &angles, Vector& forward);
 
     void ClampAngles(QAngle& angles);
+	void FixAngles(QAngle& angles);
     void VectorTransform(const Vector& in1, const matrix3x4_t& in2, Vector& out);
     void AngleVectors(const QAngle &angles, Vector& forward);
     void AngleVectors(const QAngle &angles, Vector& forward, Vector& right, Vector& up);

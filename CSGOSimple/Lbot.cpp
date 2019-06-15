@@ -7,400 +7,504 @@
 #include "RuntimeSaver.h"
 #include "Backtrack.h"
 #include "Settings.h"
+#include "Autowall.h"
+#include "MovementFix.h"
+
+float GetRealDistanceFOV(float distance, QAngle angle, QAngle viewangles)
+{
+	Vector aimingAt;
+	Math::AngleVectors(viewangles, aimingAt);
+	aimingAt *= distance;
+	Vector aimAt;
+	Math::AngleVectors(angle, aimAt);
+	aimAt *= distance;
+	return aimingAt.DistTo(aimAt) / 5;
+}
 
 void Lbot::OnCreateMove(CUserCmd* cmd)
 {
-    C_BasePlayer* local = g_LocalPlayer;
-    if (!local || !local->IsAlive())
-    {
-        return;
-    }
-    C_BaseCombatWeapon* weapon = local->m_hActiveWeapon().Get();
-    if (!weapon || weapon->IsReloading())
-    {
-        return;
-    }
-    UpdateWeaponConfig(weapon);
+	if (!IsEnabled(cmd)) 
+	{
+		if (g_LocalPlayer && g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive() && Settings::Aimbot::Enabled && Settings::Aimbot::WeaponAimSetting[WeaponID].RCSType == 0)
+		{
+			auto pWeapon = g_LocalPlayer->m_hActiveWeapon();
+			if (pWeapon && (pWeapon->IsSniper() || pWeapon->IsPistol() || pWeapon->IsRifle())) 
+			{
+				RCS(cmd->viewangles, target, false);
+				Math::FixAngles(cmd->viewangles);
+				g_EngineClient->SetViewAngles(cmd->viewangles);
+			}
+		}
+		else 
+		{
+			RCSLastPunch = { 0, 0, 0 };
+		}
 
-    std::deque<int> hb_enabled;
+		is_delayed = false;
+		shot_delay = false;
+		kill_delay = false;
+		silent_enabled = Settings::Aimbot::WeaponAimSetting[WeaponID].Silent && Settings::Aimbot::WeaponAimSetting[WeaponID].SilentFOV > 0;
+		target = NULL;
+		return;
+	}
 
-    if (WeaponHitboxHead)
-        hb_enabled.push_back(HITBOX_HEAD);
-    if (WeaponHitboxNeck)
-        hb_enabled.push_back(HITBOX_NECK);
-    if (WeaponHitboxChest)
-        hb_enabled.push_back(HITBOX_CHEST);
-    if (WeaponHitboxPelvis)
-        hb_enabled.push_back(HITBOX_PELVIS);
-    if (WeaponHitboxStomach)
-        hb_enabled.push_back(HITBOX_STOMACH);
+	RandomSeed(cmd->command_number);
 
-	if(Settings::Aimbot::Backtrack)
-        Backtrack::Get().LegitOnCreateMove(hb_enabled);
+	auto weapon = g_LocalPlayer->m_hActiveWeapon().Get();
+	if (!weapon)
+		return;
 
-	bool bAttack = (cmd->buttons & IN_ATTACK);
+	auto weapon_data = weapon->GetCSWeaponData();
+	if (!weapon_data)
+		return;
+	WeaponID = Settings::Aimbot::GetWeaponType(weapon);
+	UpdateWeaponConfig(weapon);
 
-	if (bAttack)
-		if (weapon->IsPistol() && WeaponAutopistol)
-			AutoPistol(cmd);
+	bool should_do_rcs = false;
+	QAngle angles = cmd->viewangles;
+	QAngle current = angles;
+	float fov = 0.180f;
+	if (!(Settings::Aimbot::FlashCheck && g_LocalPlayer->IsFlashed())) 
+	{
+		int bestBone = -1;
+		if (GetClosestPlayer(cmd, bestBone)) 
+		{
+			Math::VectorAngles(target->GetHitboxPos(bestBone) - g_LocalPlayer->GetEyePos(), angles);
+			Math::FixAngles(angles);
+			if (Settings::Aimbot::WeaponAimSetting[WeaponID].FOVType == 1)
+				fov = GetRealDistanceFOV(g_LocalPlayer->GetEyePos().DistTo(target->GetHitboxPos(bestBone)), angles, cmd->viewangles);
+			else
+				fov = GetFovToPlayer(cmd->viewangles, angles);
 
-	//StandaloneRCS(cmd);
-    if (WeaponRcs)
-		ResetRecoil(cmd);
-    if (WeaponFov != 0.f)
-        DoAimbot(cmd, local, weapon);
-    if (WeaponRcs)
-		RemoveRecoil(local, cmd);
+			should_do_rcs = true;
 
-    //Math::NormalizeAngles(cmd->viewangles);
+			if (!Settings::Aimbot::WeaponAimSetting[WeaponID].Silent && !is_delayed && !shot_delay && Settings::Aimbot::WeaponAimSetting[WeaponID].Delay > 0)
+			{
+				is_delayed = true;
+				shot_delay = true;
+				shot_delay_time = GetTickCount64() + Settings::Aimbot::WeaponAimSetting[WeaponID].Delay;
+			}
 
-    g_EngineClient->SetViewAngles(cmd->viewangles);
+			if (shot_delay && shot_delay_time <= GetTickCount64())
+				shot_delay = false;
+
+			if (shot_delay)
+				cmd->buttons &= IN_ATTACK;
+
+			if (Settings::Aimbot::WeaponAimSetting[WeaponID].Autofire)
+			{
+				if (!Settings::Aimbot::AutofireHotkey || InputSys::Get().IsKeyDown(Settings::Aimbot::AutofireHotkey))
+				{
+					if (!weapon_data->bFullAuto) 
+					{
+						if (cmd->command_number % 2 == 0)
+							cmd->buttons &= IN_ATTACK;
+						else 
+							cmd->buttons |= ~IN_ATTACK;
+					}
+					else 
+					{
+						cmd->buttons |= ~IN_ATTACK;
+					}
+				}
+			}
+
+			/*if (settings.autostop) {
+				cmd->forwardmove = cmd->sidemove = 0;
+			}*/
+		}
+	}
+
+	if (IsNotSilent(fov) && (should_do_rcs || Settings::Aimbot::WeaponAimSetting[WeaponID].RCSType == 0))
+		RCS(angles, target, should_do_rcs);
+
+	if (target && IsNotSilent(fov))
+		Smooth(current, angles, angles);
+
+	Math::FixAngles(angles);
+	cmd->viewangles = angles;
+	if (IsNotSilent(fov))
+		g_EngineClient->SetViewAngles(angles);
+
+	silent_enabled = false;
+	if (g_LocalPlayer->m_hActiveWeapon()->IsPistol() && Settings::Aimbot::WeaponAimSetting[WeaponID].Autopistol)
+	{
+		float server_time = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
+		float next_shot = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack() - server_time;
+		if (next_shot > 0)
+			cmd->buttons &= ~IN_ATTACK;
+	}
+
+	Math::FixAngles(cmd->viewangles);
+	cmd->viewangles.yaw = std::remainderf(cmd->viewangles.yaw, 360.0f);
 }
 
+bool Lbot::IsEnabled(CUserCmd* pCmd)
+{
+	if (!g_EngineClient->IsConnected() || !g_LocalPlayer || !g_LocalPlayer->IsAlive())
+		return false;
+
+	auto pWeapon = g_LocalPlayer->m_hActiveWeapon();
+	if (!pWeapon || pWeapon->IsKnife() || pWeapon->IsGrenade() || pWeapon->IsZeus()) 
+		return false;
+
+	auto weaponData = pWeapon->GetCSWeaponData();
+	auto weapontype = weaponData->WeaponType;
+	//settings = g_Options.legitbot_items[pWeapon->m_Item().m_iItemDefinitionIndex()];
+	if (!Settings::Aimbot::Enabled)
+		return false;
+
+	//if ((pWeapon->m_Item().m_iItemDefinitionIndex() == WEAPON_AWP || pWeapon->m_Item().m_iItemDefinitionIndex() == WEAPON_SSG08) && settings.only_in_zoom && !g_LocalPlayer->m_bIsScoped()) 
+	//	return false;
+
+	if (!pWeapon->HasBullets() || pWeapon->IsReloading()) 
+		return false;
+
+	return InputSys::Get().IsKeyDown(Settings::Aimbot::Hotkey);
+}
+
+float Lbot::GetFovToPlayer(QAngle viewAngle, QAngle aimAngle)
+{
+	QAngle delta = aimAngle - viewAngle;
+	Math::FixAngles(delta);
+	return sqrtf(powf(delta.pitch, 2.0f) + powf(delta.yaw, 2.0f));
+}
+
+bool Lbot::IsRcs()
+{
+	return g_LocalPlayer->m_iShotsFired() >= Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_Bullet + 1;
+}
+
+float Lbot::GetSmooth()
+{
+	float smooth = IsRcs() && Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_SmoothEnabled ? Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_Smooth 
+																							 : Settings::Aimbot::WeaponAimSetting[WeaponID].Smooth;
+	return smooth;
+}
+
+float Lbot::GetFov()
+{
+	if (IsRcs() && Settings::Aimbot::WeaponAimSetting[WeaponID].RCS && Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_FOVEnabled) return Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_FOV;
+	if (!Settings::Aimbot::WeaponAimSetting[WeaponID].Silent) return Settings::Aimbot::WeaponAimSetting[WeaponID].FOV;
+	return Settings::Aimbot::WeaponAimSetting[WeaponID].SilentFOV > Settings::Aimbot::WeaponAimSetting[WeaponID].FOV ? Settings::Aimbot::WeaponAimSetting[WeaponID].SilentFOV
+																													 : Settings::Aimbot::WeaponAimSetting[WeaponID].FOV;
+}
 
 void Lbot::UpdateWeaponConfig(C_BaseCombatWeapon* weapon)
 {
-	int WeaponID = Settings::Aimbot::GetWeaponType(weapon);
+	//int WeaponID = Settings::Aimbot::GetWeaponType(weapon);
 
-	WeaponFov = Settings::Aimbot::WeaponAimSetting[WeaponID].FOV;
+	/*WeaponFov = Settings::Aimbot::WeaponAimSetting[WeaponID].FOV;
+	WeaponSmoothType = Settings::Aimbot::WeaponAimSetting[WeaponID].SmoothType;
+	WeaponFOVType = Settings::Aimbot::WeaponAimSetting[WeaponID].FOVType;
 	WeaponSmooth = Settings::Aimbot::WeaponAimSetting[WeaponID].Smooth;
+	WeaponSilent = Settings::Aimbot::WeaponAimSetting[WeaponID].Silent;
+	WeaponSilentFOV = Settings::Aimbot::WeaponAimSetting[WeaponID].SilentFOV;
 	WeaponRandomness = Settings::Aimbot::WeaponAimSetting[WeaponID].Randomize;
 	WeaponDelay = Settings::Aimbot::WeaponAimSetting[WeaponID].Delay;
+	WeaponKillDelay = Settings::Aimbot::WeaponAimSetting[WeaponID].KillDelay;
 	WeaponAutopistol = Settings::Aimbot::WeaponAimSetting[WeaponID].Autopistol;
+	WeaponAutowall = Settings::Aimbot::WeaponAimSetting[WeaponID].AutowallEnabled;
+	WeaponHitbox = Settings::Aimbot::WeaponAimSetting[WeaponID].Hitbox;
+	WeaponAimType = Settings::Aimbot::WeaponAimSetting[WeaponID].AimType;
+	WeaponMinDamage = Settings::Aimbot::WeaponAimSetting[WeaponID].MinDamage;
+	WeaponAutoFire = Settings::Aimbot::WeaponAimSetting[WeaponID].Autofire;
 
 	WeaponRcs = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS;
+	WeaponRCSBullet = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_Bullet;
+	WeaponRCSType = Settings::Aimbot::WeaponAimSetting[WeaponID].RCSType;
 	WeaponRecoilX = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_X;
 	WeaponRecoilY = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_Y;
-
-	WeaponHitboxHead = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxHead;
-	WeaponHitboxNeck = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxNeck;
-	WeaponHitboxChest = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxChest;
-	WeaponHitboxPelvis = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxPelvis;
-	WeaponHitboxStomach = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxStomach;
-	WeaponHitboxArm = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxArm;
-	WeaponHitboxLeg = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxLeg;
-	WeaponHitboxFoot = Settings::Aimbot::WeaponAimSetting[WeaponID].HitboxFoot;
+	WeaponRCSFOVEnabled = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_FOVEnabled;
+	WeaponRCSFOV = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_FOV;
+	WeaponRCSSmoothEnabled = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_SmoothEnabled;
+	WeaponRCSSmooth = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_Smooth;*/
 }
 
-int Lbot::GetBestTarget(C_BasePlayer* local, C_BaseCombatWeapon* weapon, CUserCmd* cmd, Vector& hitpos)
+void Lbot::RCS(QAngle& angle, C_BasePlayer* target, bool should_run)
 {
-    QAngle viewangles = cmd->viewangles;
+	if (!Settings::Aimbot::WeaponAimSetting[WeaponID].RCS)
+	{
+		RCSLastPunch.Init();
+		return;
+	}
 
-    float BestFov = WeaponFov;
-    Vector BestPos = Vector(0, 0, 0);
-    int BestIndex = -1;
-    //bool UsingBacktrack = false;
-    //LegitTickRecord BestBacktrackTick;
-	bool lbot_backtrack = Settings::Aimbot::Backtrack; 
-	bool lbot_backtrack_aim = Settings::Aimbot::BacktrackAtAim;
-	float lbot_backtrack_ms = Settings::Aimbot::BacktrackTick;
+	if (Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_X == 0 
+		&& Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_Y == 0)
+	{
+		RCSLastPunch.Init();
+		return;
+	}
 
-    //float flRange = weapon->GetCSWeaponData()->flRange;
+	QAngle punch = g_LocalPlayer->m_aimPunchAngle() * 2.0f;
 
-    for (int i = 1; i < g_EngineClient->GetMaxClients(); i++)
-    {
-        auto entity = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(i));
-        if (!entity || !entity->IsPlayer() || entity == local || entity->IsDormant()
-                || !entity->IsAlive() || !entity->IsEnemy())
-        {
-            continue;
-        }
+	auto weapon = g_LocalPlayer->m_hActiveWeapon().Get();
+	if (weapon && weapon->m_flNextPrimaryAttack() > g_GlobalVars->curtime) 
+	{
+		auto delta_angles = punch - RCSLastPunch;
+		auto delta = weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime;
+		if (delta >= g_GlobalVars->interval_per_tick)
+			punch = RCSLastPunch + delta_angles / static_cast<float>(TIME_TO_TICKS(delta));
+	}
 
-        //Console.WriteLine("Found valid target")
+	CurrentPunch = punch;
+	if (Settings::Aimbot::WeaponAimSetting[WeaponID].RCSType == 0 && !should_run)
+		punch -= { RCSLastPunch.pitch, RCSLastPunch.yaw, 0.f };
 
-        //if (local->m_vecOrigin().DistTo(entity->m_vecOrigin()) > flRange) continue;
-
-        entity->PrecaceOptimizedHitboxes();
-
-        for (int hitbox = 0; hitbox < HITBOX_MAX; hitbox++)
-        {
-            switch (hitbox)
-            {
-                case HITBOX_HEAD:
-                    if (!WeaponHitboxHead)
-                    {
-                        continue;
-                    }
-                    break;
-                case HITBOX_NECK:
-                    if (!WeaponHitboxNeck)
-                    {
-                        continue;
-                    }
-                    break;
-                case HITBOX_PELVIS:
-                    if (!WeaponHitboxPelvis)
-                    {
-                        continue;
-                    }
-                    break;
-                case HITBOX_STOMACH:
-                    if (!WeaponHitboxStomach)
-                    {
-                        continue;
-                    }
-                    break;
-                case HITBOX_LOWER_CHEST:
-                case HITBOX_CHEST:
-                case HITBOX_UPPER_CHEST:
-                    if (!WeaponHitboxChest)
-                    {
-                        continue;
-                    }
-                    break;
-                case HITBOX_RIGHT_THIGH:
-                case HITBOX_LEFT_THIGH:
-                case HITBOX_RIGHT_CALF:
-                case HITBOX_LEFT_CALF:
-                    if (!WeaponHitboxLeg)
-                    {
-                        continue;
-                    }
-                    break;
-                case HITBOX_RIGHT_FOOT:
-                case HITBOX_LEFT_FOOT:
-                    if (!WeaponHitboxFoot)
-                    {
-                        continue;
-                    }
-                    break;
-                case HITBOX_RIGHT_HAND:
-                case HITBOX_LEFT_HAND:
-                case HITBOX_RIGHT_UPPER_ARM:
-                case HITBOX_RIGHT_FOREARM:
-                case HITBOX_LEFT_UPPER_ARM:
-                case HITBOX_LEFT_FOREARM:
-                    if (!WeaponHitboxArm)
-                        continue;
-                    break;
-            }
-
-            Vector pos;
-            if (!entity->GetOptimizedHitboxPos(hitbox, pos))
-                continue;
-            if (!local->CanSeePlayer(local, pos))
-                continue;
-
-			if (Settings::Aimbot::SmokeCheck && Utils::LineThroughSmoke(local->GetEyePos(), pos))
-				continue;
-
-            float fov = Math::GetFOV(viewangles, Math::CalcAngle(local->GetEyePos(), pos));
-
-            if (fov < BestFov)
-            {
-                //UsingBacktrack = false;
-                BestPos = pos;
-                BestFov = fov;
-                BestIndex = i;
-            }
-        }
-
-        if (lbot_backtrack && lbot_backtrack_aim)
-        {
-            std::deque<LegitTickRecord> BacktrackRecords = Backtrack::Get().GetValidLegitRecords(i, lbot_backtrack_ms);
-
-            for (auto record = BacktrackRecords.begin(); record != BacktrackRecords.end(); record++)
-            {
-                for (int hitbox = 0; hitbox < HITBOX_MAX; hitbox++)
-                {
-                    switch (hitbox)
-                    {
-                        case HITBOX_HEAD:
-                            if (!WeaponHitboxHead)
-                                continue;
-                            break;
-                        case HITBOX_NECK:
-                            if (!WeaponHitboxNeck)
-                                continue;
-                            break;
-                        case HITBOX_PELVIS:
-                            if (!WeaponHitboxPelvis)
-                                continue;
-                            break;
-                        case HITBOX_STOMACH:
-                            if (!WeaponHitboxStomach)
-                                continue;
-                            break;
-                        case HITBOX_LOWER_CHEST:
-                        case HITBOX_CHEST:
-                        case HITBOX_UPPER_CHEST:
-                            if (!WeaponHitboxChest)
-                                continue;
-                            break;
-                        case HITBOX_RIGHT_THIGH:
-                        case HITBOX_LEFT_THIGH:
-                        case HITBOX_RIGHT_CALF:
-                        case HITBOX_LEFT_CALF:
-                        case HITBOX_RIGHT_FOOT:
-                        case HITBOX_LEFT_FOOT:
-                        case HITBOX_RIGHT_HAND:
-                        case HITBOX_LEFT_HAND:
-                        case HITBOX_RIGHT_UPPER_ARM:
-                        case HITBOX_RIGHT_FOREARM:
-                        case HITBOX_LEFT_UPPER_ARM:
-                        case HITBOX_LEFT_FOREARM:
-                            continue;
-                            break;
-                    }
-
-                    if (!local->CanSeePlayer(local, record->hitboxes[hitbox]))
-                        continue;
-                    float fov = Math::GetFOV(viewangles, Math::CalcAngle(local->GetEyePos(), record->hitboxes[hitbox]));
-
-
-                    if (fov < BestFov)
-                    {
-                        BestPos = record->hitboxes[hitbox];
-                        BestFov = fov;
-                        BestIndex = i;
-                    }
-                }
-            }
-        }
-    }
-
-    //if (UsingBacktrack)
-    //{
-    //	cmd->tick_count = TIME_TO_TICKS(BestBacktrackTick.m_flSimulationTime);
-    //}
-
-    hitpos = BestPos;
-    return BestIndex;
-}
-
-void Lbot::ResetRecoil(CUserCmd* cmd)
-{
-	cmd->viewangles += LastAimpunchRemove;
-}
-
-void Lbot::AutoPistol(CUserCmd * cmd)
-{
-	float NextAttack = g_LocalPlayer->m_hActiveWeapon()->m_flNextPrimaryAttack();
-	float Tick = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick; 
-
-	if (NextAttack < Tick)
+	RCSLastPunch = CurrentPunch;
+	if (!IsRcs())
 		return;
 
-	if (g_LocalPlayer->m_hActiveWeapon()->GetItemDefinitionIndex() == WEAPON_REVOLVER)
-		cmd->buttons &= ~IN_ATTACK2;
-	else
-		cmd->buttons &= ~IN_ATTACK;
+	angle.pitch -= punch.pitch * (Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_X / 100.0f);
+	angle.yaw -= punch.yaw * (Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_Y / 100.0f);
+
+	Math::FixAngles(angle);
 }
 
-void Lbot::RemoveRecoil(C_BasePlayer* local, CUserCmd* cmd)
+bool Lbot::IsLineGoesThroughSmoke(Vector vStartPos, Vector vEndPos)
 {
-	QAngle AimPunch = local->m_aimPunchAngle();
-	QAngle FinalViewAngle = (AimPunch + LastAimpunch);
-	LastAimpunch = AimPunch;
-	AimPunch.pitch *= WeaponRecoilY;
-	AimPunch.yaw *= WeaponRecoilX;
-	//Math::NormalizeAngles(AimPunch);
-	cmd->viewangles -= FinalViewAngle;
-	LastAimpunchRemove = FinalViewAngle;
+	return Utils::LineThroughSmoke(vStartPos, vEndPos);
 }
 
-void Lbot::DoAimbot(CUserCmd* cmd, C_BasePlayer* local, C_BaseCombatWeapon* weapon)
+void Lbot::Smooth(QAngle currentAngle, QAngle aimAngle, QAngle& angle)
 {
-    static int LastEntity = -1;
-    static float EntityFoundTime = 0.f;
-    static bool DidLastShot = false;
+	auto smooth_value = GetSmooth();
+	if (smooth_value <= 1)
+		return;
 
-    if (!weapon->CanFire())
-        return;
-    
-    if (!weapon->HasBullets())
-        return;
-	
-	if ( !InputSys::Get().IsKeyDown(Settings::Aimbot::Hotkey) )
-        return;
+	QAngle delta = aimAngle - currentAngle;
+	Math::FixAngles(delta);
 
-    Vector Outpos = Vector(0, 0, 0);
-    int Target = GetBestTarget(local, weapon, cmd, Outpos);
-    if (Target == -1)
-    {
-        LastEntity = -1;
-        EntityFoundTime = g_GlobalVars->curtime;
-        return;
-    }
+	if (Settings::Aimbot::WeaponAimSetting[WeaponID].SmoothType == 1)
+	{
+		float deltaLength = fmaxf(sqrtf((delta.pitch * delta.pitch) + (delta.yaw * delta.yaw)), 0.01f);
+		delta *= (1.0f / deltaLength);
 
-	//auto TargetEntity = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(Target));
-	//if (g_LocalPlayer->CanSeePlayer(g_LocalPlayer, TargetEntity->GetRenderOrigin()))
-	//	return;
+		RandomSeed(g_GlobalVars->tickcount);
+		float randomize = RandomFloat(-0.1f, 0.1f);
+		smooth_value = fminf((g_GlobalVars->interval_per_tick * 64.0f) / (randomize + smooth_value * 0.15f), deltaLength);
+	}
+	else 
+	{
+		smooth_value = (g_GlobalVars->interval_per_tick * 64.0f) / smooth_value;
+	}
 
-    if (LastEntity != Target)
-    {
-        EntityFoundTime = g_GlobalVars->curtime;
-        LastEntity = Target;
-    }
-
-    if (WeaponDelay != 0.f)
-    {
-        if (g_GlobalVars->curtime - EntityFoundTime > WeaponDelay)
-            cmd->buttons |= IN_ATTACK;
-
-        else if(weapon->m_Item().m_iItemDefinitionIndex() != WEAPON_REVOLVER)
-            cmd->buttons &= ~IN_ATTACK;
-    }
-
-    if (WeaponRandomness != 0.f)
-        Outpos += Vector(Math::RandomFloat(-WeaponRandomness, WeaponRandomness), Math::RandomFloat(-WeaponRandomness, WeaponRandomness), Math::RandomFloat(-WeaponRandomness, WeaponRandomness));
-
-    QAngle CalcAng = Math::CalcAngle(local->GetEyePos(), Outpos);
-    QAngle ViewAngle = cmd->viewangles;
-
-    Math::NormalizeAngles(CalcAng);
-    Math::NormalizeAngles(ViewAngle);
-
-    QAngle Delta = ViewAngle - CalcAng;
-
-    Math::NormalizeAngles(Delta);
-    Math::ClampAngles(Delta);
-
-
-    float RandomFactor = 1.f;
-    //if (WeaponRandomness != 0.f) RandomFactor = Math::RandomFloat(0.f, 1.f + WeaponRandomness);
-
-    QAngle FinalAngle = ViewAngle - (Delta / (WeaponSmooth * RandomFactor));
-
-    Math::NormalizeAngles(FinalAngle);
-    Math::ClampAngles(FinalAngle);
-
-    if (DidLastShot && weapon->GetItemDefinitionIndex() != WEAPON_REVOLVER && (weapon->IsPistol() || weapon->IsShotgun() || weapon->IsSniper()))
-        cmd->buttons &= ~IN_ATTACK;
-
-    DidLastShot = !DidLastShot;
-    cmd->viewangles = FinalAngle;
-    if (weapon->CanFire())
-    {
-        auto entity = static_cast<C_BasePlayer*>(g_EntityList->GetClientEntity(Target));
-        if (!entity || !entity->IsPlayer() || entity == local || entity->IsDormant()
-                || !entity->IsAlive() || !entity->IsEnemy())
-        {
-            return;
-        }
-
-        cmd->tick_count = TIME_TO_TICKS(entity->m_flSimulationTime() + Backtrack::Get().GetLerpTime());
-    }
+	delta *= smooth_value;
+	angle = currentAngle + delta;
+	Math::FixAngles(angle);
 }
 
+bool Lbot::IsNotSilent(float fov)
+{
+	return IsRcs() || !Settings::Aimbot::WeaponAimSetting[WeaponID].Silent || 
+						(Settings::Aimbot::WeaponAimSetting[WeaponID].Silent && fov > Settings::Aimbot::WeaponAimSetting[WeaponID].SilentFOV);
+}
 
+C_BasePlayer* Lbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone)
+{
+	QAngle ang;
+	Vector eVecTarget;
+	Vector pVecTarget = g_LocalPlayer->GetEyePos();
+	if (target && !kill_delay && Settings::Aimbot::WeaponAimSetting[WeaponID].KillDelay > 0 && target->IsNotTarget())
+	{
+		target = NULL;
+		shot_delay = false;
+		kill_delay = true;
+		kill_delay_time = (int)GetTickCount64() + Settings::Aimbot::WeaponAimSetting[WeaponID].KillDelay;
+	}
+	if (kill_delay) 
+	{
+		if (kill_delay_time <= (int)GetTickCount64()) kill_delay = false;
+		else return NULL;
+	}
+
+	C_BasePlayer* player;
+	target = NULL;
+	int bestHealth = 100.f;
+	float bestFov = 9999.f;
+	float bestDamage = 0.f;
+	float bestBoneFov = 9999.f;
+	float bestDistance = 9999.f;
+	int health;
+	float fov;
+	float damage;
+	float distance;
+	int fromBone = Settings::Aimbot::WeaponAimSetting[WeaponID].AimType == 1 ? 0 : Settings::Aimbot::WeaponAimSetting[WeaponID].Hitbox;
+	int toBone = Settings::Aimbot::WeaponAimSetting[WeaponID].AimType == 1 ? 7 : Settings::Aimbot::WeaponAimSetting[WeaponID].Hitbox;
+	for (int i = 1; i < g_EngineClient->GetMaxClients(); ++i) 
+	{
+		damage = 0.f;
+		player = (C_BasePlayer*)g_EntityList->GetClientEntity(i);
+		if (player->IsNotTarget())
+			continue;
+		if (!Settings::Aimbot::DeathmatchMode && player->m_iTeamNum() == g_LocalPlayer->m_iTeamNum())
+			continue;
+		for (int bone = fromBone; bone <= toBone; bone++) 
+		{
+			eVecTarget = player->GetHitboxPos(bone);
+			Math::VectorAngles(eVecTarget - pVecTarget, ang);
+			Math::FixAngles(ang);
+			distance = pVecTarget.DistTo(eVecTarget);
+			if (Settings::Aimbot::WeaponAimSetting[WeaponID].FOVType == 1)
+				fov = GetRealDistanceFOV(distance, ang, cmd->viewangles + RCSLastPunch);
+			else
+				fov = GetFovToPlayer(cmd->viewangles + RCSLastPunch, ang);
+
+			if (fov > GetFov())
+				continue;
+
+			if (!g_LocalPlayer->CanSeePlayer(player, eVecTarget)) 
+			{
+				if (!Settings::Aimbot::WeaponAimSetting[WeaponID].AutowallEnabled)
+					continue;
+
+				damage = Autowall::Get().CanHit(eVecTarget);
+				if (damage < Settings::Aimbot::WeaponAimSetting[WeaponID].MinDamage)
+					continue;
+
+			}
+			if ((Settings::Aimbot::Priority == 1 || Settings::Aimbot::Priority == 2) && damage == 0.f)
+				damage = Autowall::Get().CanHit(eVecTarget);
+
+			health = player->m_iHealth() - damage;
+			if (Settings::Aimbot::SmokeCheck && IsLineGoesThroughSmoke(pVecTarget, eVecTarget))
+				continue;
+
+			bool OnGround = (g_LocalPlayer->m_fFlags() & FL_ONGROUND);
+			if (Settings::Aimbot::JumpCheck && !OnGround)
+				continue;
+
+			if (Settings::Aimbot::WeaponAimSetting[WeaponID].AimType == 1 && bestBoneFov < fov)
+				continue;
+
+
+			bestBoneFov = fov;
+			if (
+				(Settings::Aimbot::Priority == 0 && bestFov > fov) ||
+				(Settings::Aimbot::Priority == 1 && bestHealth > health) ||
+				(Settings::Aimbot::Priority == 2 && bestDamage < damage) ||
+				(Settings::Aimbot::Priority == 3 && distance < bestDistance)
+				) 
+			{
+				bestBone = bone;
+				target = player;
+				bestFov = fov;
+				bestHealth = health;
+				bestDamage = damage;
+				bestDistance = distance;
+			}
+		}
+	}
+	return target;
+}
 
 void Lbot::LegitAA(CUserCmd * cmd, bool & bSendPacket)
 {
-	static bool sw = false;
-	bSendPacket = sw;
-	sw = !sw;
+	QAngle OldAngles = cmd->viewangles;
+	if (cmd->buttons & (IN_ATTACK | IN_ATTACK2 | IN_USE) ||
+		g_LocalPlayer->m_nMoveType() == MOVETYPE_LADDER || g_LocalPlayer->m_nMoveType() == MOVETYPE_NOCLIP
+		|| !g_LocalPlayer->IsAlive())
+		return;
 
-	auto animstate = g_LocalPlayer->GetBasePlayerAnimState();
-	float feet_yaw = animstate->m_flGoalFeetYaw;
-	float feet_delta = Math::NormalizeAngle(cmd->viewangles.yaw - feet_yaw);
-	float desync_delta = g_LocalPlayer->GetMaxDesyncAngle();
-	float delta = std::clamp(Math::NormalizeAngle(desync_delta - feet_delta), -desync_delta, desync_delta);
+	auto weapon = g_LocalPlayer->m_hActiveWeapon().Get();
+	if (!weapon)
+		return;
 
-	static bool bSwitch = false;
-	if (!bSendPacket && !(cmd->buttons & IN_ATTACK))
+	auto weapon_index = weapon->m_Item().m_iItemDefinitionIndex();
+	if ((weapon_index == WEAPON_GLOCK || weapon_index == WEAPON_FAMAS) && weapon->m_flNextPrimaryAttack() >= g_GlobalVars->curtime)
+		return;
+
+	auto weapon_data = weapon->GetCSWeaponData();
+
+	if (weapon_data->WeaponType == WEAPONTYPE_GRENADE) 
 	{
-		cmd->viewangles.yaw += bSwitch ? delta : -delta;
-		bSwitch != bSwitch;
+		if (!weapon->m_bPinPulled()) 
+		{
+			float throwTime = weapon->m_fThrowTime();
+			if (throwTime > 0.f)
+				return;
+		}
+
+		if ((cmd->buttons & IN_ATTACK) || (cmd->buttons & IN_ATTACK2)) 
+		{
+			if (weapon->m_fThrowTime() > 0.f)
+				return;
+		}
 	}
+
+	static bool broke_lby = false;
+
+	if (InputSys::Get().WasKeyPressed(Settings::Aimbot::AAFlipHotkey))
+		Settings::Aimbot::AaSide = -Settings::Aimbot::AaSide;
+
+	if (Settings::Aimbot::LegitAA == 1)
+	{
+		float minimal_move = 2.0f;
+		if (g_LocalPlayer->m_fFlags() & FL_DUCKING)
+			minimal_move *= 3.f;
+
+		if (cmd->buttons & IN_WALK)
+			minimal_move *= 3.f;
+
+		bool should_move = g_LocalPlayer->m_vecVelocity().Length2D() <= 0.0f
+			|| std::fabsf(g_LocalPlayer->m_vecVelocity().z) <= 100.0f;
+
+		if ((cmd->command_number % 2) == 1) 
+		{
+			cmd->viewangles.yaw += 120.0f * side;
+			if (should_move)
+				cmd->sidemove -= minimal_move;
+			bSendPacket = false;
+		}
+		else if (should_move) 
+			cmd->sidemove += minimal_move;
+	}
+	else 
+	{
+		if (next_lby >= g_GlobalVars->curtime) 
+		{
+			if (!broke_lby && bSendPacket && g_ClientState->chokedcommands > 0)
+				return;
+
+			broke_lby = false;
+			bSendPacket = false;
+			cmd->viewangles.yaw += 120.0f * Settings::Aimbot::AaSide;
+		}
+		else 
+		{
+			broke_lby = true;
+			bSendPacket = false;
+			cmd->viewangles.yaw += 120.0f * -Settings::Aimbot::AaSide;
+		}
+	}
+	Math::FixAngles(cmd->viewangles);
+	Math::MovementFix(cmd, OldAngles, cmd->viewangles);
+
+
+	auto anim_state = g_LocalPlayer->GetBasePlayerAnimState();
+	if (anim_state) 
+	{
+		CBasePlayerAnimState anim_state_backup = *anim_state;
+		*anim_state = g_Saver.AnimState;
+		*g_LocalPlayer->GetVAngles() = cmd->viewangles;
+		g_LocalPlayer->UpdateClientSideAnimation();
+
+		if (anim_state->speed_2d > 0.1f || std::fabsf(anim_state->flUpVelocity)) {
+			next_lby = g_GlobalVars->curtime + 0.22f;
+		}
+		else if (g_GlobalVars->curtime > next_lby) {
+			if (std::fabsf(Math::AngleDiff(anim_state->m_flGoalFeetYaw, anim_state->m_flEyeYaw)) > 35.0f) {
+				next_lby = g_GlobalVars->curtime + 1.1f;
+			}
+		}
+
+		g_Saver.AnimState = *anim_state;
+		*anim_state = anim_state_backup;
+	}
+
+	/*if (bSendPacket) 
+	{
+		real_angle = g_AnimState.m_flGoalFeetYaw;
+		view_angle = g_AnimState.m_flEyeYaw;
+	}*/
 }

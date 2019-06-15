@@ -525,6 +525,24 @@ std::string C_BasePlayer::GetName()
 	return std::string(buf);
 }
 
+bool C_BasePlayer::IsNotTarget()
+{
+	if (!this || this == g_LocalPlayer)
+		return true;
+
+	if (m_iHealth() <= 0)
+		return true;
+
+	if (m_bGunGameImmunity())
+		return true;
+
+	if (m_fFlags() & FL_FROZEN)
+		return true;
+
+	int entIndex = EntIndex();
+	return entIndex > g_GlobalVars->maxClients;
+}
+
 bool C_BasePlayer::GetHitboxPos(int hitbox, Vector& output)
 {
 	if (hitbox >= HITBOX_MAX)

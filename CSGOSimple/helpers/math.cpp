@@ -1,9 +1,73 @@
 
 #include "Math.hpp"
+#include "../valve_sdk/csgostructs.hpp"
 
 namespace Math
 {
-    //--------------------------------------------------------------------------------
+	void FixAngles(QAngle& angles)
+	{
+		NormalizeAngles(angles);
+		ClampAngles(angles);
+	}
+	void MovementFix(CUserCmd* cmd, QAngle desiredAngle, QAngle oldAngles)
+	{
+		if (oldAngles.pitch != desiredAngle.pitch || oldAngles.yaw != desiredAngle.yaw || oldAngles.roll != desiredAngle.roll) {
+			Vector wish_forward, wish_right, wish_up, cmd_forward, cmd_right, cmd_up;
+
+			auto viewangles = oldAngles;
+			auto movedata = Vector(cmd->forwardmove, cmd->sidemove, cmd->upmove);
+			viewangles.Normalize();
+
+			if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND) && viewangles.roll != 0.f)
+				movedata.y = 0.f;
+
+			AngleVectors(desiredAngle, wish_forward, wish_right, wish_up);
+			AngleVectors(viewangles, cmd_forward, cmd_right, cmd_up);
+
+			auto v8 = sqrt(wish_forward.x * wish_forward.x + wish_forward.y * wish_forward.y), v10 = sqrt(wish_right.x * wish_right.x + wish_right.y * wish_right.y), v12 = sqrt(wish_up.z * wish_up.z);
+
+			Vector wish_forward_norm(1.0f / v8 * wish_forward.x, 1.0f / v8 * wish_forward.y, 0.f),
+				wish_right_norm(1.0f / v10 * wish_right.x, 1.0f / v10 * wish_right.y, 0.f),
+				wish_up_norm(0.f, 0.f, 1.0f / v12 * wish_up.z);
+
+			auto v14 = sqrt(cmd_forward.x * cmd_forward.x + cmd_forward.y * cmd_forward.y), v16 = sqrt(cmd_right.x * cmd_right.x + cmd_right.y * cmd_right.y), v18 = sqrt(cmd_up.z * cmd_up.z);
+
+			Vector cmd_forward_norm(1.0f / v14 * cmd_forward.x, 1.0f / v14 * cmd_forward.y, 1.0f / v14 * 0.0f),
+				cmd_right_norm(1.0f / v16 * cmd_right.x, 1.0f / v16 * cmd_right.y, 1.0f / v16 * 0.0f),
+				cmd_up_norm(0.f, 0.f, 1.0f / v18 * cmd_up.z);
+
+			auto v22 = wish_forward_norm.x * movedata.x, v26 = wish_forward_norm.y * movedata.x, v28 = wish_forward_norm.z * movedata.x, v24 = wish_right_norm.x * movedata.y, v23 = wish_right_norm.y * movedata.y, v25 = wish_right_norm.z * movedata.y, v30 = wish_up_norm.x * movedata.z, v27 = wish_up_norm.z * movedata.z, v29 = wish_up_norm.y * movedata.z;
+
+			Vector correct_movement;
+			correct_movement.x = cmd_forward_norm.x * v24 + cmd_forward_norm.y * v23 + cmd_forward_norm.z * v25 + (cmd_forward_norm.x * v22 + cmd_forward_norm.y * v26 + cmd_forward_norm.z * v28) + (cmd_forward_norm.y * v30 + cmd_forward_norm.x * v29 + cmd_forward_norm.z * v27);
+			correct_movement.y = cmd_right_norm.x * v24 + cmd_right_norm.y * v23 + cmd_right_norm.z * v25 + (cmd_right_norm.x * v22 + cmd_right_norm.y * v26 + cmd_right_norm.z * v28) + (cmd_right_norm.x * v29 + cmd_right_norm.y * v30 + cmd_right_norm.z * v27);
+			correct_movement.z = cmd_up_norm.x * v23 + cmd_up_norm.y * v24 + cmd_up_norm.z * v25 + (cmd_up_norm.x * v26 + cmd_up_norm.y * v22 + cmd_up_norm.z * v28) + (cmd_up_norm.x * v30 + cmd_up_norm.y * v29 + cmd_up_norm.z * v27);
+
+			correct_movement.x = std::clamp(correct_movement.x, -450.f, 450.f);
+			correct_movement.y = std::clamp(correct_movement.y, -450.f, 450.f);
+			correct_movement.z = std::clamp(correct_movement.z, -320.f, 320.f);
+
+			cmd->forwardmove = correct_movement.x;
+			cmd->sidemove = correct_movement.y;
+			cmd->upmove = correct_movement.z;
+
+			cmd->buttons &= ~(IN_MOVERIGHT | IN_MOVELEFT | IN_BACK | IN_FORWARD);
+			if (cmd->sidemove != 0.0) {
+				if (cmd->sidemove <= 0.0)
+					cmd->buttons |= IN_MOVELEFT;
+				else
+					cmd->buttons |= IN_MOVERIGHT;
+			}
+
+			if (cmd->forwardmove != 0.0) {
+				if (cmd->forwardmove <= 0.0)
+					cmd->buttons |= IN_BACK;
+				else
+					cmd->buttons |= IN_FORWARD;
+			}
+		}
+	}
+	//--------------------------------------------------------------------------------
     float VectorDistance(const Vector& v1, const Vector& v2)
     {
         return FASTSQRT(pow(v1.x - v2.x, 2) + pow(v1.y - v2.y, 2) + pow(v1.z - v2.z, 2));
@@ -221,28 +285,20 @@ namespace Math
         {
             yaw = 0;
             if(forward[2] > 0)
-            {
                 pitch = 270;
-            }
             else
-            {
                 pitch = 90;
-            }
         }
         else
         {
             yaw = (atan2(forward[1], forward[0]) * 180 / DirectX::XM_PI);
             if(yaw < 0)
-            {
-                yaw += 360;
-            }
+				yaw += 360;
 
             tmp = sqrt(forward[0] * forward[0] + forward[1] * forward[1]);
             pitch = (atan2(-forward[2], tmp) * 180 / DirectX::XM_PI);
             if(pitch < 0)
-            {
                 pitch += 360;
-            }
         }
 
         angles[0] = pitch;

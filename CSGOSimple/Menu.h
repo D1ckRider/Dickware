@@ -1,6 +1,7 @@
 
 #include "singleton.hpp"
 #include "menu_helpers.hpp"
+#include "Settings.h"
 
 enum class MenuAvailable : int
 {
@@ -88,6 +89,11 @@ public:
 	void RenderSkinchanger();
     void RenderSettings();
 	void RenderSpectatorList();
+
+
+	void RenderRageWeapon(Settings::WeaponType wtype);
+	void RenderLegitWeapon(Settings::WeaponType wtype);
+	void RenderRageHitboxes(std::string hitbox_name, Settings::HitboxType htype);
 private:
     MenuHelper::components Components;
     //MenuFonts* fonts;

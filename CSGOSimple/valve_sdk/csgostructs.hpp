@@ -324,12 +324,22 @@ public:
 	NETVAR(Vector, m_ragPos, "DT_Ragdoll", "m_ragPos");
 	NETVARADDOFFS(float_t, m_flOldSimulationTime, "CBaseEntity", "m_flSimulationTime", 0x4);
 	NETVAR(bool, m_bFreezePeriod, "DT_CSGameRulesProxy", "m_bFreezePeriod");
+	NETVAR(int32_t, m_iFOV, "DT_BasePlayer", "m_iFOV");
+	NETVAR(int32_t, m_iDefaultFOV, "DT_BasePlayer", "m_iDefaultFOV");
 	//NETVAR(float, m_flSurvivalStartTime, "DT_CSGameRulesProxy", "m_flSurvivalStartTime");
 	NETVAR(int32_t, m_nSurvivalTeam, "DT_CSPlayer", "m_nSurvivalTeam");
 	NETVAR(float_t, m_flHealthShotBoostExpirationTime, "DT_CSPlayer", "m_flHealthShotBoostExpirationTime");
 	//m_nSurvivalTeam
 
 	VarMapping_t* VarMapping();
+
+
+	int C_BasePlayer::GetFOV() 
+	{
+		if (m_iFOV() != 0)
+			return m_iFOV();
+		return m_iDefaultFOV();
+	}
 
 	bool InDangerzone()
 	{
@@ -457,6 +467,7 @@ public:
 	Vector        GetHitboxPos(int hitbox_id);
 	mstudiobbox_t* GetHitbox(int hitbox_id);
 	std::string		GetName();
+	bool		IsNotTarget();
 	bool          GetHitboxPos(int hitbox, Vector& output);
 	void			PrecaceOptimizedHitboxes();
 	bool GetOptimizedHitboxPos(int hitbox, Vector& output);

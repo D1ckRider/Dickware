@@ -416,55 +416,8 @@ bool AntiAim::FreestandingLbyBreak ( float& ang )
     return false;
 }
 
-// TODO: Fix this finally
-float AntiAim::GetMaxDesyncYaw()
-{
-    //g_LocalPlayer->GetBasePlayerAnimState();
-   // auto animstate = uintptr_t(this->GetBasePlayerAnimState());
-	//auto animstate = uintptr_t(g_LocalPlayer->GetBasePlayerAnimState());
-	auto animstate = g_LocalPlayer->GetBasePlayerAnimState();
-    //float rate = 180;
-    //float duckammount = *(float *)(animstate + 0xA4);
-	float duckammount = animstate->m_fDuckAmount;
-    float speedfraction = std::max(0.f, std::min(animstate->m_flFeetSpeedForwardsOrSideWays, 1.f));
-
-    float speedfactor = std::max(0.f, std::max(1.f, animstate->m_flFeetSpeedUnknownForwardOrSideways));
-
-    float unk1 = ((animstate->m_flStopToFullRunningFraction * -0.30000001) - 0.19999999) * speedfraction;
-    float unk2 = unk1 + 1.f;
-    //float unk3;
-
-    if (duckammount > 0)
-    	unk2 += +((duckammount * speedfactor) * (0.5f - unk2));
-
-    //unk3 = *(float *)(animstate + 0x334) * unk2;
-	//unk3 = dynamic_cast<float>(&animstate + 0x334) * unk2;
-
-    return *(float*)((uintptr_t)animstate + 0x334) * unk2;
-}
-
-float AngleDiff(float destAngle, float srcAngle) 
-{
-	float delta;
-	
-	delta = fmodf( destAngle - srcAngle, 360.0f );
-	
-	if( destAngle > srcAngle ) 
-	{
-		if( delta >= 180 )
-			delta -= 360;
-	}
-	else
-	{
-		if( delta <= -180 )
-			delta += 360;
-	}
-	return delta;
-}
-
 void AntiAim::LbyBreakerPrediction ( CUserCmd* cmd, bool& bSendPacket )
 {
-
 	if (!Settings::RageBot::DesyncType || !Settings::RageBot::Enabled || !g_LocalPlayer || !g_LocalPlayer->IsAlive())
         return;
 
@@ -472,17 +425,17 @@ void AntiAim::LbyBreakerPrediction ( CUserCmd* cmd, bool& bSendPacket )
 	if( anim_state ) 
 	{
 		CBasePlayerAnimState anim_state_backup = *anim_state;
-		//*anim_state = g_AnimState;
+		*anim_state = g_Saver.AnimState;
 		*g_LocalPlayer->GetVAngles( ) = cmd->viewangles;
 		g_LocalPlayer->UpdateClientSideAnimation( );
 
 		if( anim_state->speed_2d > 0.1f || std::fabsf( anim_state->flUpVelocity ) )
 			g_Saver.NextLbyUpdate = g_GlobalVars->curtime + 0.47f + DirectX::XM_2PI;
 		else if( g_GlobalVars->curtime > g_Saver.NextLbyUpdate)
-			if( std::fabsf( AngleDiff( anim_state->m_flGoalFeetYaw, anim_state->m_flEyeYaw ) ) > 65.0f )
+			if( std::fabsf( Math::AngleDiff( anim_state->m_flGoalFeetYaw, anim_state->m_flEyeYaw ) ) > 65.0f )
 				g_Saver.NextLbyUpdate = g_GlobalVars->curtime + 2.1f;
 
-		//g_AnimState = *anim_state;
+		g_Saver.AnimState = *anim_state;
 		*anim_state = anim_state_backup;
 	}
 
@@ -660,6 +613,10 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
         static QAngle LastRealAngle = QAngle ( 0, 0, 0 );
         //if (!g_Saver.FakelagCurrentlyEnabled) bSendPacket = cmd->tick_count % 2;
 
+
+		if (InputSys::Get().WasKeyPressed(Settings::RageBot::DesyncFlipHotkey))
+			side = -side;
+
 		/*if (Settings::RageBot::DesyncType == DesyncState::LEGACY)
 		{
 			auto animstate = g_LocalPlayer->GetBasePlayerAnimState();
@@ -686,16 +643,37 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
 			else
 				cmd->viewangles.yaw -= desync_delta + 30.f;
 		}*/
+		static bool broke_lby = false;
+
 		if(Settings::RageBot::DesyncType > DesyncState::STATIC)
 		{
-			DesyncAnimation(cmd, bSendPacket, Settings::RageBot::DesyncType);
+			//DesyncAnimation(cmd, bSendPacket, Settings::RageBot::DesyncType);
+			float minimal_move = 2.0f;
+			if (g_LocalPlayer->m_fFlags() & FL_DUCKING)
+				minimal_move *= 3.f;
+
+			if (cmd->buttons & IN_WALK)
+				minimal_move *= 3.f;
+
+			bool should_move = g_LocalPlayer->m_vecVelocity().Length2D() <= 0.0f
+				|| std::fabsf(g_LocalPlayer->m_vecVelocity().z) <= 100.0f;
+
+			if ((cmd->command_number % 2) == 1)
+			{
+				cmd->viewangles.yaw += 120.0f * side;
+				if (should_move)
+					cmd->sidemove -= minimal_move;
+				bSendPacket = false;
+			}
+			else if (should_move)
+				cmd->sidemove += minimal_move;
 		}
 
 		if (bSendPacket)
 		{
 			LastRealAngle = cmd->viewangles;
-			g_Saver.AARealAngle = QAngle(cmd->viewangles.pitch, g_LocalPlayer->GetBasePlayerAnimState()->m_flGoalFeetYaw, cmd->viewangles.roll);
-			g_Saver.AADesyncAngle = cmd->viewangles;
+			g_Saver.RealYaw = g_Saver.AnimState.m_flGoalFeetYaw;
+			g_Saver.DesyncYaw = g_Saver.AnimState.m_flEyeYaw;
 		}
 
         g_Saver.FakelagData.ang = LastRealAngle;

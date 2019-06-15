@@ -32,9 +32,14 @@ IPhysicsSurfaceProps* g_PhysSurface    = nullptr;
 ILocalize*			  g_Localize	   = nullptr;
 C_LocalPlayer         g_LocalPlayer;
 IMemAlloc*			  g_pMemAlloc	   = nullptr;
+uintptr_t*			  g_SpatialPartition = nullptr;
 IViewRenderBeams*     g_RenderBeams    = nullptr;
 CUtlVectorSimple*	  g_ClientSideAnimationList = nullptr;
 C_ConvarSpoofer*	  g_CVarSpoofer;
+
+int(__cdecl* RandomInt)(int min, int max);
+void(__cdecl* RandomSeed)(uint32_t seed);
+float(__cdecl* RandomFloat)(float min, float max);
 
 namespace Interfaces
 {
@@ -66,6 +71,7 @@ namespace Interfaces
         auto matSysFactory    = get_module_factory(GetModuleHandleW(L"materialsystem.dll"));
         auto dataCacheFactory = get_module_factory(GetModuleHandleW(L"datacache.dll"));
         auto vphysicsFactory  = get_module_factory(GetModuleHandleW(L"vphysics.dll"));
+		auto stdlib = GetModuleHandleA("vstdlib.dll");
 
         g_CHLClient           = get_interface<IBaseClientDLL>      (clientFactory, "VClient018");
         g_EntityList          = get_interface<IClientEntityList>   (clientFactory, "VClientEntityList003");
@@ -85,8 +91,8 @@ namespace Interfaces
         g_VGuiPanel           = get_interface<IPanel>              (vgui2Factory, "VGUI_Panel009");
         g_VGuiSurface         = get_interface<ISurface>            (vguiFactory, "VGUI_Surface031");
         g_PhysSurface         = get_interface<IPhysicsSurfaceProps>(vphysicsFactory, "VPhysicsSurfaceProps001");
-        g_pMemAlloc = *(IMemAlloc**)(GetProcAddress(GetModuleHandleW(L"tier0.dll"), "g_pMemAlloc"));
-
+        g_pMemAlloc			  = *(IMemAlloc**)(GetProcAddress(GetModuleHandleW(L"tier0.dll"), "g_pMemAlloc"));
+		g_SpatialPartition	  = get_interface<uintptr_t>			(engineFactory, "SpatialPartition001");
 		
 		auto localizeFactory = get_module_factory(GetModuleHandleW(L"localize.dll"));
 		g_Localize = get_interface<ILocalize>(localizeFactory, "Localize_001");
@@ -109,6 +115,11 @@ namespace Interfaces
         g_RenderBeams = *(IViewRenderBeams**)(Utils::PatternScan(client, "A1 ? ? ? ? FF 10 A1 ? ? ? ? B9") + 0x1);
 
         g_LocalPlayer     = *(C_LocalPlayer*)(Utils::PatternScan(client, "8B 0D ? ? ? ? 83 FF FF 74 07") + 2);
+
+		RandomInt = reinterpret_cast<decltype(RandomInt)>(GetProcAddress(stdlib, "RandomInt"));
+		RandomSeed = reinterpret_cast<decltype(RandomSeed)>(GetProcAddress(stdlib, "RandomSeed"));
+		RandomFloat = reinterpret_cast<decltype(RandomFloat)>(GetProcAddress(stdlib, "RandomFloat"));
+
     }
 
     void Dump()
@@ -138,5 +149,6 @@ namespace Interfaces
         PRINT_INTERFACE(g_PhysSurface );
         PRINT_INTERFACE(g_RenderBeams );
         PRINT_INTERFACE(g_pMemAlloc   );
+		PRINT_INTERFACE(g_SpatialPartition);
     }
 }

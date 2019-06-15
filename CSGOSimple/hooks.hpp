@@ -25,6 +25,7 @@ namespace index
     constexpr auto SendDatagram				 = 46;
 	constexpr auto FireBullets				 = 7;
 	constexpr auto WriteUsercmdDeltaToBuffer = 23;
+	constexpr auto SuppressLists = 16;
 }
 
 namespace Hooks
@@ -60,6 +61,7 @@ namespace Hooks
     using RenderSmokeOverlay_t = void ( __thiscall* ) ( IVRenderView*, bool );
     using SendDatagram_t	   = int  ( __thiscall* ) ( INetChannel*, bf_write* );
 	using WriteUsercmdDeltaToBuffer_t = bool(__thiscall* )(IBaseClientDLL*, int, bf_write*, int, int, bool);
+	using SuppressLists = bool(__thiscall*)(void*, int, bool);
 
 
     long __stdcall hkEndScene ( IDirect3DDevice9* device );
@@ -79,7 +81,7 @@ namespace Hooks
 
 	void __stdcall FireBullets_PostDataUpdate(C_TEFireBullets* thisptr, DataUpdateType_t updateType);
 	void __stdcall hkTEFireBulletsPostDataUpdate(DataUpdateType_t updateType);
-
+	void __stdcall hkSuppressLists(int a2, bool a3);
     void __fastcall hkSceneEnd ( void* pEcx, void* pEdx );
     bool __stdcall hkFireEvent ( IGameEvent* pEvent );
 	void hkRecvProxy(const CRecvProxyData* pData, void* entity, void* output);

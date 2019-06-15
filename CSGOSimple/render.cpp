@@ -25,7 +25,6 @@ ImFont* g_ManualAAFont;
 Render::Render()
 {
     //InitializeCriticalSection(&render_cs);
-
 }
 
 ImDrawListSharedData _data;
@@ -110,6 +109,21 @@ void Render::BeginScene()
 		DrawWatermark();
     Visuals::Get().AddToDrawList();
 
+	if (g_EngineClient->IsInGame() && g_LocalPlayer && Settings::Aimbot::DrawFov)
+		Visuals::Get().DrawFOV();
+
+	if (g_EngineClient->IsInGame() && g_LocalPlayer && Settings::Aimbot::LegitAA > 0)
+	{
+		int PosDesyncY;
+
+		//if (g_Options.misc_watermark)
+			//PosDesyncY = 25;
+		//else PosDesyncY = 5;
+		PosDesyncY = 5;
+
+		Render::Get().RenderText(Settings::Aimbot::AaSide > 0.0f ? "LEFT" : "RIGHT", 8, PosDesyncY, 18.0f, Color::White);
+	}
+
     render_mutex.lock();
     *draw_list_act = *draw_list;
     render_mutex.unlock();
@@ -133,8 +147,6 @@ ImDrawList* Render::RenderScene()
     draw_data.TotalVtxCount = draw_list_rendering->VtxBuffer.Size;
     draw_data.TotalIdxCount = draw_list_rendering->IdxBuffer.Size;
     }
-
-
 
     if (draw_data.Valid)
     ImGui_ImplDX9_RenderDrawData(&draw_data);*/

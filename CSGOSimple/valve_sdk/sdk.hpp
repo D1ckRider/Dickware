@@ -97,9 +97,14 @@ extern CClientState*         g_ClientState;
 extern IPhysicsSurfaceProps* g_PhysSurface;
 extern ILocalize*			 g_Localize;
 extern IMemAlloc*			 g_pMemAlloc;
+extern uintptr_t*			 g_SpatialPartition;
 extern IViewRenderBeams*	 g_RenderBeams;
 extern CUtlVectorSimple*	 g_ClientSideAnimationList;
 extern C_ConvarSpoofer*		 g_CVarSpoofer;
+
+extern void(__cdecl* RandomSeed)(uint32_t seed);
+extern int(__cdecl* RandomInt)(int min, int max);
+extern float(__cdecl* RandomFloat)(float min, float max);
 
 template<typename... Args>
 void ConMsg(const char* pMsg, Args... args)

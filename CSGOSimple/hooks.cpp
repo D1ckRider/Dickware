@@ -58,6 +58,7 @@ namespace Hooks
     vfunc_hook gameevents_hook;
     vfunc_hook clientstate_hook;
 	vfunc_hook firebullets_hook;
+	vfunc_hook partition_hook;
 
 	float flAngle = 0.f;
 
@@ -75,6 +76,7 @@ namespace Hooks
         sound_hook.setup ( g_EngineSound, "engine.dll" );
         mdlrender_hook.setup ( g_MdlRender, "client_panorama.dll" );
         clientmode_hook.setup ( g_ClientMode, "client_panorama.dll" );
+		partition_hook.setup(g_SpatialPartition);
         ConVar* sv_cheats_con = g_CVar->FindVar ( "sv_cheats" );
         sv_cheats.setup ( sv_cheats_con );
 		auto dwFireBullets = *(DWORD**)(Utils::PatternScan(GetModuleHandleW(L"client_panorama.dll"), "55 8B EC 51 53 56 8B F1 BB ? ? ? ? B8") + 0x131);
@@ -89,6 +91,7 @@ namespace Hooks
 
         hlclient_hook.hook_index ( index::FrameStageNotify, hkFrameStageNotify );
         hlclient_hook.hook_index ( index::CreateMove, hkCreateMove_Proxy );
+		partition_hook.hook_index(index::SuppressLists, hkSuppressLists);
 
         vguipanel_hook.hook_index ( index::PaintTraverse, hkPaintTraverse );
 
@@ -212,7 +215,7 @@ namespace Hooks
 
         //cl_interp_ratio_cvar->SetValue(0);
 
-        AntiAim::Get().ResetLbyPrediction();
+        //AntiAim::Get().ResetLbyPrediction();
 
         //test
         //cl_sv_lagcompensateself->SetValue(1);
@@ -329,6 +332,13 @@ namespace Hooks
 
         prediction->run_prediction ( cmd );
 
+		static float SpawnTime = 0.0f;
+		if (g_LocalPlayer->m_flSpawnTime() != SpawnTime) 
+		{
+			g_Saver.AnimState.pBaseEntity = g_LocalPlayer;
+			g_LocalPlayer->ResetAnimationState(&g_Saver.AnimState);
+			SpawnTime = g_LocalPlayer->m_flSpawnTime();
+		}
 
         #ifdef _DEBUG
         //Backtrack::Get().OnCreateMove();
@@ -341,13 +351,14 @@ namespace Hooks
 		if(Settings::Misc::BHop)
             BunnyHop::Get().OnCreateMove ( cmd );
 
-        if ( rbot )
-            Fakelag::Get().OnCreateMove ( cmd, bSendPacket );
+        //if ( rbot )
+        Fakelag::Get().OnCreateMove ( cmd, bSendPacket );
 
 		if ( Settings::RageBot::EnabledAA )
             AntiAim::Get().OnCreateMove ( cmd, bSendPacket );
-
-		//Lbot::Get().LegitAA(cmd, bSendPacket);
+		
+		if (Settings::Aimbot::LegitAA > 0)
+			Lbot::Get().LegitAA(cmd, bSendPacket);
 
         if ( rbot )
         {
@@ -357,8 +368,84 @@ namespace Hooks
 
 		GrenadeHint::Get().Tick(cmd->buttons);
 
+		if (!rbot)
+		{
+			Math::FixAngles(cmd->viewangles);
+			cmd->viewangles.yaw = std::remainderf(cmd->viewangles.yaw, 360.0f);
+		}
+		
+
+		if (Settings::Aimbot::LegitAA > 0 && g_ClientState->chokedcommands >= 14) 
+		{
+			bSendPacket = true;
+			cmd->viewangles = g_ClientState->viewangles;
+		}
+
+
 		if ( !rbot && Settings::Aimbot::Enabled )
         {
+			// from aimware dmp
+			static ConVar* m_yaw = m_yaw = g_CVar->FindVar("m_yaw");
+			static ConVar* m_pitch = m_pitch = g_CVar->FindVar("m_pitch");
+			static ConVar* sensitivity = sensitivity = g_CVar->FindVar("sensitivity");
+
+			static QAngle m_angOldViewangles = g_ClientState->viewangles;
+
+			float delta_x = std::remainderf(cmd->viewangles.pitch - m_angOldViewangles.pitch, 360.0f);
+			float delta_y = std::remainderf(cmd->viewangles.yaw - m_angOldViewangles.yaw, 360.0f);
+
+			if (delta_x != 0.0f) {
+				float mouse_y = -((delta_x / m_pitch->GetFloat()) / sensitivity->GetFloat());
+				short mousedy;
+				if (mouse_y <= 32767.0f) {
+					if (mouse_y >= -32768.0f) {
+						if (mouse_y >= 1.0f || mouse_y < 0.0f) {
+							if (mouse_y <= -1.0f || mouse_y > 0.0f)
+								mousedy = static_cast<short>(mouse_y);
+							else
+								mousedy = -1;
+						}
+						else {
+							mousedy = 1;
+						}
+					}
+					else {
+						mousedy = 0x8000u;
+					}
+				}
+				else {
+					mousedy = 0x7FFF;
+				}
+
+				cmd->mousedy = mousedy;
+			}
+
+			if (delta_y != 0.0f) {
+				float mouse_x = -((delta_y / m_yaw->GetFloat()) / sensitivity->GetFloat());
+				short mousedx;
+				if (mouse_x <= 32767.0f) {
+					if (mouse_x >= -32768.0f) {
+						if (mouse_x >= 1.0f || mouse_x < 0.0f) {
+							if (mouse_x <= -1.0f || mouse_x > 0.0f)
+								mousedx = static_cast<short>(mouse_x);
+							else
+								mousedx = -1;
+						}
+						else {
+							mousedx = 1;
+						}
+					}
+					else {
+						mousedx = 0x8000u;
+					}
+				}
+				else {
+					mousedx = 0x7FFF;
+				}
+
+				cmd->mousedx = mousedx;
+			}
+
             Lbot::Get().OnCreateMove ( cmd );
 
 			if(Settings::Aimbot::Backtrack)
@@ -407,7 +494,6 @@ namespace Hooks
                 MovementFix::Get().Correct ( OldViewangles, cmd, OldForwardmove, OldSidemove );
         }
 
-        //if ( g_Config.GetBool ( "rbot_slidewalk" ) )
 		if ( Settings::RageBot::SlideWalk )
             AntiAim::Get().SlideWalk ( cmd );
 
@@ -837,6 +923,29 @@ namespace Hooks
 			call FireBullets_PostDataUpdate
 			retn 4
 		}
+	}
+
+	void __stdcall hkSuppressLists(int a2, bool a3)
+	{
+		static auto ofunc = partition_hook.get_original< SuppressLists >(index::SuppressLists);
+
+		static auto OnRenderStart_Return = Utils::PatternScan(GetModuleHandleA("client_panorama.dll"), "FF 50 40 8B 1D ? ? ? ?") + 0x3;
+		static auto FrameNetUpdateEnd_Return = Utils::PatternScan(GetModuleHandleA("client_panorama.dll"), "5F 5E 5D C2 04 00 83 3D ? ? ? ? ?");
+
+		if (g_LocalPlayer && g_LocalPlayer->IsAlive()) 
+		{
+			if (_ReturnAddress() == OnRenderStart_Return) 
+			{
+				static auto set_abs_angles = Utils::PatternScan(GetModuleHandleA("client_panorama.dll"), "55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1 E8");
+				reinterpret_cast<void(__thiscall*)(void*, const QAngle&)>(set_abs_angles)(g_LocalPlayer, QAngle(0.0f, g_Saver.AnimState.m_flGoalFeetYaw, 0.0f));
+			}
+			else if (_ReturnAddress() == FrameNetUpdateEnd_Return) 
+			{
+				//Skinchanger::Get().OnFrameStageNotify(true);
+			}
+		}
+
+		ofunc(g_SpatialPartition, a2, a3);
 	}
 
     //--------------------------------------------------------------------------------

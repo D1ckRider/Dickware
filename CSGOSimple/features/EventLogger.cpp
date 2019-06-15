@@ -22,7 +22,8 @@ void EventLogger::PaintTraverse()
 
 			auto opacity = int(255 * factor);
 
-			if (opacity < 2) {
+			if (opacity < 2) 
+			{
 				Log.erase(Log.begin() + i);
 				continue;
 			}
@@ -39,7 +40,7 @@ void EventLogger::PaintTraverse()
 		//auto front_color = g_cfg.menu.menu_theme[0];
 		//front_color.SetAlpha(msg.Color.a());
 		auto name_size = VGSHelper::Get().GetSize(msg.Type);
-
+		
 		//VGSHelper::Get().DrawTextW(pre, msg.X, last_y + msg.Y, msg.Color);
 		VGSHelper::Get().DrawLogHeader(pre, msg.X, last_y + msg.Y, msg.Color);
 		VGSHelper::Get().DrawLogBase(text, msg.X + 3 + name_size.x, last_y + msg.Y, Color::White);
