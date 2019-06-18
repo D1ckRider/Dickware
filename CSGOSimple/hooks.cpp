@@ -332,13 +332,13 @@ namespace Hooks
 
         prediction->run_prediction ( cmd );
 
-		static float SpawnTime = 0.0f;
+		/*static float SpawnTime = 0.0f;
 		if (g_LocalPlayer->m_flSpawnTime() != SpawnTime) 
 		{
 			g_Saver.AnimState.pBaseEntity = g_LocalPlayer;
 			g_LocalPlayer->ResetAnimationState(&g_Saver.AnimState);
 			SpawnTime = g_LocalPlayer->m_flSpawnTime();
-		}
+		}*/
 
         #ifdef _DEBUG
         //Backtrack::Get().OnCreateMove();
@@ -375,7 +375,7 @@ namespace Hooks
 		}
 		
 
-		if (Settings::Aimbot::LegitAA > 0 && g_ClientState->chokedcommands >= 14) 
+		if ((Settings::Aimbot::LegitAA > 0 || Settings::RageBot::DesyncType > 0) && g_ClientState->chokedcommands >= 14) 
 		{
 			bSendPacket = true;
 			cmd->viewangles = g_ClientState->viewangles;
@@ -455,6 +455,8 @@ namespace Hooks
 		if ( !rbot && Settings::TriggerBot::Enabled )
 			TriggerBot::Get().OnCreateMove(cmd);
 
+		AntiAim::Get().LbyBreakerPrediction(cmd, bSendPacket);
+
 		if ( rbot && Settings::RageBot::Resolver )
             Resolver::Get().OnCreateMove ( OldViewangles );
 
@@ -481,7 +483,7 @@ namespace Hooks
 
         //OldViewangles.pitch = cmd->viewangles.pitch;
 
-        AntiAim::Get().LbyBreakerPrediction ( cmd, bSendPacket );
+        //AntiAim::Get().LbyBreakerPrediction ( cmd, bSendPacket );
 
         //QAngle oldVang = cmd->viewangles;
         Math::NormalizeAngles ( cmd->viewangles );
@@ -562,8 +564,6 @@ namespace Hooks
 
             Render::Get().BeginScene();
 			GrenadeHint::Get().Paint();
-			//if ( g_LocalPlayer && flAngle )
-			//	Visuals::Get().DrawEnemyCircle(flAngle);
         }
     }
     //--------------------------------------------------------------------------------

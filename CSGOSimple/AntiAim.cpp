@@ -421,6 +421,14 @@ void AntiAim::LbyBreakerPrediction ( CUserCmd* cmd, bool& bSendPacket )
 	if (!Settings::RageBot::DesyncType || !Settings::RageBot::Enabled || !g_LocalPlayer || !g_LocalPlayer->IsAlive())
         return;
 
+	static float SpawnTime = 0.0f;
+	if (g_LocalPlayer->m_flSpawnTime() != SpawnTime) 
+	{
+		g_Saver.AnimState.pBaseEntity = g_LocalPlayer;
+		g_LocalPlayer->ResetAnimationState(&g_Saver.AnimState);
+		SpawnTime = g_LocalPlayer->m_flSpawnTime();
+	}
+
 	auto anim_state = g_LocalPlayer->GetBasePlayerAnimState();
 	if( anim_state ) 
 	{
@@ -603,12 +611,12 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
         else
 			FakeLagTicks = Settings::RageBot::AntiAimSettings[AAState::MOVING].FakelagTicks;
 
-        if ( FakeLagTicks == 0 )
+        /*if ( FakeLagTicks == 0 )
         {
             static bool sw = false;
             bSendPacket = sw;
             sw = !sw;
-        }
+        }*/
 
         static QAngle LastRealAngle = QAngle ( 0, 0, 0 );
         //if (!g_Saver.FakelagCurrentlyEnabled) bSendPacket = cmd->tick_count % 2;
@@ -617,63 +625,62 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
 		if (InputSys::Get().WasKeyPressed(Settings::RageBot::DesyncFlipHotkey))
 			side = -side;
 
-		/*if (Settings::RageBot::DesyncType == DesyncState::LEGACY)
-		{
-			auto animstate = g_LocalPlayer->GetBasePlayerAnimState();
-			static bool b_switch = false;
-			float feet_yaw = animstate->m_flGoalFeetYaw;
-			float feet_delta = Math::NormalizeAngle(cmd->viewangles.yaw - feet_yaw);
-			float fake_yaw;
-			float desync_delta = g_LocalPlayer->GetMaxDesyncAngle();
-			float delta = std::clamp(Math::NormalizeAngle(desync_delta - feet_delta), -desync_delta, desync_delta);
-			float negative_delta = std::clamp(Math::NormalizeAngle(desync_delta + feet_delta), -desync_delta, desync_delta);
-			bool c_switch = fabsf(negative_delta) > fabsf(delta);
-
-			if (fabsf(feet_delta) > 20.f)
-				b_switch = !c_switch;
-
-			b_switch ? fake_yaw = cmd->viewangles.yaw - negative_delta : fake_yaw = cmd->viewangles.yaw + delta;
-			if ( !bSendPacket && !( cmd->buttons & IN_ATTACK ) )
-			{
-				cmd->viewangles.yaw = fake_yaw;
-				g_Saver.AADesyncAngle = cmd->viewangles;
-			}
-			if (g_Saver.NextLbyUpdate >= g_GlobalVars->curtime)
-				cmd->viewangles.yaw += 120.f;
-			else
-				cmd->viewangles.yaw -= desync_delta + 30.f;
-		}*/
 		static bool broke_lby = false;
-
 		if(Settings::RageBot::DesyncType > DesyncState::STATIC)
 		{
+			float desyncAngle = g_LocalPlayer->GetMaxDesyncAngle();
 			//DesyncAnimation(cmd, bSendPacket, Settings::RageBot::DesyncType);
-			float minimal_move = 2.0f;
-			if (g_LocalPlayer->m_fFlags() & FL_DUCKING)
-				minimal_move *= 3.f;
-
-			if (cmd->buttons & IN_WALK)
-				minimal_move *= 3.f;
-
-			bool should_move = g_LocalPlayer->m_vecVelocity().Length2D() <= 0.0f
-				|| std::fabsf(g_LocalPlayer->m_vecVelocity().z) <= 100.0f;
-
-			if ((cmd->command_number % 2) == 1)
+			if (Settings::RageBot::DesyncType == DesyncState::STATIC)
 			{
-				cmd->viewangles.yaw += 120.0f * side;
-				if (should_move)
-					cmd->sidemove -= minimal_move;
-				bSendPacket = false;
+				float minimal_move = 2.0f;
+				if (g_LocalPlayer->m_fFlags() & FL_DUCKING)
+					minimal_move *= 3.f;
+
+				if (cmd->buttons & IN_WALK)
+					minimal_move *= 3.f;
+
+				bool should_move = g_LocalPlayer->m_vecVelocity().Length2D() <= 0.0f
+					|| std::fabsf(g_LocalPlayer->m_vecVelocity().z) <= 100.0f;
+
+				if ((cmd->command_number % 2) == 1) 
+				{
+					cmd->viewangles.yaw += 120.0f * side;
+					if (should_move)
+						cmd->sidemove -= minimal_move;
+					bSendPacket = false;
+				}
+				else if (should_move) 
+				{
+					cmd->sidemove += minimal_move;
+				}
 			}
-			else if (should_move)
-				cmd->sidemove += minimal_move;
+			else 
+			{
+				if (g_Saver.NextLbyUpdate >= g_GlobalVars->curtime) 
+				{
+					if (!broke_lby && bSendPacket && g_ClientState->chokedcommands > 0)
+						return;
+
+					broke_lby = false;
+					bSendPacket = false;
+					cmd->viewangles.yaw += 120.0f * side;
+				}
+				else 
+				{
+					broke_lby = true;
+					bSendPacket = false;
+					cmd->viewangles.yaw -= (desyncAngle + 30.f) * side;
+				}
+			}
 		}
+
+		Math::FixAngles(cmd->viewangles);
 
 		if (bSendPacket)
 		{
 			LastRealAngle = cmd->viewangles;
-			g_Saver.RealYaw = g_Saver.AnimState.m_flGoalFeetYaw;
-			g_Saver.DesyncYaw = g_Saver.AnimState.m_flEyeYaw;
+			g_Saver.RealYaw = g_LocalPlayer->GetBasePlayerAnimState()->m_flGoalFeetYaw; //g_Saver.AnimState.m_flGoalFeetYaw;
+			g_Saver.DesyncYaw = g_LocalPlayer->GetBasePlayerAnimState()->m_flEyeYaw;//g_Saver.AnimState.m_flEyeYaw;
 		}
 
         g_Saver.FakelagData.ang = LastRealAngle;
@@ -684,7 +691,6 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
 	}
 
 }
-
 
 void AntiAim::Pitch ( CUserCmd* cmd )
 {
@@ -1178,8 +1184,6 @@ void AntiAim::DesyncAnimation(CUserCmd* cmd, bool& bSendPacket, int type)
 
 	cmd->viewangles.yaw = Math::NormalizeAngle(cmd->viewangles.yaw);
 
-	static bool BrokeLby;
-
 	if (type == DesyncState::JITTER) 
 	{
 		int jitter_side = 1;
@@ -1233,7 +1237,7 @@ void AntiAim::DesyncAnimation(CUserCmd* cmd, bool& bSendPacket, int type)
 				cmd->viewangles.yaw += desync - 190.0f;
 			else
 				cmd->viewangles.yaw += inverse_desync;
-			//bSendPacket = false;
+			bSendPacket = false;
 		}
 
 		if (++m_iRotate >= 3)
@@ -1252,29 +1256,31 @@ void AntiAim::DesyncAnimation(CUserCmd* cmd, bool& bSendPacket, int type)
 			return;
 #endif
 
+
+
 		float desync = g_LocalPlayer->GetMaxDesyncAngle();
 		float balance = 1.0f;
 		if (type == DesyncState::BALANCE)
 			balance = -1.0f;
 
+		/*if (bSendPacket && g_ClientState->chokedcommands >= 2) 
+		{
+			cmd->viewangles.yaw = Math::NormalizeAngle(cmd->viewangles.yaw);
+			return;
+		}
+
+		if (type == DesyncState::STATIC)
+			cmd->viewangles.yaw -= 100.0f;
+		else
+			cmd->viewangles.yaw += (balance * 120.0f);
+
+		else if (type != DesyncState::STATIC)
+			// lby breaker
+			cmd->viewangles.yaw -= (desync + 30.0f) * balance;*/
+
 		if (g_Saver.NextLbyUpdate >= g_GlobalVars->curtime) 
 		{
-
-			if (!BrokeLby && bSendPacket && g_ClientState->chokedcommands > 0)
-				return;
-
-			BrokeLby = false;
-			bSendPacket = false;
-			cmd->viewangles.yaw += 120.0f * side;
-		}
-		else 
-		{
-			BrokeLby = true;
-			bSendPacket = false;
-			cmd->viewangles.yaw += 120.0f * -side;
-		}
-
-			/*if (bSendPacket && g_ClientState->chokedcommands >= 2) 
+			if (bSendPacket && g_ClientState->chokedcommands >= 2) 
 			{
 				cmd->viewangles.yaw = Math::NormalizeAngle(cmd->viewangles.yaw);
 				return;
@@ -1283,15 +1289,19 @@ void AntiAim::DesyncAnimation(CUserCmd* cmd, bool& bSendPacket, int type)
 			if (type == DesyncState::STATIC)
 				cmd->viewangles.yaw -= 100.0f;
 			else
-				cmd->viewangles.yaw += (balance * 120.0f);*/
-
-		/*else if (type != DesyncState::STATIC)
+				cmd->viewangles.yaw += (balance * 120.0f);
+		}
+		else if (type != DesyncState::STATIC) 
+		{
 			// lby breaker
-			cmd->viewangles.yaw -= (desync + 30.0f) * balance;*/
+			//cmd->viewangles.yaw -= (desync + 30.0f) * balance;
+			cmd->viewangles.yaw -= (desync + 30.f);
+		}
+
+		bSendPacket = false;
 	}
 	cmd->viewangles.yaw = Math::NormalizeAngle(cmd->viewangles.yaw);
 }
-
 
 bool AntiAim::DesyncRotate(float rotation, int direction, CUserCmd* cmd, bool& bSendPacket)
 {

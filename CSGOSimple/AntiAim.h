@@ -90,8 +90,6 @@ private:
 
     bool allocate = false, change = false, reset = false;
 
-    float GetMaxDesyncYaw();
-
 	int m_iRotate = 0;
 	int m_iRotateIteration = 0;
 

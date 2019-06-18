@@ -1428,15 +1428,16 @@ void Visuals::AddToDrawList()
 			float AngleLinesLength = 30.0f;
 
 			Vector w2sReal;
-			if (Math::WorldToScreen(origin + forward * AngleLinesLength, w2sReal)) {
+			if (Math::WorldToScreen(origin + forward * AngleLinesLength, w2sReal)) 
+			{
 				Render::Get().RenderLine(w2sOrigin.x, w2sOrigin.y, w2sReal.x, w2sReal.y, Color::White, 1.0f);
 				Render::Get().RenderBoxFilled(w2sReal.x - 5.0f, w2sReal.y - 5.0f, w2sReal.x + 5.0f, w2sReal.y + 5.0f, Color::White);
 				//Render::Get().RenderText(text, w2sReal.x, w2sReal.y - 5.0f, 14.0f, clr, true, true);
-				Render::Get().RenderText(text, ImVec2(), 14.f, clr, true);
+				Render::Get().RenderText(text, ImVec2(w2sReal.x, w2sReal.y - 5.0f), 14.f, clr, true);
 			}
 		};
 
-		/*if (Settings::RageBot::Desync > 0)
+		if (Settings::RageBot::Desync > 0)
 		{
 			Vector w2sOrigin;
 			if (Math::WorldToScreen(g_LocalPlayer->m_vecOrigin(), w2sOrigin)) 
@@ -1445,7 +1446,7 @@ void Visuals::AddToDrawList()
 				drawAngleLine(g_LocalPlayer->m_vecOrigin(), w2sOrigin, g_LocalPlayer->m_flLowerBodyYawTarget(), "lby", Color(0.0f, 0.0f, 1.0f, 1.0f));
 				drawAngleLine(g_LocalPlayer->m_vecOrigin(), w2sOrigin, g_Saver.RealYaw, "real", Color(0.0f, 1.0f, 0.0f, 1.0f));
 			}
-		}*/
+		}
 
 
         if ( g_Config.GetInt ( "misc_fakelag_mode" ) == 1 )

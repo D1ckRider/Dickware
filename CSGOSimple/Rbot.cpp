@@ -33,13 +33,6 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 	CurrentCmd = cmd;
 	UpdateWeaponConfig(weapon);
 
-	// Get debug config info
-	if (GetAsyncKeyState(VK_DELETE))
-	{
-		g_Logger.Info("INFO", "WeaponID is " + std::to_string(Settings::RageBot::GetWeaponType(weapon)));
-		g_Logger.Info("INFO", "Min Damage is " + std::to_string(MinDmg));
-	}
-
 	if (weapon->IsKnife())
 		return;
 
@@ -460,6 +453,28 @@ void Rbot::SlowWalk( CUserCmd * cmd, float speed )
 	cmd->forwardmove *= finalSpeed;
 	cmd->sidemove *= finalSpeed;
 	cmd->upmove *= finalSpeed;
+}
+
+void Rbot::SlowWalk(CUserCmd* cmd)
+{
+	if (Settings::RageBot::SlowWalk && InputSys::Get().IsKeyDown(Settings::RageBot::SlowWalkHotkey)) 
+	{
+		float speed = Settings::RageBot::SlowWalkMod * 0.01f;
+		auto weapon = g_LocalPlayer->m_hActiveWeapon().Get();
+		if (weapon)
+		{
+			auto weapon_data = weapon->GetCSWeaponData();
+			if (weapon_data) 
+			{
+				float max_speed = weapon->m_weaponMode() == 0 ? weapon_data->flMaxPlayerSpeed : weapon_data->flMaxPlayerSpeedAlt;
+				float ratio = max_speed / 250.0f;
+				speed *= ratio;
+			}
+		}
+
+		cmd->forwardmove *= speed;
+		cmd->sidemove *= speed;
+	}
 }
 
 void Rbot::ZeusBot ( CUserCmd* cmd, C_BaseCombatWeapon* weapon )

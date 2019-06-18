@@ -247,6 +247,9 @@ public:
 	NETVAR(CHandle<C_BaseWeaponWorldModel>, m_hWeaponWorldModel, "DT_BaseCombatWeapon", "m_hWeaponWorldModel");
 	NETVAR(short, m_iItemDefinitionIndex, "DT_BaseAttributableItem", "m_iItemDefinitionIndex");
 
+	NETVAR(int32_t, m_weaponMode, "DT_WeaponCSBase", "m_weaponMode");
+	NETVAR(int32_t, m_zoomLevel, "DT_WeaponCSBaseGun", "m_zoomLevel");
+
 
 	CCSWeaponInfo* GetCSWeaponData();
 	bool HasBullets();

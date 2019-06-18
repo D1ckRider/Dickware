@@ -34,10 +34,6 @@ struct RbotMatrixData
 class Rbot : public Singleton<Rbot>
 {
 public:
-	// FIXME: What a shitcode 3:
-	bool ForceBAim = false;
-	
-
     void CreateMove ( CUserCmd* cmd, bool& bSendPacket );
     void OnFireEvent ( IGameEvent* event );
     bool GetBestHitboxPoint ( C_BasePlayer* entity, float& damage, Vector& hitbox, BaimMode baim, bool& WillKill, matrix3x4_t matrix[MAXSTUDIOBONES] = nullptr, mstudiohitboxset_t* StudioSet = nullptr, bool NoPointscale = false );
@@ -57,6 +53,7 @@ private:
     void AutoStop	  ( CUserCmd* cmd );
     void AutoCrouch   ( CUserCmd* cmd );
 	void SlowWalk	  ( CUserCmd* cmd, float speed );
+	void SlowWalk	  ( CUserCmd* cmd );
 
     CUserCmd* CurrentCmd = nullptr;
 
