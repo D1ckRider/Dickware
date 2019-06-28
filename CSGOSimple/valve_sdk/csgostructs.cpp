@@ -406,7 +406,52 @@ bool C_BasePlayer::SetupBones2(matrix3x4_t* pBoneToWorldOut, int nMaxBones, int 
 
 Vector C_BasePlayer::GetEyePos()
 {
-	return m_vecOrigin() + m_vecViewOffset();
+	Vector pos;// = m_vecOrigin() + m_vecViewOffset();
+
+	eye_pos(&pos);
+
+	if (*reinterpret_cast<int32_t*>(uintptr_t(this) + 0x3AB0))
+	{
+		auto anim_state = GetBasePlayerAnimState();
+		if (anim_state)
+			ModifyEyePos(anim_state, &pos);
+	}
+
+	return pos;
+
+	//return m_vecOrigin() + m_vecViewOffset();
+}
+
+void C_BasePlayer::ModifyEyePos(CBasePlayerAnimState* animstate, Vector* pos)
+{
+	if (g_EngineClient->IsHLTV() || g_EngineClient->IsPlayingDemo())
+		return;
+
+	static auto LookUpBone_t = (int(*)(DWORD entity, const char* boneName))Utils::PatternScan(GetModuleHandleA("client_panorama.dll"), ("55 8B EC 53 56 8B F1 57 83 BE ?? ?? ?? ?? ?? 75 14")); //mem::find_ida_sig("client_panorama.dll", "55 8B EC 53 56 8B F1 57 83 BE ?? ?? ?? ?? ?? 75 14").cast<int(__thiscall*)(void*, const char*)>();
+
+	if (animstate->m_bInHitGroundAnimation /// in hitground
+		&& animstate->m_fDuckAmount != 0.f
+		&& m_hGroundEntity()) /// unk
+	{
+		auto base_entity = static_cast<C_BasePlayer*>(animstate->pBaseEntity);
+
+		auto bone_pos = base_entity->GetBonePos(HITBOX_HEAD); //GetBonePos(LookUpBone_t((DWORD)base_entity, "head_0"));
+
+		bone_pos.z += 1.7f;
+
+		if (pos->z > bone_pos.z)
+		{
+			float some_factor = 0.f;
+
+			float delta = pos->z - bone_pos.z;
+
+			float some_offset = (delta - 4.f) / 6.f;
+			if (some_offset >= 0.f)
+				some_factor = std::fminf(some_offset, 1.f);
+
+			pos->z += ((bone_pos.z - pos->z) * (((some_factor * some_factor) * 3.f) - (((some_factor * some_factor) * 2.f) * some_factor)));
+		}
+	}
 }
 
 player_info_t C_BasePlayer::GetPlayerInfo()
@@ -681,6 +726,11 @@ bool C_BasePlayer::CanSeePlayer(C_BasePlayer* player, const Vector& pos)
 	g_EngineTrace->TraceRay(ray, MASK_SHOT | CONTENTS_GRATE, &filter, &tr);
 
 	return tr.hit_entity == player || tr.fraction > 0.97f;
+}
+
+void C_BasePlayer::eye_pos(Vector* in)
+{
+	return CallVFunction<void(__thiscall*)(void*, Vector*)>(this, 166)(this, in);
 }
 
 void C_BasePlayer::UpdateClientSideAnimation()

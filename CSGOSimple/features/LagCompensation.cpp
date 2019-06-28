@@ -104,7 +104,7 @@ void NBacktrack::FrameUpdatePostEntityThink()
 				continue;
 		}
 
-		UpdateAnimations(player); // update animations
+		//UpdateAnimations(player); // update animations
 		cur_lagrecord.SaveRecord(player); // first let's create the record
 
 		if (!lag_records.empty()) // apply specific stuff that is needed
@@ -429,7 +429,7 @@ void NBacktrack::FakelagFix(C_BasePlayer* player)
 
 void NBacktrack::UpdateAnimations(C_BasePlayer* player)
 {
-	auto state = player->GetBasePlayerAnimState();
+	CBasePlayerAnimState* state = player->GetBasePlayerAnimState();
 	if (state)
 	{
 		// backup
@@ -439,30 +439,15 @@ void NBacktrack::UpdateAnimations(C_BasePlayer* player)
 		static auto host_timescale = g_CVar->FindVar(("host_timescale"));
 
 		g_GlobalVars->frametime = g_GlobalVars->interval_per_tick * host_timescale->GetFloat();
-		g_GlobalVars->curtime = player->m_flOldSimulationTime() + g_GlobalVars->interval_per_tick;
+		g_GlobalVars->curtime = player->m_flSimulationTime();
 
-		Vector backup_origin = player->m_vecOrigin();
-		Vector backup_absorigin = player->GetAbsOrigin();
-		Vector backup_velocity = player->m_vecVelocity();
-		int backup_flags = player->m_fFlags();
 		int backup_eflags = player->m_iEFlags();
 
-		AnimationLayer backup_layers[15];
-		std::memcpy(backup_layers, player->GetAnimOverlays(), (sizeof(AnimationLayer) * player->GetNumAnimOverlays()));
-
-		if (state->m_bOnGround)
-		{
-			player->m_fFlags() |= FL_ONGROUND;
-		}
-		else
-		{
-			player->m_fFlags() &= ~FL_ONGROUND;
-		}
-		player->m_iEFlags() &= ~0x1000;
-
+		// SetLocalVelocity
+		player->m_iEFlags() &= ~0x1000; // InvalidatePhysicsRecursive(VELOCITY_CHANGED); EFL_DIRTY_ABSVELOCITY = 0x1000
 		player->m_vecAbsVelocity() = player->m_vecVelocity();
 
-		// invalidates prior animations so the entity gets animated on our client 100% via UpdateClientSideAnimation
+		// invalidates prior animations
 		if (state->m_iLastClientSideAnimationUpdateFramecount == g_GlobalVars->framecount)
 			state->m_iLastClientSideAnimationUpdateFramecount = g_GlobalVars->framecount - 1;
 
@@ -474,19 +459,14 @@ void NBacktrack::UpdateAnimations(C_BasePlayer* player)
 		player->m_bClientSideAnimation() = false;
 
 		// restore
-		std::memcpy(player->GetAnimOverlays(), backup_layers, (sizeof(AnimationLayer) * player->GetNumAnimOverlays()));
-		player->m_vecOrigin() = backup_origin;
-		player->SetAbsOriginal(backup_absorigin);
-		player->m_vecVelocity() = backup_velocity;
-		player->m_fFlags() = backup_flags;
 		player->m_iEFlags() = backup_eflags;
 
 		g_GlobalVars->curtime = curtime;
 		g_GlobalVars->frametime = frametime;
 
-		player->SetupBones2(nullptr, -1, 0x7FF00, g_GlobalVars->curtime);
+		player->InvalidateBoneCache();
+		player->SetupBones(nullptr, -1, 0x7FF00, g_GlobalVars->curtime);
 	}
-
 }
 
 void NBacktrack::SetOverwriteTick(C_BasePlayer* player, QAngle angles, float_t correct_time, uint32_t priority)

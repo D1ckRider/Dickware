@@ -48,7 +48,7 @@
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\</IntDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(DXSDK_DIR)Include</IncludePath>
-    <TargetName>crashhandler</TargetName>
+    <TargetName>cheat</TargetName>
     <LibraryPath>$(DXSDK_DIR)Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -171,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AntiAim.h" />
+    <ClInclude Include="astriumwep.hpp" />
     <ClInclude Include="Autowall.h" />
     <ClInclude Include="Backtrack.h" />
     <ClInclude Include="BuyBot.h" />
@@ -240,6 +241,7 @@
     <ClInclude Include="Utils\ConvarSpoofer.h" />
     <ClInclude Include="valve_sdk\csgostructs.hpp" />
     <ClInclude Include="valve_sdk\interfaces\ILocalize.h" />
+    <ClInclude Include="valve_sdk\interfaces\IStudioRender.hpp" />
     <ClInclude Include="valve_sdk\sdk.hpp" />
     <ClInclude Include="valve_sdk\interfaces\CClientState.hpp" />
     <ClInclude Include="valve_sdk\interfaces\CInput.hpp" />

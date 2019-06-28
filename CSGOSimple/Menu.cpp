@@ -1,4 +1,4 @@
-#include "Menu.h"
+﻿#include "Menu.h"
 #include "FontManager.h"
 #include "ConfigSystem.h"
 #include "ConsoleHelper.h"
@@ -130,7 +130,7 @@ void Menu::RenderRagebot()
 		Components.Hotkey("Slow Walk Hotkey", Settings::RageBot::SlowWalkHotkey);
 		Components.SliderFloat("Slow Walk Speed", Settings::RageBot::SlowWalkMod, 0.f, 1.f);
 		Components.Checkbox("Fake Duck", Settings::RageBot::FakeDuck);
-		Components.Hotkey("FakeDuck Hotkey", Settings::RageBot::FakeDuckHotkey);
+		Components.Hotkey("Fake Duck Hotkey", Settings::RageBot::FakeDuckHotkey);
 		Components.Checkbox("Auto Scope", Settings::RageBot::AutoScope);
 		Components.Checkbox("Auto Stop", Settings::RageBot::AutoStop);
 		Components.Checkbox("Auto Crouch", Settings::RageBot::AutoCrouch);
@@ -276,8 +276,10 @@ void Menu::RenderRageWeapon(Settings::WeaponType wtype)
 
 void Menu::RenderRageHitboxes(std::string hitbox_name, Settings::HitboxType htype)
 {
-	Components.Checkbox(hitbox_name, Settings::RageBot::Hitboxes[htype].Enabled);
-	Components.SameLine();
+	//Components.Checkbox(hitbox_name, Settings::RageBot::Hitboxes[htype].Enabled);
+	ImGui::Checkbox(hitbox_name.data(), &Settings::RageBot::Hitboxes[htype].Enabled);
+	ImGui::SameLine();
+	ImGui::SameLine();
 	std::string id = "##rbot.scale_" + std::to_string(htype);
 	ImGui::SliderFloat(id.data(), &Settings::RageBot::Hitboxes[htype].Scale, 0.f, 1.f, "Scale: %.2f");
 }

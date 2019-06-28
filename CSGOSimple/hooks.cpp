@@ -74,7 +74,8 @@ namespace Hooks
         vguipanel_hook.setup ( g_VGuiPanel, "vgui2.dll" );
         vguisurf_hook.setup ( g_VGuiSurface, "vguimatsurface.dll" );
         sound_hook.setup ( g_EngineSound, "engine.dll" );
-        mdlrender_hook.setup ( g_MdlRender, "client_panorama.dll" );
+        //mdlrender_hook.setup ( g_MdlRender, "client_panorama.dll" );
+		mdlrender_hook.setup(g_StudioRender);
         clientmode_hook.setup ( g_ClientMode, "client_panorama.dll" );
 		partition_hook.setup(g_SpatialPartition);
         ConVar* sv_cheats_con = g_CVar->FindVar ( "sv_cheats" );
@@ -481,6 +482,17 @@ namespace Hooks
                 bSendPacket = false;
         }
 
+		
+		if (rbot && Settings::RageBot::Resolver)
+		{
+			//g_ClientState.
+			for (int i = 1; i <= g_GlobalVars->maxClients; i++)
+			{
+				C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(i);
+				NBacktrack::Get().UpdateAnimations(player);
+			}
+		}
+
         //OldViewangles.pitch = cmd->viewangles.pitch;
 
         //AntiAim::Get().LbyBreakerPrediction ( cmd, bSendPacket );
@@ -587,7 +599,20 @@ namespace Hooks
 
         return oDoPostScreenEffects ( g_ClientMode, a1 );
     }
-    //--------------------------------------------------------------------------------
+	//--------------------------------------------------------------------------------
+	void __fastcall hkDrawModelExecute(void* pEcx, void* pEdx, void* pResults, DrawModelInfo_t* pInfo, matrix3x4_t* pBoneToWorld, float* flpFlexWeights, float* flpFlexDelayedWeights, Vector& vrModelOrigin, int32_t iFlags)
+	{
+		static auto ofunc = mdlrender_hook.get_original<DrawModelExecute>(index::DrawModelExecute);
+		bool forced_mat = !g_MdlRender->IsForcedMaterialOverride();
+		if (forced_mat)
+			Chams::Get().OnDrawModelExecute(pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
+
+		ofunc(pEcx, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
+
+		if (forced_mat)
+			g_MdlRender->ForcedMaterialOverride(nullptr);
+	}
+	//--------------------------------------------------------------------------------
     void __stdcall hkFrameStageNotify ( ClientFrameStage_t stage )
     {
         static auto ofunc = hlclient_hook.get_original<FrameStageNotify> ( index::FrameStageNotify );
@@ -813,24 +838,11 @@ namespace Hooks
 
     }
     //--------------------------------------------------------------------------------
-    void __stdcall hkDrawModelExecute ( IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld )
+    /*void __stdcall hkDrawModelExecute ( IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld )
     {
         static auto ofunc = mdlrender_hook.get_original<DrawModelExecute> ( index::DrawModelExecute );
-        //Chams::Get().OnDrawModelExecute(ctx, state, pInfo, pCustomBoneToWorld);
-        /*
-        auto rotate_vec = [](vec3 _origin, float _yaw, float _dist) -> vec3
-        {
-        vec3 _dir;
-        math::angle_vectors(q_ang(0, _yaw, 0), _dir);
-        return _origin + (_dir * _dist);
-        };
-
-        vec3 _sim_pos = rotate_vec(m_localplayer->m_origin(), _angle, 18);
-        */
         ofunc ( g_MdlRender, ctx, state, pInfo, pCustomBoneToWorld );
-		//Chams::Get().DrawModelExecute(ctx, state, pInfo, pCustomBoneToWorld);
-        //g_MdlRender->ForcedMaterialOverride ( nullptr );
-    }
+    }*/
 
     auto dwCAM_Think = Utils::PatternScan ( GetModuleHandleW ( L"client_panorama.dll" ), "85 C0 75 30 38 86" );
     typedef bool ( __thiscall* svc_get_bool_t ) ( PVOID );
@@ -847,7 +859,15 @@ namespace Hooks
         return ofunc ( pConVar );
     }
 
+	bool __fastcall hkIsHLTV(void* ECX, void* EDX)
+	{
+		static auto ofunc = nullptr;
 
+		return true;
+		//if((DWORD)_ReturnAddress() == )
+
+		//return ofunc(ECX, EDX);
+	}
 
 	void __stdcall FireBullets_PostDataUpdate(C_TEFireBullets* thisptr, DataUpdateType_t updateType)
 	{
@@ -936,8 +956,8 @@ namespace Hooks
 		{
 			if (_ReturnAddress() == OnRenderStart_Return) 
 			{
-				static auto set_abs_angles = Utils::PatternScan(GetModuleHandleA("client_panorama.dll"), "55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1 E8");
-				reinterpret_cast<void(__thiscall*)(void*, const QAngle&)>(set_abs_angles)(g_LocalPlayer, QAngle(0.0f, g_Saver.AnimState.m_flGoalFeetYaw, 0.0f));
+				//static auto set_abs_angles = Utils::PatternScan(GetModuleHandleA("client_panorama.dll"), "55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1 E8");
+				//reinterpret_cast<void(__thiscall*)(void*, const QAngle&)>(set_abs_angles)(g_LocalPlayer, QAngle(0.0f, g_Saver.AnimState.m_flGoalFeetYaw, 0.0f));
 			}
 			else if (_ReturnAddress() == FrameNetUpdateEnd_Return) 
 			{
@@ -964,7 +984,7 @@ namespace Hooks
         // |
         // v
         // code here
-        Chams::Get().OnSceneEnd();
+        //Chams::Get().OnSceneEnd();
     }
 
 

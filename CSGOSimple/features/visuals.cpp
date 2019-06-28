@@ -176,11 +176,11 @@ void Visuals::Player::RenderBox()
 void Visuals::Player::RenderName()
 {
     player_info_t info = ctx.pl->GetPlayerInfo();
-
+	std::string name = info.szName;
     auto sz = g_pDefaultFont->CalcTextSizeA ( 12.f, FLT_MAX, 0.0f, info.szName );
 
-    //Render::Get().RenderText(info.szName, ctx.bbox.right + 4.f, ctx.head_pos.y - sz.y + TextHeight, 14.f, ctx.clr);
-    VGSHelper::Get().DrawText ( info.szName, ( ctx.bbox.left + ( ( ctx.bbox.right - ctx.bbox.left ) / 2 ) ) - ( sz.x / 2 ), ctx.head_pos.y - sz.y - 4.f, ctx.NameClr, 12.f );
+	Render::Get().RenderTextNoOutline(name, ImVec2((ctx.bbox.left + ((ctx.bbox.right - ctx.bbox.left) / 2)) - (sz.x / 2), ctx.head_pos.y - sz.y - 4.f), 12.f, ctx.NameClr, true);
+    //VGSHelper::Get().DrawText ( info.szName, ( ctx.bbox.left + ( ( ctx.bbox.right - ctx.bbox.left ) / 2 ) ) - ( sz.x / 2 ), ctx.head_pos.y - sz.y - 4.f, ctx.NameClr, 12.f );
     //TextHeight += 14.f;
 }
 //--------------------------------------------------------------------------------
@@ -241,6 +241,8 @@ void Visuals::Player::RenderWeaponName()
 	//VGSHelper::Get().DrawText ( text, ctx.bbox.right + 2.f + ctx.PosHelper.right, ctx.head_pos.y - sz.y + TextHeight, ctx.WeaponClr, 12 );
 	//VGSHelper::Get().DrawText ( text, ctx.bbox.right + 2.f + ctx.PosHelper.right, ctx.head_pos.y - sz.y + TextHeight, ctx.WeaponClr, 12 );
 	VGSHelper::Get().DrawIcon((wchar_t)g_WeaponIcons[weapon->GetItemDefinitionIndex()], ctx.bbox.right + 2.f + ctx.PosHelper.right, ctx.head_pos.y - sz.y + TextHeight, ctx.WeaponClr, 18);
+	
+	//Render::Get().RenderTextNoOutline("S", ImVec2(ctx.bbox.right + 2.f + ctx.PosHelper.bottom, ctx.feet_pos .y - sz.y), 18, ctx.WeaponClr, g_pIconFont);
 	TextHeight += 12.f;
 }
 
@@ -430,12 +432,15 @@ void Visuals::Player::RenderLine ( DrawSideModes mode, Color color, float percen
 
     //Render::Get().RenderBox(x, y, x + w, y + h, Color::Black, 1.f, true);
     //Render::Get().RenderBox(x + 1, y + 1, x + w - 1, y + height - 2, Color(0, 50, 255, 255), 1.f, true);
-    if ( mode == DrawSideModes::LEFT || mode == DrawSideModes::RIGHT )
-        VGSHelper::Get().DrawFilledBox ( x, y, x2, y + box_h, Color ( 0, 0, 0, 100 ) );
-    else
-        VGSHelper::Get().DrawFilledBox ( x, y, x + box_w, y2, Color ( 0, 0, 0, 100 ) );
+	if (mode == DrawSideModes::LEFT || mode == DrawSideModes::RIGHT)
+		//VGSHelper::Get().DrawFilledBox ( x, y, x2, y + box_h, Color ( 0, 0, 0, 100 ) );
+		Render::Get().RenderBoxFilled(x, y, x2, y + box_h, Color(0, 0, 0, 100));
+	else
+		Render::Get().RenderBoxFilled(x, y, x + box_w, y2, Color(0, 0, 0, 100));
+        //GSHelper::Get().DrawFilledBox ( x, y, x + box_w, y2, Color ( 0, 0, 0, 100 ) );
 
-    VGSHelper::Get().DrawFilledBox ( x + 1, y + 1, x2 - 1, y2 - 2, color );
+    //VGSHelper::Get().DrawFilledBox ( x + 1, y + 1, x2 - 1, y2 - 2, color );
+	Render::Get().RenderBoxFilled(x + 1, y + 1, x2 - 1, y2 - 2, color);
 }
 void Visuals::Player::RenderResolverInfo()
 {
@@ -644,7 +649,6 @@ void Visuals::DrawFOV()
 	}
 }
 
-
 bool IsOnScreen(Vector origin, Vector& screen)
 {
 	if (!Math::WorldToScreen(origin, screen)) return false;
@@ -748,6 +752,7 @@ void Visuals::DrawGrenade ( C_BaseEntity* ent )
 		Vector screen;
 		const std::string to_render = "time: " + std::to_string(g_Saver.MolotovInfo[i].TimeToExpire - CurrentTime); //hdr->szName;
 		if (Math::WorldToScreen(g_Saver.MolotovInfo[i].Position, screen))
+			//Render::Get().RenderText(to_render, screen.x, screen.y, 12.f, Color::Red);
 			VGSHelper::Get().DrawText(to_render, screen.x, screen.y, Color::Red, 12);
 	}
 
@@ -759,6 +764,7 @@ void Visuals::DrawGrenade ( C_BaseEntity* ent )
 		const std::string to_render = "smoke: " + std::to_string(g_Saver.SmokeInfo[i].TimeToExpire - CurrentTime); //hdr->szName;
 		if (Math::WorldToScreen(g_Saver.SmokeInfo[i].Position, screen))
 			VGSHelper::Get().DrawText(to_render, screen.x, screen.y, Color::White, 12);
+			//Render::Get().RenderText(to_render, screen.x, screen.y, 13.f, Color::White);
 	}
 
 }

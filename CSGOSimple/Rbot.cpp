@@ -420,9 +420,61 @@ void Rbot::FakeDuck(CUserCmd * cmd, bool &bSendPackets)
 
 void Rbot::AutoStop ( CUserCmd* cmd )
 {
-    cmd->forwardmove = 0;
+    /*cmd->forwardmove = 0;
     cmd->sidemove = 0;
-    cmd->upmove = 0;
+    cmd->upmove = 0;*/
+
+	if (g_LocalPlayer->m_nMoveType() != MOVETYPE_WALK)
+		return; // Not implemented otherwise :(
+
+	Vector hvel = g_LocalPlayer->m_vecVelocity();
+	hvel.z = 0;
+	float speed = hvel.Length2D();
+
+	if (speed < 1.f) // Will be clipped to zero anyways
+	{
+		cmd->forwardmove = 0.f;
+		cmd->sidemove = 0.f;
+		return;
+	}
+
+	// Homework: Get these dynamically
+	float accel = 5.5f;
+	float maxSpeed = 320.f;
+	float playerSurfaceFriction = 1.0f; // I'm a slimy boi
+	float max_accelspeed = accel * g_GlobalVars->interval_per_tick * maxSpeed * playerSurfaceFriction;
+
+	float wishspeed{};
+
+	// Only do custom deceleration if it won't end at zero when applying max_accel
+	// Gamemovement truncates speed < 1 to 0
+	if (speed - max_accelspeed <= -1.f)
+	{
+		// We try to solve for speed being zero after acceleration:
+		// speed - accelspeed = 0
+		// speed - accel*frametime*wishspeed = 0
+		// accel*frametime*wishspeed = speed
+		// wishspeed = speed / (accel*frametime)
+		// ^ Theoretically, that's the right equation, but it doesn't work as nice as 
+		//   doing the reciprocal of that times max_accelspeed, so I'm doing that :shrug:
+		wishspeed = max_accelspeed / (speed / (accel * g_GlobalVars->interval_per_tick));
+	}
+	else // Full deceleration, since it won't overshoot
+	{
+		// Or use max_accelspeed, doesn't matter
+		wishspeed = max_accelspeed;
+	}
+
+	// Calculate the negative movement of our velocity, relative to our viewangles
+	QAngle ndang;
+	Math::VectorAngles((hvel * -1.f), ndang);
+	ndang.yaw = cmd->viewangles.yaw - ndang.yaw; // Relative to local view
+	Vector ndir;
+	Math::AngleVectors(ndang, ndir); // Back to vector, y'all
+
+	cmd->forwardmove = ndir.x * wishspeed;
+	cmd->sidemove = ndir.y * wishspeed;
+
 }
 
 void Rbot::AutoCrouch ( CUserCmd* cmd )

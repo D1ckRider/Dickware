@@ -315,6 +315,7 @@ public:
 	NETVAR(float_t, m_flFlashMaxAlpha, "DT_CSPlayer", "m_flFlashMaxAlpha");
 	NETVAR(int32_t, m_nHitboxSet, "DT_BaseAnimating", "m_nHitboxSet");
 	NETVAR(CHandle<C_BaseCombatWeapon>, m_hActiveWeapon, "DT_BaseCombatCharacter", "m_hActiveWeapon");
+	NETVAR(CHandle<C_BaseEntity>, m_hGroundEntity, "DT_BasePlayer", "m_hGroundEntity");
 	NETVAR(int32_t, m_iAccount, "DT_CSPlayer", "m_iAccount");
 	NETVAR(int32_t, m_iObserverMode, "DT_BasePlayer", "m_iObserverMode");
 	NETVAR(float_t, m_flFlashDuration, "DT_CSPlayer", "m_flFlashDuration");
@@ -463,6 +464,7 @@ public:
 
 
 	Vector        GetEyePos();
+	void		  ModifyEyePos(CBasePlayerAnimState* animstate, Vector* pos);
 	player_info_t GetPlayerInfo();
 	bool          IsAlive();
 	bool		  IsFlashed();
@@ -477,6 +479,7 @@ public:
 	Vector        GetBonePos(int bone);
 	bool          CanSeePlayer(C_BasePlayer* player, int hitbox);
 	bool          CanSeePlayer(C_BasePlayer* player, const Vector& pos);
+	void		  eye_pos(Vector* in);
 	void UpdateClientSideAnimation();
 	void SetAngle2(QAngle wantedang);
 

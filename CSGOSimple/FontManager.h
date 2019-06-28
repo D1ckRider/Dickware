@@ -6,5 +6,6 @@ class FontManager
 {
 public:
     ImFont* GetIconFont(ImGuiIO& io, float size);
+
 };
 

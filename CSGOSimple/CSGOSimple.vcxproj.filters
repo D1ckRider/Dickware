@@ -664,6 +664,12 @@
     <ClInclude Include="features\EventLogger.h">
       <Filter>Header Files\Features</Filter>
     </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\IStudioRender.hpp">
+      <Filter>Header Files\SDK</Filter>
+    </ClInclude>
+    <ClInclude Include="astriumwep.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\AA_D_S.png">

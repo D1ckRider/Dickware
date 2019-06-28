@@ -91,7 +91,7 @@ public:
 	void DrawGrenade(C_BaseEntity* ent);
 	void DrawDangerzoneItem(C_BaseEntity* ent, float maxRange);
 	void ThirdPerson();
-	
+	void DrawHitboxes(C_BaseEntity* ent);
 
 	/* Local indicators */
 	void LbyIndicator();

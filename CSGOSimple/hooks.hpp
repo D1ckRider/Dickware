@@ -14,7 +14,7 @@ namespace index
     constexpr auto CreateMove                = 22;
     constexpr auto PlaySound                 = 82;
     constexpr auto FrameStageNotify          = 37;
-    constexpr auto DrawModelExecute          = 21;
+    constexpr auto DrawModelExecute          = 29;
     constexpr auto DoPostScreenSpaceEffects  = 44;
     constexpr auto SvCheatsGetBool           = 13;
     constexpr auto OverrideView              = 18;
@@ -25,7 +25,7 @@ namespace index
     constexpr auto SendDatagram				 = 46;
 	constexpr auto FireBullets				 = 7;
 	constexpr auto WriteUsercmdDeltaToBuffer = 23;
-	constexpr auto SuppressLists = 16;
+	constexpr auto SuppressLists			 = 16;
 }
 
 namespace Hooks
@@ -51,8 +51,8 @@ namespace Hooks
     using FrameStageNotify     = void ( __thiscall* ) ( IBaseClientDLL*, ClientFrameStage_t );
     using PlaySound            = void ( __thiscall* ) ( ISurface*, const char* name );
     using LockCursor_t         = void ( __thiscall* ) ( ISurface* );
-    using DrawModelExecute     = void ( __thiscall* ) ( IVModelRender*, IMatRenderContext*, const DrawModelState_t&, const ModelRenderInfo_t&, matrix3x4_t* );
-    using FireEvent            = bool ( __thiscall* ) ( IGameEventManager2*, IGameEvent* pEvent );
+	using DrawModelExecute	   = void(__thiscall*)(void*, void*, DrawModelInfo_t*, matrix3x4_t*, float*, float*, Vector&, int);
+	using FireEvent            = bool ( __thiscall* ) ( IGameEventManager2*, IGameEvent* pEvent );
     using DoPostScreenEffects  = int  ( __thiscall* ) ( IClientMode*, int );
     using OverrideView		   = void ( __thiscall* ) ( IClientMode*, CViewSetup* );
 
@@ -62,6 +62,7 @@ namespace Hooks
     using SendDatagram_t	   = int  ( __thiscall* ) ( INetChannel*, bf_write* );
 	using WriteUsercmdDeltaToBuffer_t = bool(__thiscall* )(IBaseClientDLL*, int, bf_write*, int, int, bool);
 	using SuppressLists = bool(__thiscall*)(void*, int, bool);
+	using IsHLTV =	bool(__thiscall*)(void*);
 
 
     long __stdcall hkEndScene ( IDirect3DDevice9* device );
@@ -71,12 +72,13 @@ namespace Hooks
     void __stdcall hkPaintTraverse ( vgui::VPANEL panel, bool forceRepaint, bool allowForce );
     void __stdcall hkEmitSound1 ( IRecipientFilter& filter, int iEntIndex, int iChannel, const char* pSoundEntry, unsigned int nSoundEntryHash, const char* pSample, float flVolume, int nSeed, float flAttenuation, int iFlags, int iPitch, const Vector* pOrigin, const Vector* pDirection, void* pUtlVecOrigins, bool bUpdatePositions, float soundtime, int speakerentity, int unk );
     //void __stdcall hkPlaySound(const char* name);
-    void __stdcall hkDrawModelExecute ( IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld );
-    void __stdcall hkFrameStageNotify ( ClientFrameStage_t stage );
+	void __fastcall hkDrawModelExecute(void* pEcx, void* pEdx, void* pResults, DrawModelInfo_t* pInfo, matrix3x4_t* pBoneToWorld, float* flpFlexWeights, float* flpFlexDelayedWeights, Vector& vrModelOrigin, int32_t iFlags);
+	void __stdcall hkFrameStageNotify ( ClientFrameStage_t stage );
     void __stdcall hkOverrideView ( CViewSetup* vsView );
     void __stdcall hkLockCursor();
     int  __stdcall hkDoPostScreenEffects ( int a1 );
     bool __fastcall hkSvCheatsGetBool ( PVOID pConVar, void* edx );
+	bool __fastcall hkIsHLTV(void* ECX, void* EDX);
 
 
 	void __stdcall FireBullets_PostDataUpdate(C_TEFireBullets* thisptr, DataUpdateType_t updateType);

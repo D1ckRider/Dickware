@@ -9,6 +9,7 @@
 #include "menu_helpers.hpp"
 #include "options.hpp"
 #include "droid.hpp"
+#include "astriumwep.hpp"
 #include "Settings.h"
 #include "helpers/math.hpp"
 #include <ctime>
@@ -90,7 +91,7 @@ void Render::GetFonts()
     g_pDefaultFont = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(Droid_compressed_data, Droid_compressed_size, 18.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
     g_pC4Font = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(Droid_compressed_data, Droid_compressed_size, 32.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 
-    g_pIconFont = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(Droid_compressed_data, Droid_compressed_size, 18.f);
+    g_pIconFont = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(astriumwep, astriumwep_size, 18.f, NULL, ImGui::GetIO().Fonts->GetGlyphRangesCyrillic());
 }
 
 void Render::ClearDrawList()
@@ -198,7 +199,6 @@ float Render::RenderTextNoOutline(const std::string& text, const ImVec2& pos, fl
     }
 
     draw_list->PushTextureID(pFont->ContainerAtlas->TexID);
-
     if (center)
     {
         draw_list->AddText(pFont, size, ImVec2(pos.x - textSize.x / 2.0f, pos.y), GetU32(color), text.c_str());
@@ -209,7 +209,6 @@ float Render::RenderTextNoOutline(const std::string& text, const ImVec2& pos, fl
     }
 
     draw_list->PopTextureID();
-
     return pos.y + textSize.y;
 }
 

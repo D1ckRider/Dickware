@@ -19,6 +19,7 @@ class Chams : public Singleton<Chams>
 {
 public:
     void OnSceneEnd();
-	void DrawModelExecute(IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld);
+	void OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4_t* pBoneToWorld, float* flpFlexWeights,
+		float* flpFlexDelayedWeights, Vector& vrModelOrigin, int iFlags);
 };
 

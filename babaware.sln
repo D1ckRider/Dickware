@@ -1,9 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28010.2041
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28917.182
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "babaware", "CSGOSimple\CSGOSimple.vcxproj", "{F3E42845-8D56-4BB3-821D-8163AB1337F0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cheat", "CSGOSimple\CSGOSimple.vcxproj", "{F3E42845-8D56-4BB3-821D-8163AB1337F0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestingInjector", "TestingInjector\TestingInjector.vcxproj", "{643FC07D-8BC1-4EA4-9413-78003D7CCAA1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{F3E42845-8D56-4BB3-821D-8163AB1337F0} = {F3E42845-8D56-4BB3-821D-8163AB1337F0}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,6 +24,14 @@ Global
 		{F3E42845-8D56-4BB3-821D-8163AB1337F0}.Release|x64.ActiveCfg = Release|Win32
 		{F3E42845-8D56-4BB3-821D-8163AB1337F0}.Release|x86.ActiveCfg = Release|Win32
 		{F3E42845-8D56-4BB3-821D-8163AB1337F0}.Release|x86.Build.0 = Release|Win32
+		{643FC07D-8BC1-4EA4-9413-78003D7CCAA1}.Debug|x64.ActiveCfg = Debug|x64
+		{643FC07D-8BC1-4EA4-9413-78003D7CCAA1}.Debug|x64.Build.0 = Debug|x64
+		{643FC07D-8BC1-4EA4-9413-78003D7CCAA1}.Debug|x86.ActiveCfg = Debug|Win32
+		{643FC07D-8BC1-4EA4-9413-78003D7CCAA1}.Debug|x86.Build.0 = Debug|Win32
+		{643FC07D-8BC1-4EA4-9413-78003D7CCAA1}.Release|x64.ActiveCfg = Release|x64
+		{643FC07D-8BC1-4EA4-9413-78003D7CCAA1}.Release|x64.Build.0 = Release|x64
+		{643FC07D-8BC1-4EA4-9413-78003D7CCAA1}.Release|x86.ActiveCfg = Release|Win32
+		{643FC07D-8BC1-4EA4-9413-78003D7CCAA1}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -35,6 +35,7 @@ IMemAlloc*			  g_pMemAlloc	   = nullptr;
 uintptr_t*			  g_SpatialPartition = nullptr;
 IViewRenderBeams*     g_RenderBeams    = nullptr;
 CUtlVectorSimple*	  g_ClientSideAnimationList = nullptr;
+IStudioRender*		  g_StudioRender = nullptr;
 C_ConvarSpoofer*	  g_CVarSpoofer;
 
 int(__cdecl* RandomInt)(int min, int max);
@@ -71,7 +72,8 @@ namespace Interfaces
         auto matSysFactory    = get_module_factory(GetModuleHandleW(L"materialsystem.dll"));
         auto dataCacheFactory = get_module_factory(GetModuleHandleW(L"datacache.dll"));
         auto vphysicsFactory  = get_module_factory(GetModuleHandleW(L"vphysics.dll"));
-		auto stdlib = GetModuleHandleA("vstdlib.dll");
+		auto stdlib           = GetModuleHandleA("vstdlib.dll");
+		auto studioFactory    = get_module_factory(GetModuleHandleW(L"studiorender.dll"));
 
         g_CHLClient           = get_interface<IBaseClientDLL>      (clientFactory, "VClient018");
         g_EntityList          = get_interface<IClientEntityList>   (clientFactory, "VClientEntityList003");
@@ -93,6 +95,7 @@ namespace Interfaces
         g_PhysSurface         = get_interface<IPhysicsSurfaceProps>(vphysicsFactory, "VPhysicsSurfaceProps001");
         g_pMemAlloc			  = *(IMemAlloc**)(GetProcAddress(GetModuleHandleW(L"tier0.dll"), "g_pMemAlloc"));
 		g_SpatialPartition	  = get_interface<uintptr_t>			(engineFactory, "SpatialPartition001");
+		g_StudioRender		  = get_interface< IStudioRender >(studioFactory, "VStudioRender026");
 		
 		auto localizeFactory = get_module_factory(GetModuleHandleW(L"localize.dll"));
 		g_Localize = get_interface<ILocalize>(localizeFactory, "Localize_001");

@@ -119,7 +119,110 @@ void Chams::OnSceneEnd()
     g_MdlRender->ForcedMaterialOverride(nullptr);
 }
 
-void Chams::DrawModelExecute(IMatRenderContext* ctx, const DrawModelState_t& state, const ModelRenderInfo_t& pInfo, matrix3x4_t* pCustomBoneToWorld)
+void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4_t* pBoneToWorld,
+								float* flpFlexWeights, float* flpFlexDelayedWeights, Vector& vrModelOrigin, int iFlags)
 {
-	
+	static auto fnDME = Hooks::mdlrender_hook.get_original<Hooks::DrawModelExecute>(index::DrawModelExecute);
+
+	if (!pInfo->m_pClientEntity || !g_LocalPlayer)
+		return;
+
+	const auto mdl = pInfo->m_pClientEntity->GetModel();
+
+	//bool is_sleeve = strstr( mdl->szName, "sleeve" ) != nullptr;
+	//bool is_weapon = strstr(mdl->szName, "weapons/v_")  != nullptr;
+
+	bool chamsEnabled = Settings::Visual::LocalChams.Enabled || Settings::Visual::EnemyChams.Enabled || Settings::Visual::TeamChams.Enabled;
+	if (chamsEnabled && strstr(mdl->szName, "models/player") != nullptr)
+	{
+		// 
+		// Draw player Chams.
+		// 
+		auto ent = (C_BasePlayer*)(pInfo->m_pClientEntity->GetIClientUnknown()->GetBaseEntity());
+
+		if (ent && ent->IsPlayer() && ent->IsAlive()) {
+			const auto enemy = ent->m_iTeamNum() != g_LocalPlayer->m_iTeamNum();
+			if (!enemy && !Settings::Visual::TeamChams.Enabled)
+				return;
+
+			/*if (g_Options.chams_backtrack && g_Backtrack.data.count(ent->EntIndex()) > 0) {
+				auto& data = g_Backtrack.data.at(ent->EntIndex());
+				if (data.size() > 0) {
+					if (g_Options.chams_backtrack == 2) {
+						for (auto& record : data) {
+							OverrideMaterial(
+								false,
+								g_Options.chams_backtrack_flat,
+								false,
+								false,
+								Color(g_Options.color_chams_backtrack));
+							fnDME(g_StudioRender, pResults, pInfo, record.boneMatrix, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
+						}
+					}
+					else if (g_Options.chams_backtrack == 1) {
+						auto& back = data.back();
+						OverrideMaterial(
+							false,
+							g_Options.chams_backtrack_flat,
+							false,
+							false,
+							Color(g_Options.color_chams_backtrack));
+						fnDME(g_StudioRender, pResults, pInfo, back.boneMatrix, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
+					}
+				}
+			}*/
+
+			const auto clr_front = enemy ? Color(Settings::Visual::EnemyChams.Visible) : Color(Settings::Visual::TeamChams.Visible);
+			const auto clr_back = enemy ? Color(Settings::Visual::EnemyChams.Invisible) : Color(Settings::Visual::TeamChams.Invisible);
+			const auto flat = enemy ? (Settings::Visual::EnemyChams.Mode == 1 || Settings::Visual::EnemyChams.Mode == 7)
+									: (Settings::Visual::TeamChams.Mode == 1 || Settings::Visual::TeamChams.Mode == 7);
+			const auto metallic = enemy ? (Settings::Visual::EnemyChams.Mode == 4 || Settings::Visual::EnemyChams.Mode == 6)
+										: (Settings::Visual::TeamChams.Mode == 4 || Settings::Visual::TeamChams.Mode == 6);
+			const auto wireframe = enemy ? (Settings::Visual::EnemyChams.Mode == 2)
+										 : (Settings::Visual::TeamChams.Mode == 2);
+			const auto glass = enemy ? (Settings::Visual::EnemyChams.Mode == 3)
+									 : (Settings::Visual::TeamChams.Mode == 3);
+			bool ignoreZ = Settings::Visual::EnemyChams.Mode >= 5 || Settings::Visual::TeamChams.Mode >= 5;
+
+			if (ignoreZ) 
+			{
+				/*OverrideMaterial(
+					true,
+					g_Options.chams_player_flat,
+					g_Options.chams_player_wireframe,
+					false,
+					clr_back);*/
+				MaterialManager::Get().OverrideMaterial(true, flat, wireframe, false, metallic, clr_back);
+				fnDME(g_StudioRender, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
+				/*OverrideMaterial(
+					false,
+					g_Options.chams_player_flat,
+					g_Options.chams_player_wireframe,
+					false,
+					clr_front);*/
+				MaterialManager::Get().OverrideMaterial(false, flat, wireframe, false , metallic, clr_front);
+			}
+			else {
+				/*OverrideMaterial(
+					false,
+					g_Options.chams_player_flat,
+					g_Options.chams_player_wireframe,
+					g_Options.chams_player_glass,
+					clr_front);*/
+				MaterialManager::Get().OverrideMaterial(false, flat, wireframe, glass, metallic, clr_front);
+			}
+		}
+	}
+	/*else if (strstr(mdl->szName, "arms") != nullptr) {
+		auto material = g_MatSystem->FindMaterial(mdl->szName, TEXTURE_GROUP_MODEL);
+
+		if (!material)
+			return;
+
+		if (g_Options.other_no_hands) 
+		{
+			material->SetMaterialVarFlag(MATERIAL_VAR_NO_DRAW, true);
+			g_MdlRender->ForcedMaterialOverride(material);
+		}
+	}*/
 }

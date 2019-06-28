@@ -41,6 +41,7 @@
 #include "interfaces\memalloc.h"
 #include "..\Utils\ConvarSpoofer.h"
 #include "interfaces\IViewRenderBeams.hpp"
+#include "interfaces/IStudioRender.hpp"
 
 #include "Misc/Convar.hpp"
 #include "Misc/CUserCmd.hpp"
@@ -101,6 +102,8 @@ extern uintptr_t*			 g_SpatialPartition;
 extern IViewRenderBeams*	 g_RenderBeams;
 extern CUtlVectorSimple*	 g_ClientSideAnimationList;
 extern C_ConvarSpoofer*		 g_CVarSpoofer;
+extern IStudioRender*		 g_StudioRender;
+
 
 extern void(__cdecl* RandomSeed)(uint32_t seed);
 extern int(__cdecl* RandomInt)(int min, int max);
