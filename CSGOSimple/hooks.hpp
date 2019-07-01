@@ -26,6 +26,7 @@ namespace index
 	constexpr auto FireBullets				 = 7;
 	constexpr auto WriteUsercmdDeltaToBuffer = 23;
 	constexpr auto SuppressLists			 = 16;
+	constexpr auto TempEntities				 = 36;
 }
 
 namespace Hooks
@@ -63,7 +64,10 @@ namespace Hooks
 	using WriteUsercmdDeltaToBuffer_t = bool(__thiscall* )(IBaseClientDLL*, int, bf_write*, int, int, bool);
 	using SuppressLists = bool(__thiscall*)(void*, int, bool);
 	using IsHLTV =	bool(__thiscall*)(void*);
+	using TempEntities = bool(__thiscall* )(void*, void*/*SVC_TempEntities*/);
 
+
+	extern TempEntities o_TempEntities;
 
     long __stdcall hkEndScene ( IDirect3DDevice9* device );
     long __stdcall hkReset ( IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters );
@@ -88,6 +92,7 @@ namespace Hooks
     bool __stdcall hkFireEvent ( IGameEvent* pEvent );
 	void hkRecvProxy(const CRecvProxyData* pData, void* entity, void* output);
     void __stdcall Hooked_RenderSmokeOverlay ( bool unk );
+	bool __fastcall hkTempEntities(void* ECX, void* EDX, void* msg);
     int __fastcall SendDatagram_h ( INetChannel* netchan, void*, bf_write* datagram );
 	bool __fastcall hkWriteUsercmdDeltaToBuffer(IBaseClientDLL* ECX, void* EDX, int nSlot, bf_write* buf, int from, int to, bool isNewCmd);
     //void __fastcall DoExtraBonesProcessing(void *ecx, void *edx, studiohdr_t *hdr, Vector *vector, Quaternion *something, matrix3x4_t *matrix, CBoneBitList &bone_list, cik *context);

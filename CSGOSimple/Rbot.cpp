@@ -833,7 +833,7 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
         }
         else
         {
-			NBacktrack::Get().RageBacktrack(entity, cmd, CHitpos, LagComp_Hitchanced);
+			LagCompensation::Get().RageBacktrack(entity, cmd, CHitpos, LagComp_Hitchanced);
 
             /*bool ShouldSkip = true;
             Vector NormalHitpos = Vector ( 0, 0, 0 );

@@ -695,7 +695,62 @@ void Resolver::OnFramestageNotify()
         float avgang = 0.f;
         bool b = GetAverageYaw ( i, avgang );
 
-        if ( Moving && !SlowWalk && !InAir )
+		auto animstate = entity->GetPlayerAnimState();
+		if (animstate)
+		{
+			// missed shot <= 2
+			//if (MissedShots[entity->index()] <= 2)
+			if(g_Resolver.GResolverData[entity->EntIndex()].Shots <= 2)
+			{
+				float speed;
+				if (animstate->m_flFeetSpeedUnknownForwardOrSideways < 0.f)
+					speed = 0.0;
+				else
+					speed = std::min(animstate->m_flFeetSpeedUnknownForwardOrSideways, 1.f);
+
+				float flYawModifier = (animstate->m_flStopToFullRunningFraction * -0.30000001 - 0.19999999) * speed;
+				flYawModifier += 1.0f;
+
+				if (animstate->m_fDuckAmount > 0.f && animstate->m_flFeetSpeedUnknownForwardOrSideways >= 0.f)
+					flYawModifier = std::min(animstate->m_flFeetSpeedUnknownForwardOrSideways, 1.0f);
+
+				float m_flMaxBodyYaw = *(float*)(uintptr_t(animstate) + 0x334) * flYawModifier;
+				float m_flMinBodyYaw = *(float*)(uintptr_t(animstate) + 0x330) * flYawModifier;
+
+				float ResolvedYaw = animstate->m_flEyeYaw;
+				float delta = std::abs(animstate->m_flEyeYaw - animstate->m_flGoalFeetYaw);
+				if (m_flMaxBodyYaw < delta)
+				{
+					ResolvedYaw = animstate->m_flEyeYaw - std::abs(m_flMaxBodyYaw);
+				}
+				else if (m_flMinBodyYaw > delta)
+				{
+					ResolvedYaw = animstate->m_flEyeYaw + std::abs(m_flMinBodyYaw);
+				}
+				animstate->m_flGoalFeetYaw = Math::NormalizeAngle(ResolvedYaw); 
+			}
+			else
+			{
+				switch(g_Resolver.GResolverData[entity->EntIndex()].Shots % 4)
+				{
+				case 0:
+					animstate->m_flGoalFeetYaw += 45.0f;
+					break;
+				case 1:
+					animstate->m_flGoalFeetYaw -= 45.0f;
+					break;
+				case 2:
+					animstate->m_flGoalFeetYaw -= 30.0f;
+					break;
+				case 3:
+					animstate->m_flGoalFeetYaw += 30.0f;
+					break;
+				default:
+					break;
+				}
+			}
+		}
+        /*if ( Moving && !SlowWalk && !InAir )
             g_Resolver.GResolverData[i].Resolved = true;
         else if ( Moving && SlowWalk && !InAir )
         {
@@ -750,12 +805,12 @@ void Resolver::OnFramestageNotify()
                 {
                     case 0:
                         //entity->m_angEyeAngles().yaw = Yaw + 58.f;
-						entity->GetBasePlayerAnimState()->m_flGoalFeetYaw +=  entity->GetMaxDesyncAngle();
+						entity->GetPlayerAnimState()->m_flGoalFeetYaw +=  entity->GetMaxDesyncAngle();
                         break;
 
                     case 1:
                         //entity->m_angEyeAngles().yaw = Yaw - 58.f;
-						entity->GetBasePlayerAnimState()->m_flGoalFeetYaw -= entity->GetMaxDesyncAngle();
+						entity->GetPlayerAnimState()->m_flGoalFeetYaw -= entity->GetMaxDesyncAngle();
                         break;
 
                     /*case 2:
@@ -764,10 +819,10 @@ void Resolver::OnFramestageNotify()
 
                     case 3:
                         entity->m_angEyeAngles().yaw = Yaw - 29;
-                        break;*/
+                        break;
                 }
             }
-        }
+        }*/
 
         g_Resolver.GResolverData[i].Fake = !g_Resolver.GResolverData[i].Resolved;
     }

@@ -966,34 +966,18 @@ void Visuals::DesyncIndicator()
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
 		return;
 
-	/*Color clr = Color::Green;
-	//int x, y;
-	//g_EngineClient->GetScreenSize(x, y);
-
-	std::string text = "Desync: " + std::to_string(g_LocalPlayer->GetMaxDesyncAngle());
-	ImVec2 t = g_pDefaultFont->CalcTextSizeA(34.f, FLT_MAX, 0.0f, text.data());
-
-	Render::Get().RenderTextNoOutline(text, ImVec2(10, ScreenY - 100.f - CurrentIndicatorHeight), 34.f, clr);
-	CurrentIndicatorHeight += 34.f;*/
 	Color clr = Color::Green;
 
 	float percent;
 
-	/*if (Moving || InAir || g_Saver.InFakewalk)
-		percent = 1.f;
-	else
-		percent = (g_Saver.NextLbyUpdate - g_GlobalVars->curtime) / 1.1f;*/
-
-	percent = 58.f / (g_LocalPlayer->GetMaxDesyncAngle() * 100.f);
-
-	percent = 1.f - percent;
+	percent = g_LocalPlayer->GetMaxDesyncAngle() / 58.f;
 
 	ImVec2 t = g_pDefaultFont->CalcTextSizeA(34.f, FLT_MAX, 0.0f, "DESYNC");
 	float width = t.x * percent;
 
 	Render::Get().RenderLine(9.f, ScreenY - 100.f - (CurrentIndicatorHeight - 34.f), 11.f + t.x, ScreenY - 100.f - (CurrentIndicatorHeight - 34.f), Color(0, 0, 0, 25), 4.f);
 
-	if (width < t.x && width > 0.f)
+	if (width <= t.x && width > 0.f)
 		Render::Get().RenderLine(10.f, ScreenY - 100.f - (CurrentIndicatorHeight - 34.f), 10.f + width, ScreenY - 100.f - (CurrentIndicatorHeight - 34.f), clr, 2.f);
 
 	Render::Get().RenderTextNoOutline("DESYNC", ImVec2(10, ScreenY - 100.f - CurrentIndicatorHeight), 34.f, clr);
@@ -1423,8 +1407,8 @@ void Visuals::AddToDrawList()
 
 	if ( Settings::RageBot::Enabled )
     {
-        LbyIndicator();
-        PingIndicator();
+        //LbyIndicator();
+        //PingIndicator();
 		BAimIndicator();
 		DesyncIndicator();
 		

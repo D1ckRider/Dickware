@@ -68,6 +68,38 @@ struct RbotShotInfoStruct
     bool Moving = false;
 };
 
+/*
+ * player_old_flags
+ */
+struct player_old_flags
+{
+	int flags;
+	float curtime;
+};
+
+/*
+ * player_prediction_data
+ */
+struct player_prediction_data
+{
+	void reset()
+	{
+		prediction_stage = 0, tickbase = 0;
+		random_seed = 0;
+		in_prediction = false;
+		curtime = 0.f, frametime = 0.f;
+		prediction_random_seed = nullptr;
+	}
+
+	int prediction_stage = 0, tickbase = 0;
+	unsigned random_seed = 0;
+	bool in_prediction = false;
+	float curtime = 0.f, frametime = 0.f;
+	unsigned* prediction_random_seed = nullptr;
+	player_old_flags non_predicted;
+};
+
+
 class RuntimeSaver
 {
 public:
@@ -99,9 +131,6 @@ public:
     bool CurrentInLbyBreak = false;
     bool CurrentShouldSkipAnimations = false;
 
-    //Fakewalk
-    bool InFakewalk = false;
-
     int LastBacktrackTick = -1;
 
     bool LCbroken = false;
@@ -118,9 +147,11 @@ public:
 
     RbotShotInfoStruct RbotShotInfo;
 
+	player_prediction_data PredictionData;
+
     Vector LastShotEyePos = Vector(0, 0, 0);
 
-	CBasePlayerAnimState AnimState;
+	CCSGOPlayerAnimState AnimState;
 
 	float DesyncYaw = 0.f;
 	float RealYaw = 0.f;

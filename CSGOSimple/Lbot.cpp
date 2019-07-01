@@ -481,10 +481,10 @@ void Lbot::LegitAA(CUserCmd * cmd, bool & bSendPacket)
 	Math::MovementFix(cmd, OldAngles, cmd->viewangles);
 
 
-	auto anim_state = g_LocalPlayer->GetBasePlayerAnimState();
+	auto anim_state = g_LocalPlayer->GetPlayerAnimState();
 	if (anim_state) 
 	{
-		CBasePlayerAnimState anim_state_backup = *anim_state;
+		CCSGOPlayerAnimState anim_state_backup = *anim_state;
 		*anim_state = g_Saver.AnimState;
 		*g_LocalPlayer->GetVAngles() = cmd->viewangles;
 		g_LocalPlayer->UpdateClientSideAnimation();

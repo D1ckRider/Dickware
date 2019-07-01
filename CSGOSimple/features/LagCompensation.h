@@ -75,7 +75,7 @@ struct LagRecord
 };
 
 
-class NBacktrack : public Singleton<NBacktrack>
+class LagCompensation : public Singleton<LagCompensation>
 {
 public:
 	void RageBacktrack(C_BasePlayer* target, CUserCmd* usercmd, Vector& aim_point, bool& hitchanced);
@@ -116,7 +116,7 @@ public:
 };
 
 template<class T, class U>
-inline T NBacktrack::clamp(T in, U low, U high)
+inline T LagCompensation::clamp(T in, U low, U high)
 {
 	if (in <= low)
 		return low;

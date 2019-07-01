@@ -32,7 +32,7 @@
 
 struct datamap_t;
 class AnimationLayer;
-class CBasePlayerAnimState;
+//class CBasePlayerAnimState;
 class CCSPlayerAnimState;
 class CCSGOPlayerAnimState;
 class C_BaseEntity;
@@ -415,16 +415,12 @@ public:
 	AnimationLayer* GetAnimOverlays();
 	AnimationLayer* GetAnimOverlay(int i);
 	int GetSequenceActivity(int sequence);
-	CBasePlayerAnimState* GetBasePlayerAnimState();
-	CCSPlayerAnimState* GetPlayerAnimState();
+	CCSGOPlayerAnimState* GetPlayerAnimState();
+	//CCSPlayerAnimState* GetPlayerAnimState();
 
 	static void UpdateAnimationState(CCSGOPlayerAnimState* state, QAngle angle);
 	static void ResetAnimationState(CCSGOPlayerAnimState* state);
 	void CreateAnimationState(CCSGOPlayerAnimState* state);
-	void CreateAnimationState(CBasePlayerAnimState* state);
-	static void UpdateAnimationState(CBasePlayerAnimState* state, QAngle angle);
-	static void ResetAnimationState(CBasePlayerAnimState* state);
-
 	float_t& m_surfaceFriction()
 	{
 		static unsigned int _m_surfaceFriction = Utils::FindInDataMap(GetPredDescMap(), "m_surfaceFriction");
@@ -464,7 +460,7 @@ public:
 
 
 	Vector        GetEyePos();
-	void		  ModifyEyePos(CBasePlayerAnimState* animstate, Vector* pos);
+	void		  ModifyEyePos(CCSGOPlayerAnimState* animstate, Vector* pos);
 	player_info_t GetPlayerInfo();
 	bool          IsAlive();
 	bool		  IsFlashed();
@@ -524,7 +520,7 @@ public:
 	char  pad_0038[4]; //0x0034
 }; //Size: 0x0038
 
-class CBasePlayerAnimState
+class CCSGOPlayerAnimState
 {
 public:
 	void* pThis;
@@ -577,7 +573,7 @@ public:
 	char pad9[4]; //NaN
 	float m_flUnknown3;
 	char pad10[528];
-};
+};//Size=0x344
 
 class CCSPlayerAnimState
 {
@@ -586,24 +582,6 @@ public:
 	virtual ~CCSPlayerAnimState() = 0;
 	virtual void Update(float_t eyeYaw, float_t eyePitch) = 0;
 };
-
-class CCSGOPlayerAnimState
-{
-public:
-
-	Vector GetVecVelocity()
-	{
-		// Only on ground velocity
-		return *(Vector*)((uintptr_t)this + 0xC8);
-	}
-
-	float GetVelocity()
-	{
-		return *(float*)((uintptr_t)this + 0xEC);
-	}
-
-	char pad_0x0000[0x344]; //0x0000
-}; //Size=0x344
 
 class DT_CSPlayerResource
 {

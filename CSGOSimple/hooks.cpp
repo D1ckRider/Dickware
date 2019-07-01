@@ -60,6 +60,8 @@ namespace Hooks
 	vfunc_hook firebullets_hook;
 	vfunc_hook partition_hook;
 
+	TempEntities o_TempEntities;
+
 	float flAngle = 0.f;
 
 	CUtlVector<SndInfo_t> sndList;
@@ -489,7 +491,8 @@ namespace Hooks
 			for (int i = 1; i <= g_GlobalVars->maxClients; i++)
 			{
 				C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(i);
-				NBacktrack::Get().UpdateAnimations(player);
+				if(player && player != g_LocalPlayer)
+					LagCompensation::Get().UpdateAnimations(player);
 			}
 		}
 
@@ -515,6 +518,14 @@ namespace Hooks
 
         verified->m_cmd = *cmd;
         verified->m_crc = cmd->GetChecksum();
+
+		if (!o_TempEntities)
+		{
+			clientstate_hook.setup(g_ClientState + 0x8, "engine.dll");
+			clientstate_hook.hook_index(index::TempEntities, hkTempEntities);
+			o_TempEntities = clientstate_hook.get_original<TempEntities>(index::TempEntities);
+		}
+
     }
     //--------------------------------------------------------------------------------
     __declspec ( naked ) void __stdcall hkCreateMove_Proxy ( int sequence_number, float input_sample_frametime, bool active )
@@ -618,7 +629,6 @@ namespace Hooks
         static auto ofunc = hlclient_hook.get_original<FrameStageNotify> ( index::FrameStageNotify );
 
 		Skinchanger::Get().OnFrameStageNotify(stage);
-		//NResolver::Get().FrameStage(stage);
 
         //if (g_ClientState->m_nDeltaTick != -1) return  ofunc(g_CHLClient, stage);
         if ( !g_EngineClient->IsConnected() || !g_EngineClient->IsInGame() )
@@ -651,10 +661,9 @@ namespace Hooks
                 if ( g_Unload )
                     return;
 
-				bool rbot = Settings::RageBot::Enabled;
-
-				//if ( rbot && Settings::RageBot::Resolver )
-                //    Resolver::Get().OnFramestageNotify();
+				
+				if ( Settings::RageBot::Enabled && Settings::RageBot::Resolver )
+                    Resolver::Get().OnFramestageNotify();
 
                 NoSmoke::Get().OnFrameStageNotify();
 
@@ -681,40 +690,8 @@ namespace Hooks
             case FRAME_NET_UPDATE_END:
 
 				if (Settings::RageBot::LagComp)
-					NBacktrack::Get().FrameUpdatePostEntityThink();
+					LagCompensation::Get().FrameUpdatePostEntityThink();
 
-
-				// add Sound ESP check
-				/*if (true)
-				{
-					sndList.RemoveAll();
-					g_EngineSound->GetActiveSounds(sndList);
-					for (size_t i = 0; i < sndList.Count(); i++)
-					{
-						SndInfo_t snd = sndList.Element(i);
-						if (snd.m_nSoundSource)
-						{
-							C_BaseEntity* ent = static_cast<C_BaseEntity*>(g_EntityList->GetClientEntity(snd.m_nSoundSource));
-
-							if (!ent || ent->IsDormant())
-								continue;
-
-							if (ent == g_LocalPlayer)
-								continue;
-
-							if (snd.m_nChannel == 4)
-							{
-								if (snd.m_nGuid)
-								{
-									if (snd.m_bUpdatePositions)
-									{
-										g_Saver.StepInfo.push_back(StepInfoStruct{ *snd.m_pOrigin, g_GlobalVars->curtime + 1, 15, snd.m_nSoundSource });
-									}
-								}
-							}
-						}
-					}
-				}*/
                 break;
 
             case FRAME_RENDER_START:
@@ -726,8 +703,8 @@ namespace Hooks
 
 					if ( rbot && Settings::RageBot::EnabledAA && Settings::Visual::ThirdPersonEnabled )
                     {
-                        ThirdpersonAngleHelper::Get().SetThirdpersonAngle();
-                        ThirdpersonAngleHelper::Get().AnimFix();
+                        //ThirdpersonAngleHelper::Get().SetThirdpersonAngle();
+                        //ThirdpersonAngleHelper::Get().AnimFix();
 
 						if (!g_LocalPlayer->IsAlive())
 							g_LocalPlayer->m_iObserverMode() = 5;
@@ -897,7 +874,7 @@ namespace Hooks
 						player_time = player->m_flSimulationTime();
 
 					// Extrapolate tick to hit scouters etc
-					auto lag_records = NBacktrack::Get().m_LagRecord[iPlayer];
+					auto lag_records = LagCompensation::Get().m_LagRecord[iPlayer];
 
 					float shot_time = TICKS_TO_TIME(event_time);
 					for (auto& record : lag_records)
@@ -925,7 +902,7 @@ namespace Hooks
 										player->m_vecOrigin() = (lag_records.begin()->m_vecOrigin + (g_GlobalVars->interval_per_tick * lag_records.begin()->m_vecVelocity * choked));
 									}*/
 
-					NBacktrack::Get().SetOverwriteTick(player, calcedAngle, shot_time, 1);
+					LagCompensation::Get().SetOverwriteTick(player, calcedAngle, shot_time, 1);
 				}
 			}
 		}
@@ -1181,6 +1158,122 @@ namespace Hooks
 
     //--------------------------------------------------------------------------------
     void __stdcall Hooked_RenderSmokeOverlay ( bool unk ) { /* no need to call :) we want to remove the smoke overlay */ }
+
+	bool __fastcall hkTempEntities(void* ECX, void* EDX, void* msg)
+	{
+		if (!g_LocalPlayer || !g_EngineClient->IsInGame() || !g_EngineClient->IsConnected())
+			return o_TempEntities(ECX, msg);
+
+		bool ret = o_TempEntities(ECX, msg);
+
+		/*never used, so we fix those peoples compiling problems :)*/
+
+		/*auto CL_ParseEventDelta = [](void *RawData, void *pToData, RecvTable *pRecvTable)
+		{
+			// "RecvTable_DecodeZeros: table '%s' missing a decoder.", look at the function that calls it.
+			static uintptr_t CL_ParseEventDeltaF = (uintptr_t)Utils::PatternScan(GetModuleHandle("engine.dll"), ("55 8B EC 83 E4 F8 53 57"));
+			__asm
+			{
+				mov     ecx, RawData
+				mov     edx, pToData
+				push	pRecvTable
+				call    CL_ParseEventDeltaF
+				add     esp, 4
+			}
+		};*/
+
+		// Filtering events
+		if (!Settings::RageBot::LagComp || !g_LocalPlayer->IsAlive())
+			return ret;
+
+		CEventInfo* ei = g_ClientState->events;
+		CEventInfo* next = NULL;
+
+		if (!ei)
+			return ret;
+
+		do
+		{
+			next = *(CEventInfo * *)((uintptr_t)ei + 0x38);
+
+			uint16_t classID = ei->classID - 1;
+
+			auto m_pCreateEventFn = ei->pClientClass->m_pCreateEventFn; // ei->pClientClass->m_pCreateEventFn ptr
+			if (!m_pCreateEventFn)
+				continue;
+
+			IClientNetworkable* pCE = m_pCreateEventFn();
+			if (!pCE)
+				continue;
+
+			if (classID == (int)ClassId::CTEFireBullets)
+			{
+				// set fire_delay to zero to send out event so its not here later.
+				ei->fire_delay = 0.0f;
+
+				//			auto pRecvTable = ei->pClientClass->m_pRecvTable;
+				//			void *BasePtr = pCE->GetDataTableBasePtr();
+				//
+				//			// Decode data into client event object and use the DTBasePtr to get the netvars
+				//			CL_ParseEventDelta(ei->pData, BasePtr, pRecvTable);
+				//
+				//			if (!BasePtr)
+				//				continue;
+				//
+				//			// This nigga right HERE just fired a BULLET MANE
+				//			int EntityIndex = *(int*)((uintptr_t)BasePtr + 0x10) + 1;
+				//
+				//			auto pEntity = (C_BasePlayer*)g_EntityList->GetClientEntity(EntityIndex);
+				//			if (pEntity && pEntity->GetClientClass() &&  pEntity->GetClientClass()->m_ClassID == ClassId::ClassId_CCSPlayer && !pEntity->IsTeamMate())
+				//			{
+				//				QAngle EyeAngles = QAngle(*(float*)((uintptr_t)BasePtr + 0x24), *(float*)((uintptr_t)BasePtr + 0x28), 0.0f),
+				//					CalcedAngle = Math::CalcAngle(pEntity->GetEyePos(), g_LocalPlayer->GetEyePos());
+				//
+				//				*(float*)((uintptr_t)BasePtr + 0x24) = CalcedAngle.pitch;
+				//				*(float*)((uintptr_t)BasePtr + 0x28) = CalcedAngle.yaw;
+				//				*(float*)((uintptr_t)BasePtr + 0x2C) = 0;
+				//
+				//				float
+				//					event_time = TICKS_TO_TIME(g_GlobalVars->tickcount),
+				//					player_time = pEntity->m_flSimulationTime();
+				//
+				//				// Extrapolate tick to hit scouters etc
+				//				auto lag_records = CMBacktracking::Get().m_LagRecord[pEntity->EntIndex()];
+				//
+				//				float shot_time = event_time;
+				//				for (auto& record : lag_records)
+				//				{
+				//					if (TICKS_TO_TIME(record.m_iTickCount) <= event_time)
+				//					{
+				//						shot_time = record.m_flSimulationTime + (event_time - TICKS_TO_TIME(record.m_iTickCount)); // also get choked from this
+				//#ifdef _DEBUG
+				//						g_CVar->ConsoleColorPrintf(Color(0, 255, 0, 255), "Found exact shot time: %f, ticks choked to get here: %d\n", shot_time, TIME_TO_TICKS(event_time - TICKS_TO_TIME(record.m_iTickCount)));
+				//#endif
+				//						break;
+				//					}
+				//#ifdef _DEBUG
+				//					else
+				//						g_CVar->ConsolePrintf("Bad curtime difference, EVENT: %f, RECORD: %f\n", event_time, TICKS_TO_TIME(record.m_iTickCount));
+				//#endif
+				//				}
+				//#ifdef _DEBUG
+				//				g_CVar->ConsolePrintf("Calced angs: %f %f, Event angs: %f %f, CURTIME_TICKOUNT: %f, SIMTIME: %f, CALCED_TIME: %f\n", CalcedAngle.pitch, CalcedAngle.yaw, EyeAngles.pitch, EyeAngles.yaw, event_time, player_time, shot_time);
+				//#endif
+				//				if (!lag_records.empty())
+				//				{
+				//					int choked = floorf((event_time - player_time) / g_GlobalVars->interval_per_tick) + 0.5;
+				//					choked = (choked > 14 ? 14 : choked < 1 ? 0 : choked);
+				//					pEntity->m_vecOrigin() = (lag_records.begin()->m_vecOrigin + (g_GlobalVars->interval_per_tick * lag_records.begin()->m_vecVelocity * choked));
+				//				}
+				//
+				//				CMBacktracking::Get().SetOverwriteTick(pEntity, CalcedAngle, shot_time, 1);
+				//			}
+			}
+			ei = next;
+		} while (next != NULL);
+
+		return ret;
+	}
 
 	int32_t nTickBaseShift = 0;
 	int32_t nSinceUse = 0;

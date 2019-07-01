@@ -3,7 +3,7 @@
 #include "../Rbot.h"
 
 
-void NBacktrack::RageBacktrack(C_BasePlayer* target, CUserCmd* usercmd, Vector& aim_point, bool& hitchanced)
+void LagCompensation::RageBacktrack(C_BasePlayer* target, CUserCmd* usercmd, Vector& aim_point, bool& hitchanced)
 {
 	auto firedShots = g_LocalPlayer->m_iShotsFired();
 	float CDamage = 0.f;
@@ -40,10 +40,14 @@ void NBacktrack::RageBacktrack(C_BasePlayer* target, CUserCmd* usercmd, Vector& 
 
 			Rbot::Get().GetBestHitboxPoint(target, mindmg, aim_point, BaimMode::NONE, willkill, iter->matrix);
 
-			/*if (g_Options.rage_autobaim && firedShots > g_Options.rage_baim_after_x_shots)
-				aim_point = AimRage::Get().CalculateBestPoint(target, HITBOX_PELVIS, g_Options.rage_mindmg, true, iter->matrix);
+			//if (g_Options.rage_autobaim && firedShots > g_Options.rage_baim_after_x_shots)
+			auto baim = Rbot::Get().GetBAimStatus();
+			if(*baim == BaimMode::FORCE_BAIM || *baim == BaimMode::BAIM)
+				//aim_point = AimRage::Get().CalculateBestPoint(target, HITBOX_PELVIS, g_Options.rage_mindmg, true, iter->matrix);
+				Rbot::Get().GetBestHitboxPoint(target, mindmg, aim_point, BaimMode::FORCE_BAIM, willkill, iter->matrix);
 			else
-				aim_point = AimRage::Get().CalculateBestPoint(target, realHitboxSpot[g_Options.rage_hitbox], g_Options.rage_mindmg, g_Options.rage_prioritize, iter->matrix);*/
+				Rbot::Get().GetBestHitboxPoint(target, mindmg, aim_point, BaimMode::NONE, willkill, iter->matrix);
+				//aim_point = AimRage::Get().CalculateBestPoint(target, realHitboxSpot[g_Options.rage_hitbox], g_Options.rage_mindmg, g_Options.rage_prioritize, iter->matrix);
 
 			if (!aim_point.IsValid())
 			{
@@ -66,7 +70,7 @@ void NBacktrack::RageBacktrack(C_BasePlayer* target, CUserCmd* usercmd, Vector& 
 	}
 }
 
-void NBacktrack::FrameUpdatePostEntityThink()
+void LagCompensation::FrameUpdatePostEntityThink()
 {
 	static auto sv_unlag = g_CVar->FindVar("sv_unlag");
 	if (g_GlobalVars->maxClients <= 1 || !sv_unlag->GetBool())
@@ -124,7 +128,7 @@ void NBacktrack::FrameUpdatePostEntityThink()
 	}
 }
 
-void NBacktrack::ProcessCMD(int iTargetIdx, CUserCmd* usercmd)
+void LagCompensation::ProcessCMD(int iTargetIdx, CUserCmd* usercmd)
 {
 	LagRecord recentLR = m_RestoreLagRecord[iTargetIdx].first;
 	if (!IsTickValid(TIME_TO_TICKS(recentLR.m_flSimulationTime)))
@@ -134,7 +138,7 @@ void NBacktrack::ProcessCMD(int iTargetIdx, CUserCmd* usercmd)
 
 }
 
-void NBacktrack::RemoveBadRecords(int Idx, std::deque<LagRecord>& records)
+void LagCompensation::RemoveBadRecords(int Idx, std::deque<LagRecord>& records)
 {
 	auto& m_LagRecords = records; // Should use rbegin but can't erase
 	for (auto lag_record = m_LagRecords.begin(); lag_record != m_LagRecords.end(); lag_record++)
@@ -149,7 +153,7 @@ void NBacktrack::RemoveBadRecords(int Idx, std::deque<LagRecord>& records)
 	}
 }
 
-bool NBacktrack::StartLagCompensation(C_BasePlayer* player)
+bool LagCompensation::StartLagCompensation(C_BasePlayer* player)
 {
 	backtrack_records.clear();
 
@@ -201,7 +205,7 @@ bool NBacktrack::StartLagCompensation(C_BasePlayer* player)
 	return backtrack_records.size() > 0;
 }
 
-bool NBacktrack::FindViableRecord(C_BasePlayer* player, LagRecord* record)
+bool LagCompensation::FindViableRecord(C_BasePlayer* player, LagRecord* record)
 {
 	auto& m_LagRecords = this->m_LagRecord[player->EntIndex()];
 
@@ -280,7 +284,7 @@ bool NBacktrack::FindViableRecord(C_BasePlayer* player, LagRecord* record)
 	}
 }
 
-void NBacktrack::FinishLagCompensation(C_BasePlayer* player)
+void LagCompensation::FinishLagCompensation(C_BasePlayer* player)
 {
 	int idx = player->EntIndex();
 
@@ -307,7 +311,7 @@ void NBacktrack::FinishLagCompensation(C_BasePlayer* player)
 	player->m_flPoseParameter() = m_RestoreLagRecord[idx].second.m_arrflPoseParameters;
 }
 
-int NBacktrack::GetPriorityLevel(C_BasePlayer* player, LagRecord* lag_record)
+int LagCompensation::GetPriorityLevel(C_BasePlayer* player, LagRecord* lag_record)
 {
 	int priority = 0;
 
@@ -326,7 +330,7 @@ int NBacktrack::GetPriorityLevel(C_BasePlayer* player, LagRecord* lag_record)
 	return priority;
 }
 
-void NBacktrack::SimulateMovement(Vector& velocity, Vector& origin, C_BasePlayer* player, int& flags, bool was_in_air)
+void LagCompensation::SimulateMovement(Vector& velocity, Vector& origin, C_BasePlayer* player, int& flags, bool was_in_air)
 {
 	if (!(flags & FL_ONGROUND))
 		velocity.z -= (g_GlobalVars->frametime * g_CVar->FindVar("sv_gravity")->GetFloat());
@@ -385,7 +389,7 @@ void NBacktrack::SimulateMovement(Vector& velocity, Vector& origin, C_BasePlayer
 		flags |= (1 << 0);
 }
 
-void NBacktrack::FakelagFix(C_BasePlayer* player)
+void LagCompensation::FakelagFix(C_BasePlayer* player)
 {
 	auto& lag_records = this->m_LagRecord[player->EntIndex()];
 
@@ -427,9 +431,10 @@ void NBacktrack::FakelagFix(C_BasePlayer* player)
 	}
 }
 
-void NBacktrack::UpdateAnimations(C_BasePlayer* player)
+
+void LagCompensation::UpdateAnimations(C_BasePlayer* player)
 {
-	CBasePlayerAnimState* state = player->GetBasePlayerAnimState();
+	CCSGOPlayerAnimState* state = player->GetPlayerAnimState();
 	if (state)
 	{
 		// backup
@@ -469,7 +474,7 @@ void NBacktrack::UpdateAnimations(C_BasePlayer* player)
 	}
 }
 
-void NBacktrack::SetOverwriteTick(C_BasePlayer* player, QAngle angles, float_t correct_time, uint32_t priority)
+void LagCompensation::SetOverwriteTick(C_BasePlayer* player, QAngle angles, float_t correct_time, uint32_t priority)
 {
 	int idx = player->EntIndex();
 	LagRecord overwrite_record;
@@ -485,7 +490,7 @@ void NBacktrack::SetOverwriteTick(C_BasePlayer* player, QAngle angles, float_t c
 	m_LagRecords.emplace_back(overwrite_record);
 }
 
-bool NBacktrack::IsTickValid(int tick)
+bool LagCompensation::IsTickValid(int tick)
 {
 	// better use polak's version than our old one, getting more accurate results
 
@@ -503,7 +508,7 @@ bool NBacktrack::IsTickValid(int tick)
 	return fabsf(deltaTime) < 0.2f;
 }
 
-bool NBacktrack::IsPlayerValid(C_BasePlayer* player)
+bool LagCompensation::IsPlayerValid(C_BasePlayer* player)
 {
 	if (!player)
 		return false;
@@ -530,7 +535,7 @@ bool NBacktrack::IsPlayerValid(C_BasePlayer* player)
 	return true;
 }
 
-float NBacktrack::GetLerpTime()
+float LagCompensation::GetLerpTime()
 {
 	int ud_rate = g_CVar->FindVar("cl_updaterate")->GetInt();
 	ConVar* min_ud_rate = g_CVar->FindVar("sv_minupdaterate");

@@ -13,7 +13,7 @@ void KeyLoop::OnCreateMove()
 	if(InputSys::Get().WasKeyPressed(Settings::Visual::ThirdPersonHotkey))
 		Settings::Visual::ThirdPersonEnabled = !Settings::Visual::ThirdPersonEnabled;
 
-	if ( InputSys::Get().WasKeyPressed(Settings::RageBot::BAimHotkey) )
+	if ( Settings::RageBot::Enabled && InputSys::Get().WasKeyPressed(Settings::RageBot::BAimHotkey) )
 		g_Saver.ForceBAim = !g_Saver.ForceBAim;
 
 /*	if (InputSys::Get().WasKeyPressed(Settings::RageBot::DesyncFlipHotkey))
