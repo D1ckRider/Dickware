@@ -135,21 +135,23 @@ void Menu::RenderRagebot()
 		Components.Checkbox("Auto Stop", Settings::RageBot::AutoStop);
 		Components.Checkbox("Auto Crouch", Settings::RageBot::AutoCrouch);
 
+#ifdef _DEBUG
 		Components.Checkbox("Aim Step", Settings::RageBot::AimStepEnabled);
 		Components.SliderInt("Aim Step Value", Settings::RageBot::AimStepValue, 0, 20);
 
-#ifdef _DEBUG
 		Components.Checkbox("Fakelag prediction", Settings::RageBot::FakelagPrediction);
 #endif // _DEBUG
 
 		Components.ComboBox("Shooting Mode", ShootingModes, IM_ARRAYSIZE(ShootingModes), Settings::RageBot::ShootingMode);
 		Components.Checkbox("Resolver (WIP)", Settings::RageBot::Resolver);
+		Components.Checkbox("Lag compensation (WIP)", Settings::RageBot::LagComp);
 #ifdef _DEBUG
-		Components.Checkbox("Lag compensation", Settings::RageBot::LagComp);
-		Components.Checkbox("Backtrack", Settings::RageBot::Backtrack);
-#endif // _DEBUG
+		//Components.Checkbox("Lag compensation", Settings::RageBot::LagComp);
+		//Components.Checkbox("Backtrack", Settings::RageBot::Backtrack);
 
 		Components.Checkbox("Force unlag", Settings::RageBot::ForceUnlag);
+#endif // _DEBUG
+
 		Components.NextColumn();
 
 		Components.Checkbox("Enable AA", Settings::RageBot::EnabledAA);

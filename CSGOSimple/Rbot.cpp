@@ -20,6 +20,71 @@ TickRecord bRecord;
 
 void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 {
+	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
+		return;
+
+	if (!Settings::RageBot::Enabled)
+		return;
+
+
+	this->LocalWeapon = g_LocalPlayer->m_hActiveWeapon().Get();
+	this->CurrentCmd = cmd;
+	this->CurTime = GetTickbase() * g_GlobalVars->interval_per_tick;
+
+	UpdateConfigData();
+	UpdateWeaponConfig(LocalWeapon);
+
+	g_Saver.bAimbotting = false;
+	g_Saver.bVisualAimbotting = false;
+	
+	if (!this->CockRevolver(cmd, LocalWeapon))
+		return;
+
+	if (!LocalWeapon)
+		return;
+
+	if (g_LocalPlayer->m_flNextAttack() > CurTime)
+		return;
+
+	if (LocalWeapon->IsZeus())
+	{
+		ZeusBot(cmd, LocalWeapon);
+		return;
+	}
+
+	/* Calling SlowWalk */
+	if (LocalWeapon->GetItemDefinitionIndex() == WEAPON_SCAR20 || LocalWeapon->GetItemDefinitionIndex() == WEAPON_G3SG1)
+		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
+			SlowWalk(cmd, 40);
+
+	if (LocalWeapon->GetItemDefinitionIndex() == WEAPON_AWP)
+		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
+			SlowWalk(cmd, 33);
+
+	if (LocalWeapon->GetItemDefinitionIndex() == WEAPON_SSG08)
+		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
+			SlowWalk(cmd, 70);
+
+	if (!LocalWeapon->IsSniper())  //for every weapon btw
+		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
+			SlowWalk(cmd, 34);
+
+	if (Settings::RageBot::AutoStop)
+		AutoStop(cmd);
+
+	if (Settings::RageBot::FakeDuck && InputSys::Get().IsKeyDown(Settings::RageBot::FakeDuckHotkey))
+		FakeDuck(cmd, bSendPacket);
+
+	/*if (g_Options.rage_usekey && !g_InputSystem->IsButtonDown(static_cast<ButtonCode_t>(g_Options.rage_aimkey)))
+		return;*/
+
+	// Also add checks for grenade throw time if we dont have that yet.
+	if (g_LocalPlayer->m_hActiveWeapon().Get()->IsGrenade() || g_LocalPlayer->m_hActiveWeapon().Get()->m_iClip1() < 1)
+		return;
+
+	TargetEntities(cmd);
+
+#if 0
 	static bool DidShotLastTick = false;
 
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
@@ -184,37 +249,38 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 			cmd->buttons |= IN_ATTACK;
 		else
 			delay = 0;*/
-	//}
-	
+			//}
+
 
 	cmd->buttons |= IN_ATTACK;
-	
-    //DidShotLastTick = true;
-    g_Saver.RbotShotInfo.InLbyUpdate = g_Resolver.GResolverData[BestEntity].mode == ResolverModes::LBY_BREAK;
-    g_Saver.RbotShotInfo.InLc = g_Resolver.GResolverData[BestEntity].BreakingLC;
-    g_Saver.RbotShotInfo.Moving = g_Resolver.GResolverData[BestEntity].Moving;
-    g_Saver.AARealAngle = cmd->viewangles;
-    //Console.WriteLine(Backtrack::Get().GetLerpTime());
-    //cmd->tick_count = TIME_TO_TICKS(entity->m_flSimulationTime() - GetLerpTimeX());
 
-    if ( !bBacktrack )
-        cmd->tick_count = tick;
+	//DidShotLastTick = true;
+	g_Saver.RbotShotInfo.InLbyUpdate = g_Resolver.GResolverData[BestEntity].mode == ResolverModes::LBY_BREAK;
+	g_Saver.RbotShotInfo.InLc = g_Resolver.GResolverData[BestEntity].BreakingLC;
+	g_Saver.RbotShotInfo.Moving = g_Resolver.GResolverData[BestEntity].Moving;
+	g_Saver.AARealAngle = cmd->viewangles;
+	//Console.WriteLine(Backtrack::Get().GetLerpTime());
+	//cmd->tick_count = TIME_TO_TICKS(entity->m_flSimulationTime() - GetLerpTimeX());
 
-    switch ( rbot_shooting_mode )
-    {
-        case 0:
-            bSendPacket = true;
-            break;
+	if (!bBacktrack)
+		cmd->tick_count = tick;
 
-        case 2:
-            //g_Saver.RbotDidLastShot = true;
-            g_Saver.RbotDidLastShot = true;
-            break;
-    }
+	switch (rbot_shooting_mode)
+	{
+	case 0:
+		bSendPacket = true;
+		break;
 
-    /*
-    - add mode choke after shot
-    */
+	case 2:
+		//g_Saver.RbotDidLastShot = true;
+		g_Saver.RbotDidLastShot = true;
+		break;
+	}
+
+	/*
+	- add mode choke after shot
+	*/
+#endif // 0
 }
 
 void Rbot::OnFireEvent ( IGameEvent* event )
@@ -321,6 +387,196 @@ bool Rbot::InFakeLag ( C_BasePlayer* player )
 
     Simtimes[i] = CurrentSimtime;
     return rBool;
+}
+
+/* Gladiatorz paste */
+
+int Rbot::GetTickbase(CUserCmd* cmd)
+{
+	static int g_tick = 0;
+	static CUserCmd* g_pLastCmd = nullptr;
+
+	if (!cmd)
+		return g_tick;
+
+	if (!g_pLastCmd || g_pLastCmd->hasbeenpredicted) {
+		g_tick = g_LocalPlayer->m_nTickBase();
+	}
+	else {
+		// Required because prediction only runs on frames, not ticks
+		// So if your framerate goes below tickrate, m_nTickBase won't update every tick
+		++g_tick;
+	}
+
+	g_pLastCmd = cmd;
+	return g_tick;
+}
+
+bool Rbot::CheckTarget(int i)
+{
+	C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(i);
+
+	if (!player || player == nullptr)
+		return false;
+
+	if (player == g_LocalPlayer)
+		return false;
+
+	if (player->m_iTeamNum() == g_LocalPlayer->m_iTeamNum())
+		return false;
+
+	if (player->IsDormant())
+		return false;
+
+	if (player->m_bGunGameImmunity())
+		return false;
+
+	if (!player->IsAlive())
+		return false;
+
+	return true;
+}
+
+void Rbot::TargetEntities(CUserCmd* cmd)
+{
+	static C_BaseCombatWeapon* oldWeapon; // what is this for?
+	if (LocalWeapon != oldWeapon)
+	{
+		oldWeapon = LocalWeapon;
+		cmd->buttons &= ~IN_ATTACK;
+		return;
+	}
+
+	if (LocalWeapon->IsPistol() && cmd->tick_count % 2)
+	{
+		static int lastshot;
+		if (cmd->buttons & IN_ATTACK)
+			lastshot++;
+
+		if (!cmd->buttons & IN_ATTACK || lastshot > 1)
+		{
+			cmd->buttons &= ~IN_ATTACK;
+			lastshot = 0;
+		}
+		return;
+	}
+
+	/*
+		We should also add those health/fov based memes and only check newest record. Good enough IMO
+	*/
+
+	this->CanFireWeapon = LocalWeapon->CanFire();
+
+	if (PrevAimtarget && CheckTarget(PrevAimtarget))
+	{
+		if (TargetSpecificEnt(C_BasePlayer::GetPlayerByIndex(PrevAimtarget)))
+			return;
+	}
+
+	for (int i = 1; i < g_EngineClient->GetMaxClients(); i++)
+	{
+		// Failed to shoot at him again, reset him and try others.
+		if (PrevAimtarget && PrevAimtarget == i)
+		{
+			PrevAimtarget = NULL;
+			continue;
+		}
+
+		if (!CheckTarget(i))
+			continue;
+
+		C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(i);
+
+		if (TargetSpecificEnt(player))
+			return;
+	}
+}
+
+bool Rbot::TargetSpecificEnt(C_BasePlayer* pEnt)
+{
+	int i = pEnt->EntIndex();
+	auto firedShots = g_LocalPlayer->m_iShotsFired();
+
+	//int iHitbox = realHitboxSpot[g_Options.rage_hitbox];
+
+	baim = g_Resolver.GResolverData[i].Resolved ? BaimMode::NONE : BaimMode::BAIM;
+
+	if (g_Saver.ForceBAim)
+	{
+		baim = BaimMode::FORCE_BAIM;
+	}
+	else
+	{
+		if (!Settings::RageBot::BAimMode)
+			baim = BaimMode::NONE;
+
+		if (g_Resolver.GResolverData[i].Shots > BAimAfter && ForceBAimAfter != 0)
+			baim = BaimMode::BAIM;
+
+		if (MovingBAim && g_LocalPlayer->m_vecVelocity().Length() > 0.1f)
+			baim = BaimMode::BAIM;
+
+		if (g_Resolver.GResolverData[i].Shots > BAimAfter && ForceBAimAfter != 0)
+			baim = BaimMode::FORCE_BAIM;
+
+		//if (rbot_baimmode == 0) baim = BaimMode::NONE;
+	}
+
+	Vector vecTarget;
+	float CDamage = 0.f;
+
+	// Disgusting ass codes, can't think of a cleaner way now though. FIX ME.
+	bool LagComp_Hitchanced = false;
+	bool WillKillEntity = false;
+	if (Settings::RageBot::LagComp)
+	{
+		LagCompensation::Get().RageBacktrack(pEnt, CurrentCmd, vecTarget, LagComp_Hitchanced);
+	}
+	else
+	{
+		matrix3x4_t matrix[128];
+		if (!pEnt->SetupBones2(matrix, 128, 256, pEnt->m_flSimulationTime()))
+			return false;
+
+		GetBestHitboxPoint(pEnt, CDamage, vecTarget, baim, WillKillEntity);
+
+		/*if (g_Options.rage_autobaim && firedShots > g_Options.rage_baim_after_x_shots)
+			vecTarget = GetBestHitboxPoint(pEnt, HITBOX_PELVIS, g_Options.rage_mindmg, true, matrix);
+		else
+			vecTarget = GetBestHitboxPoint(pEnt, iHitbox, g_Options.rage_mindmg, g_Options.rage_prioritize, matrix);*/
+	}
+
+	// Invalid target/no hitable points at all.
+	if (!vecTarget.IsValid())
+		return false;
+
+	/*if(Settings::RageBot::AutoStop)
+		AutoStop(CurrentCmd);*/
+
+	if (!(CurrentCmd->buttons & IN_DUCK) && Settings::RageBot::AutoCrouch)
+		AutoCrouch(CurrentCmd);
+
+	QAngle new_aim_angles = Math::CalcAngle(g_LocalPlayer->GetEyePos(), vecTarget) - g_LocalPlayer->m_aimPunchAngle() * 2.f; //(g_Options.rage_norecoil ? g_LocalPlayer->m_aimPunchAngle() * 2.f : QAngle(0, 0, 0));
+	CurrentCmd->viewangles = g_Saver.vecVisualAimbotAngs = new_aim_angles;
+	g_Saver.vecVisualAimbotAngs += (Settings::Misc::NoVisualRecoil ? g_LocalPlayer->m_aimPunchAngle() * 2.f : QAngle(0, 0, 0));
+	g_Saver.bVisualAimbotting = true;
+
+	if (this->CanFireWeapon)
+	{
+		// Save more fps by remembering to try the same entity again next time.
+		PrevAimtarget = pEnt->EntIndex();
+
+		if (Settings::RageBot::AutoScope && g_LocalPlayer->m_hActiveWeapon().Get()->IsSniper() && g_LocalPlayer->m_hActiveWeapon().Get()->m_zoomLevel() == 0)
+		{
+			CurrentCmd->buttons |= IN_ATTACK2;
+		}
+		else if ((Settings::RageBot::LagComp && LagComp_Hitchanced) || (!LagComp_Hitchanced && HitChance(CurrentCmd->viewangles, pEnt, Hitchance)))
+		{
+			g_Saver.bAimbotting = true;
+			CurrentCmd->buttons |= IN_ATTACK;
+		}
+	}
+	return true;
 }
 
 bool Rbot::CockRevolver(CUserCmd* cmd, C_BaseCombatWeapon* weapon)

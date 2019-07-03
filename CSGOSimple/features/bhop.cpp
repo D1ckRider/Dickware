@@ -88,3 +88,48 @@ void BunnyHop::AutoStrafe(CUserCmd* cmd, QAngle va)
     Math::ClampAngles(viewAngles);
     MovementFix::Get().Correct(viewAngles, cmd, cmd->forwardmove, cmd->sidemove);
 }
+
+template<class T, class U>
+T clamp(T in, U low, U high)
+{
+	if (in <= low)
+		return low;
+
+	if (in >= high)
+		return high;
+
+	return in;
+}
+
+
+void BunnyHop::AutoStrafe(CUserCmd* cmd)
+{
+	if (g_LocalPlayer->m_nMoveType() == MOVETYPE_NOCLIP || g_LocalPlayer->m_nMoveType() == MOVETYPE_LADDER || !g_LocalPlayer->IsAlive()) return;
+
+	// If we're not jumping or want to manually move out of the way/jump over an obstacle don't strafe.
+	//if (!g_InputSystem->IsButtonDown(ButtonCode_t::KEY_SPACE) ||
+	//	g_InputSystem->IsButtonDown(ButtonCode_t::KEY_A) ||
+	//	g_InputSystem->IsButtonDown(ButtonCode_t::KEY_D) ||
+	//	g_InputSystem->IsButtonDown(ButtonCode_t::KEY_S) ||
+	//	g_InputSystem->IsButtonDown(ButtonCode_t::KEY_W))
+	//	return;
+
+	if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND)) {
+		if (cmd->mousedx > 1 || cmd->mousedx < -1) {
+			cmd->sidemove = clamp(cmd->mousedx < 0.f ? -400.f : 400.f, -400, 400);
+		}
+		else {
+			if (g_LocalPlayer->m_vecVelocity().Length2D() == 0 || g_LocalPlayer->m_vecVelocity().Length2D() == NAN || g_LocalPlayer->m_vecVelocity().Length2D() == INFINITE)
+			{
+				cmd->forwardmove = 400;
+				return;
+			}
+			cmd->forwardmove = clamp(5850.f / g_LocalPlayer->m_vecVelocity().Length2D(), -400, 400);
+			if (cmd->forwardmove < -400 || cmd->forwardmove > 400)
+				cmd->forwardmove = 0;
+			cmd->sidemove = clamp((cmd->command_number % 2) == 0 ? -400.f : 400.f, -400, 400);
+			if (cmd->sidemove < -400 || cmd->sidemove > 400)
+				cmd->sidemove = 0;
+		}
+	}
+}

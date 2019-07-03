@@ -77,6 +77,12 @@ public:
         return CallVFunction<oRunCommand>(this, 19)(this, player, ucmd, moveHelper);
     }
 
+	void SetLocalViewAngles(QAngle& angle)
+	{
+		typedef void(__thiscall * oSetLocalViewAngles)(void*, QAngle&);
+		return CallVFunction<oSetLocalViewAngles>(this, 13)(this, angle);
+	}
+
     void SetupMove(C_BasePlayer *player, CUserCmd *ucmd, IMoveHelper *moveHelper, void* pMoveData)
     {
         typedef void(__thiscall* oSetupMove)(void*, C_BasePlayer*, CUserCmd*, IMoveHelper*, void*);
@@ -88,4 +94,10 @@ public:
         typedef void(__thiscall* oFinishMove)(void*, C_BasePlayer*, CUserCmd*, void*);
         return CallVFunction<oFinishMove>(this, 21)(this, player, ucmd, pMoveData);
     }
+
+	char pad132[8];
+	bool in_prediction;
+	char pad137[1];
+	bool engine_paused;
+
 };

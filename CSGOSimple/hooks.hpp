@@ -62,10 +62,9 @@ namespace Hooks
     using RenderSmokeOverlay_t = void ( __thiscall* ) ( IVRenderView*, bool );
     using SendDatagram_t	   = int  ( __thiscall* ) ( INetChannel*, bf_write* );
 	using WriteUsercmdDeltaToBuffer_t = bool(__thiscall* )(IBaseClientDLL*, int, bf_write*, int, int, bool);
-	using SuppressLists = bool(__thiscall*)(void*, int, bool);
-	using IsHLTV =	bool(__thiscall*)(void*);
-	using TempEntities = bool(__thiscall* )(void*, void*/*SVC_TempEntities*/);
-
+	using SuppressLists		   = bool(__thiscall*)(void*, int, bool);
+	using IsHLTV			   = bool(__thiscall*)(void*);
+	using TempEntities		   = bool(__thiscall* )(void*, void*/*SVC_TempEntities*/);
 
 	extern TempEntities o_TempEntities;
 

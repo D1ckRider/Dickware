@@ -35,6 +35,7 @@ class Rbot : public Singleton<Rbot>
 {
 public:
     void CreateMove ( CUserCmd* cmd, bool& bSendPacket );
+	int GetTickbase(CUserCmd* cmd = nullptr);
     void OnFireEvent ( IGameEvent* event );
     bool GetBestHitboxPoint ( C_BasePlayer* entity, float& damage, Vector& hitbox, BaimMode baim, bool& WillKill, matrix3x4_t matrix[MAXSTUDIOBONES] = nullptr, mstudiohitboxset_t* StudioSet = nullptr, bool NoPointscale = false );
     void PrecacheShit();
@@ -47,6 +48,12 @@ private:
     float Simtimes[128];
 
 
+	// Gladiatorz paste
+	
+	bool CheckTarget(int i);
+	void TargetEntities(CUserCmd* cmd);
+	bool TargetSpecificEnt(C_BasePlayer* pEnt);
+
 	bool CockRevolver ( CUserCmd* cmd, C_BaseCombatWeapon* weapon );
 	void FakeDuck	  ( CUserCmd* cmd, bool &bSendPackets);
 	void FakeDuck	  ( CUserCmd* cmd );
@@ -56,6 +63,11 @@ private:
 	void SlowWalk	  ( CUserCmd* cmd );
 
     CUserCmd* CurrentCmd = nullptr;
+	C_BaseCombatWeapon* LocalWeapon = nullptr;
+	int PrevAimtarget = NULL;
+	bool CanFireWeapon = false;
+	float CurTime = 0.f;
+
 
     void ZeusBot ( CUserCmd* cmd, C_BaseCombatWeapon* weapon );
 

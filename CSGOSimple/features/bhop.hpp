@@ -7,4 +7,5 @@ class BunnyHop : public Singleton<BunnyHop>
 public:
     void OnCreateMove(CUserCmd* cmd);
 	void AutoStrafe(CUserCmd* cmd, QAngle va);
+	void AutoStrafe(CUserCmd* cmd);
 };

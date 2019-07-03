@@ -421,23 +421,23 @@ void AntiAim::LbyBreakerPrediction ( CUserCmd* cmd, bool& bSendPacket )
 	if (!Settings::RageBot::DesyncType || !Settings::RageBot::Enabled || !g_LocalPlayer || !g_LocalPlayer->IsAlive())
         return;
 
-	static float SpawnTime = 0.0f;
+	//static float SpawnTime = 0.0f;
 
 	if (!g_LocalPlayer || !g_LocalPlayer->m_iHealth())
 		return;
 
 	allocate = (m_serverAnimState == nullptr);
 	change = (!allocate) && (&g_LocalPlayer->GetRefEHandle() != m_ulEntHandle);
-	reset = (!allocate && !change) && (g_LocalPlayer->m_flSpawnTime() != SpawnTime);
+	reset = (!allocate && !change) && (g_LocalPlayer->m_flSpawnTime() != m_flSpawnTime);
 
 	if (change)
-		g_pMemAlloc->Free(m_serverAnimState);
+		m_serverAnimState = nullptr;
+		//g_pMemAlloc->Free(m_serverAnimState);
 
 	if (reset) 
 	{
 		g_LocalPlayer->ResetAnimationState(m_serverAnimState);
-
-		SpawnTime = g_LocalPlayer->m_flSpawnTime();
+		m_flSpawnTime = g_LocalPlayer->m_flSpawnTime();
 	}
 
 	if (allocate || change) 
@@ -448,7 +448,7 @@ void AntiAim::LbyBreakerPrediction ( CUserCmd* cmd, bool& bSendPacket )
 			g_LocalPlayer->CreateAnimationState(state);
 
 		m_ulEntHandle = const_cast<CBaseHandle*>(&g_LocalPlayer->GetRefEHandle());
-		SpawnTime = g_LocalPlayer->m_flSpawnTime();
+		m_flSpawnTime = g_LocalPlayer->m_flSpawnTime();
 
 		m_serverAnimState = state;
 	}

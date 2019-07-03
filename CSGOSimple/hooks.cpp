@@ -330,148 +330,159 @@ namespace Hooks
         float OldForwardmove = cmd->forwardmove;
         float OldSidemove = cmd->sidemove;
 		flAngle = cmd->viewangles.yaw;
+		QAngle org_angle = cmd->viewangles;
 
+		Rbot::Get().GetTickbase(cmd);
         KeyLoop::Get().OnCreateMove();
 
-        prediction->run_prediction ( cmd );
+		g_Saver.PredictionData.reset();
+		if (Settings::Misc::BHop)
+			BunnyHop::Get().OnCreateMove(cmd);
+		
+		if (Settings::Misc::AutoStrafe)
+			BunnyHop::Get().AutoStrafe(cmd, cmd->viewangles);
 
-		/*static float SpawnTime = 0.0f;
-		if (g_LocalPlayer->m_flSpawnTime() != SpawnTime) 
+		QAngle wish_angle = cmd->viewangles;
+		cmd->viewangles = org_angle;
+
+		prediction->Setup(g_Saver.PredictionData);
+
+        //prediction->run_prediction ( cmd, g_LocalPlayer );
+		prediction->RunPrediction(g_Saver.PredictionData, cmd);
+		{
+			/*static float SpawnTime = 0.0f;
+		if (g_LocalPlayer->m_flSpawnTime() != SpawnTime)
 		{
 			g_Saver.AnimState.pBaseEntity = g_LocalPlayer;
 			g_LocalPlayer->ResetAnimationState(&g_Saver.AnimState);
 			SpawnTime = g_LocalPlayer->m_flSpawnTime();
 		}*/
 
-        #ifdef _DEBUG
-        //Backtrack::Get().OnCreateMove();
-        #endif // _DEBUG
+#ifdef _DEBUG
+		//Backtrack::Get().OnCreateMove();
+#endif // _DEBUG
 
-		bool rbot = Settings::RageBot::Enabled;
+			Misc::Get().OnCreateMove(cmd);
 
-        Misc::Get().OnCreateMove ( cmd );
+			//if ( rbot )
+			Fakelag::Get().OnCreateMove(cmd, bSendPacket);
 
-		if(Settings::Misc::BHop)
-            BunnyHop::Get().OnCreateMove ( cmd );
+			if (Settings::RageBot::EnabledAA)
+				AntiAim::Get().OnCreateMove(cmd, bSendPacket);
 
-        //if ( rbot )
-        Fakelag::Get().OnCreateMove ( cmd, bSendPacket );
+			if (Settings::Aimbot::LegitAA > 0)
+				Lbot::Get().LegitAA(cmd, bSendPacket);
 
-		if ( Settings::RageBot::EnabledAA )
-            AntiAim::Get().OnCreateMove ( cmd, bSendPacket );
-		
-		if (Settings::Aimbot::LegitAA > 0)
-			Lbot::Get().LegitAA(cmd, bSendPacket);
+			if (Settings::RageBot::Enabled)
+			{
+				Rbot::Get().PrecacheShit();
+				Rbot::Get().CreateMove(cmd, bSendPacket);
+			}
 
-        if ( rbot )
-        {
-            Rbot::Get().PrecacheShit();
-            Rbot::Get().CreateMove ( cmd, bSendPacket );
-        }
+			GrenadeHint::Get().Tick(cmd->buttons);
 
-		GrenadeHint::Get().Tick(cmd->buttons);
+			if (!Settings::RageBot::Enabled)
+			{
+				Math::FixAngles(cmd->viewangles);
+				cmd->viewangles.yaw = std::remainderf(cmd->viewangles.yaw, 360.0f);
+			}
 
-		if (!rbot)
-		{
-			Math::FixAngles(cmd->viewangles);
-			cmd->viewangles.yaw = std::remainderf(cmd->viewangles.yaw, 360.0f);
-		}
-		
-
-		if ((Settings::Aimbot::LegitAA > 0 || Settings::RageBot::DesyncType > 0) && g_ClientState->chokedcommands >= 14) 
-		{
-			bSendPacket = true;
-			cmd->viewangles = g_ClientState->viewangles;
-		}
+			/*if ((Settings::Aimbot::LegitAA > 0 || Settings::RageBot::DesyncType > 0) && g_ClientState->chokedcommands >= 14)
+			{
+				bSendPacket = true;
+				cmd->viewangles = g_ClientState->viewangles;
+			}*/
 
 
-		if ( !rbot && Settings::Aimbot::Enabled )
-        {
-			// from aimware dmp
-			static ConVar* m_yaw = m_yaw = g_CVar->FindVar("m_yaw");
-			static ConVar* m_pitch = m_pitch = g_CVar->FindVar("m_pitch");
-			static ConVar* sensitivity = sensitivity = g_CVar->FindVar("sensitivity");
+			if (!Settings::RageBot::Enabled && Settings::Aimbot::Enabled)
+			{
+				// from aimware dmp
+				static ConVar* m_yaw = m_yaw = g_CVar->FindVar("m_yaw");
+				static ConVar* m_pitch = m_pitch = g_CVar->FindVar("m_pitch");
+				static ConVar* sensitivity = sensitivity = g_CVar->FindVar("sensitivity");
 
-			static QAngle m_angOldViewangles = g_ClientState->viewangles;
+				static QAngle m_angOldViewangles = g_ClientState->viewangles;
 
-			float delta_x = std::remainderf(cmd->viewangles.pitch - m_angOldViewangles.pitch, 360.0f);
-			float delta_y = std::remainderf(cmd->viewangles.yaw - m_angOldViewangles.yaw, 360.0f);
+				float delta_x = std::remainderf(cmd->viewangles.pitch - m_angOldViewangles.pitch, 360.0f);
+				float delta_y = std::remainderf(cmd->viewangles.yaw - m_angOldViewangles.yaw, 360.0f);
 
-			if (delta_x != 0.0f) {
-				float mouse_y = -((delta_x / m_pitch->GetFloat()) / sensitivity->GetFloat());
-				short mousedy;
-				if (mouse_y <= 32767.0f) {
-					if (mouse_y >= -32768.0f) {
-						if (mouse_y >= 1.0f || mouse_y < 0.0f) {
-							if (mouse_y <= -1.0f || mouse_y > 0.0f)
-								mousedy = static_cast<short>(mouse_y);
-							else
-								mousedy = -1;
+				if (delta_x != 0.0f) {
+					float mouse_y = -((delta_x / m_pitch->GetFloat()) / sensitivity->GetFloat());
+					short mousedy;
+					if (mouse_y <= 32767.0f) {
+						if (mouse_y >= -32768.0f) {
+							if (mouse_y >= 1.0f || mouse_y < 0.0f) {
+								if (mouse_y <= -1.0f || mouse_y > 0.0f)
+									mousedy = static_cast<short>(mouse_y);
+								else
+									mousedy = -1;
+							}
+							else {
+								mousedy = 1;
+							}
 						}
 						else {
-							mousedy = 1;
+							mousedy = 0x8000u;
 						}
 					}
 					else {
-						mousedy = 0x8000u;
+						mousedy = 0x7FFF;
 					}
-				}
-				else {
-					mousedy = 0x7FFF;
+
+					cmd->mousedy = mousedy;
 				}
 
-				cmd->mousedy = mousedy;
-			}
-
-			if (delta_y != 0.0f) {
-				float mouse_x = -((delta_y / m_yaw->GetFloat()) / sensitivity->GetFloat());
-				short mousedx;
-				if (mouse_x <= 32767.0f) {
-					if (mouse_x >= -32768.0f) {
-						if (mouse_x >= 1.0f || mouse_x < 0.0f) {
-							if (mouse_x <= -1.0f || mouse_x > 0.0f)
-								mousedx = static_cast<short>(mouse_x);
-							else
-								mousedx = -1;
+				if (delta_y != 0.0f) {
+					float mouse_x = -((delta_y / m_yaw->GetFloat()) / sensitivity->GetFloat());
+					short mousedx;
+					if (mouse_x <= 32767.0f) {
+						if (mouse_x >= -32768.0f) {
+							if (mouse_x >= 1.0f || mouse_x < 0.0f) {
+								if (mouse_x <= -1.0f || mouse_x > 0.0f)
+									mousedx = static_cast<short>(mouse_x);
+								else
+									mousedx = -1;
+							}
+							else {
+								mousedx = 1;
+							}
 						}
 						else {
-							mousedx = 1;
+							mousedx = 0x8000u;
 						}
 					}
 					else {
-						mousedx = 0x8000u;
+						mousedx = 0x7FFF;
 					}
-				}
-				else {
-					mousedx = 0x7FFF;
+
+					cmd->mousedx = mousedx;
 				}
 
-				cmd->mousedx = mousedx;
+				Lbot::Get().OnCreateMove(cmd);
+
+				if (Settings::Aimbot::Backtrack)
+					Backtrack::Get().FinishLegitBacktrack(cmd);
 			}
 
-            Lbot::Get().OnCreateMove ( cmd );
+			if (!Settings::RageBot::Enabled && Settings::TriggerBot::Enabled)
+				TriggerBot::Get().OnCreateMove(cmd);
 
-			if(Settings::Aimbot::Backtrack)
-                Backtrack::Get().FinishLegitBacktrack ( cmd );
-        }
+			AntiAim::Get().LbyBreakerPrediction(cmd, bSendPacket);
 
-		if ( !rbot && Settings::TriggerBot::Enabled )
-			TriggerBot::Get().OnCreateMove(cmd);
+			if (Settings::RageBot::Enabled && Settings::RageBot::Resolver)
+				Resolver::Get().OnCreateMove(OldViewangles);
 
-		AntiAim::Get().LbyBreakerPrediction(cmd, bSendPacket);
+			if (Settings::Misc::BuyBot)
+				BuyBot::Get().OnCreateMove();
 
-		if ( rbot && Settings::RageBot::Resolver )
-            Resolver::Get().OnCreateMove ( OldViewangles );
+			if (Settings::Misc::ClantagType > 0)
+				ClantagChanger::Get().OnCreateMove();
 
-		//NResolver::Get().CreateMove();
-
-		if ( Settings::Misc::BuyBot )
-            BuyBot::Get().OnCreateMove();
-
-		if ( Settings::Misc::ClantagType > 0 )
-            ClantagChanger::Get().OnCreateMove();
-
-        prediction->end_prediction ( cmd );
+			MovementFix::Get().FixMovement(cmd, wish_angle);
+		}
+		prediction->EndPrediction(g_Saver.PredictionData);
+		
+       // prediction->end_prediction ( g_LocalPlayer );
 
         if ( g_LocalPlayer && g_LocalPlayer->IsAlive() && ( cmd->buttons & IN_ATTACK || cmd->buttons & IN_ATTACK2 ) )
             g_Saver.LastShotEyePos = g_LocalPlayer->GetEyePos();
@@ -485,16 +496,16 @@ namespace Hooks
         }
 
 		
-		if (rbot && Settings::RageBot::Resolver)
-		{
-			//g_ClientState.
-			for (int i = 1; i <= g_GlobalVars->maxClients; i++)
-			{
-				C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(i);
-				if(player && player != g_LocalPlayer)
-					LagCompensation::Get().UpdateAnimations(player);
-			}
-		}
+		//if (rbot && Settings::RageBot::LagComp)
+		//{
+		//	//g_ClientState.
+		//	for (int i = 1; i <= g_GlobalVars->maxClients; i++)
+		//	{
+		//		C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(i);
+		//		if(player && player != g_LocalPlayer)
+		//			LagCompensation::Get().UpdateAnimations(player);
+		//	}
+		//}
 
         //OldViewangles.pitch = cmd->viewangles.pitch;
 
@@ -503,13 +514,13 @@ namespace Hooks
         //QAngle oldVang = cmd->viewangles;
         Math::NormalizeAngles ( cmd->viewangles );
 
-        if ( g_LocalPlayer && g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER && g_LocalPlayer->m_nMoveType() != MOVETYPE_NOCLIP )
+        /*if ( g_LocalPlayer && g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER && g_LocalPlayer->m_nMoveType() != MOVETYPE_NOCLIP )
         {
 			if ( Settings::Misc::AutoStrafe )
                 BunnyHop::Get().AutoStrafe ( cmd, OldViewangles );
             else
                 MovementFix::Get().Correct ( OldViewangles, cmd, OldForwardmove, OldSidemove );
-        }
+        }*/
 
 		if ( Settings::RageBot::SlideWalk )
             AntiAim::Get().SlideWalk ( cmd );
@@ -519,12 +530,12 @@ namespace Hooks
         verified->m_cmd = *cmd;
         verified->m_crc = cmd->GetChecksum();
 
-		if (!o_TempEntities)
+		/*if (!o_TempEntities)
 		{
 			clientstate_hook.setup(g_ClientState + 0x8, "engine.dll");
 			clientstate_hook.hook_index(index::TempEntities, hkTempEntities);
 			o_TempEntities = clientstate_hook.get_original<TempEntities>(index::TempEntities);
-		}
+		}*/
 
     }
     //--------------------------------------------------------------------------------
@@ -701,10 +712,14 @@ namespace Hooks
 					//UpdateSpoofer();
 					bool rbot = Settings::RageBot::Enabled;
 
-					if ( rbot && Settings::RageBot::EnabledAA && Settings::Visual::ThirdPersonEnabled )
+					if ( Settings::RageBot::Enabled && Settings::RageBot::EnabledAA && Settings::Visual::ThirdPersonEnabled )
                     {
                         //ThirdpersonAngleHelper::Get().SetThirdpersonAngle();
                         //ThirdpersonAngleHelper::Get().AnimFix();
+
+						g_Prediction->SetLocalViewAngles(g_LocalPlayer->m_angEyeAngles());
+						g_LocalPlayer->SetAbsAngles(QAngle(0.f, g_LocalPlayer->GetPlayerAnimState()->m_flGoalFeetYaw, 0.f));
+						g_LocalPlayer->UpdateClientSideAnimation();
 
 						if (!g_LocalPlayer->IsAlive())
 							g_LocalPlayer->m_iObserverMode() = 5;

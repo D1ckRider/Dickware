@@ -83,7 +83,7 @@ private:
     bool NextTickInLbyUpdate = false;
 	bool BreakLowerBody = false;
     float NextLbyUpdate = 0.f;
-	float_t SpawnTime = 0.f;
+	float_t m_flSpawnTime = 0.f;
 
     CBaseHandle* m_ulEntHandle = nullptr;
 	CCSGOPlayerAnimState* m_serverAnimState = nullptr;

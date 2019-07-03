@@ -875,15 +875,9 @@ void Visuals::LbyIndicator()
     if ( fabs ( g_Saver.AARealAngle.yaw - g_LocalPlayer->m_flLowerBodyYawTarget() ) < 35.f )
         clr = Color::Red;
 
-    if ( g_Saver.InFakewalk )
-        clr = Color ( 255, 150, 0 );
-
     float percent;
 
-    if ( Moving || InAir || g_Saver.InFakewalk )
-        percent = 1.f;
-    else
-        percent = ( g_Saver.NextLbyUpdate - g_GlobalVars->curtime ) / 1.1f;
+	percent = ( g_Saver.NextLbyUpdate - g_GlobalVars->curtime ) / 1.1f;
 
     percent = 1.f - percent;
 
@@ -1410,7 +1404,8 @@ void Visuals::AddToDrawList()
         //LbyIndicator();
         //PingIndicator();
 		BAimIndicator();
-		DesyncIndicator();
+		if(Settings::RageBot::DesyncType > 0)
+			DesyncIndicator();
 		
 		auto drawAngleLine = [&](const Vector& origin, const Vector& w2sOrigin, const float& angle, const char* text, Color clr) {
 			Vector forward;
@@ -1439,7 +1434,8 @@ void Visuals::AddToDrawList()
 		}
 
 
-        if ( g_Config.GetInt ( "misc_fakelag_mode" ) == 1 )
+        //if ( g_Config.GetInt ( "misc_fakelag_mode" ) == 1 )
+		if (Settings::RageBot::AntiAimSettings[0].FakelagTicks || Settings::RageBot::AntiAimSettings[1].FakelagTicks || Settings::RageBot::AntiAimSettings[2].FakelagTicks)
             LCIndicator();
     }
 
@@ -1484,13 +1480,13 @@ void VGSHelper::Init()
 	for (size_t size = 1; size < 128; size++)
 	{
 		LogBase[size] = g_VGuiSurface->CreateFont_();
-		g_VGuiSurface->SetFontGlyphSet(LogBase[size], "Open Sans Light", size, 700, 0, 0, FONTFLAG_DROPSHADOW);
+		g_VGuiSurface->SetFontGlyphSet(LogBase[size], "Tahoma", size, 700, 0, 0, FONTFLAG_DROPSHADOW);
 	}
 
 	for (size_t size = 1; size < 128; size++)
 	{
 		LogHeader[size] = g_VGuiSurface->CreateFont_();
-		g_VGuiSurface->SetFontGlyphSet(LogHeader[size], "Open Sans SemiBold", size, 700, 0, 0, FONTFLAG_DROPSHADOW);
+		g_VGuiSurface->SetFontGlyphSet(LogHeader[size], "Tahoma", size, 700, 0, 0, FONTFLAG_DROPSHADOW);
 	}
 
 	Inited = true;

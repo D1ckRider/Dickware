@@ -82,10 +82,10 @@ public:
                 return;
             Vector p = Vector(event->GetFloat("x"), event->GetFloat("y"), event->GetFloat("z"));
 
-			if (Settings::Visual::BulletTracers)
+			/*if (Settings::Visual::BulletTracers)
 				sv_showimpact->SetValue(1);
 			else
-				sv_showimpact->SetValue(0);
+				sv_showimpact->SetValue(0);*/
 
             ShotTracer(g_Saver.LastShotEyePos, p);
         }

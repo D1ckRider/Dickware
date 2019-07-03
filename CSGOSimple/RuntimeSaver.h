@@ -156,6 +156,10 @@ public:
 	float DesyncYaw = 0.f;
 	float RealYaw = 0.f;
 
+	bool bAimbotting = false;
+	bool bVisualAimbotting = false;
+	QAngle vecVisualAimbotAngs;
+
     bool RbotDidLastShot = false;
 };
 
