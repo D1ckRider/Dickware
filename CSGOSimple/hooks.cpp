@@ -40,6 +40,7 @@
 #include "NoSmoke.h"
 #include "features\LagCompensation.h"
 #include "features\EventLogger.h"
+#include "ShadowVMTHook.h"
 #pragma intrinsic(_ReturnAddress)
 
 namespace Hooks
@@ -56,26 +57,33 @@ namespace Hooks
     vfunc_hook RenderView_hook;
     vfunc_hook ViewRender_hook;
     vfunc_hook gameevents_hook;
-    vfunc_hook clientstate_hook;
+    std::unique_ptr<ShadowVTManager> clientstate_hook = nullptr;
 	vfunc_hook firebullets_hook;
 	vfunc_hook partition_hook;
+	vfunc_hook engine_hook;
 
-	TempEntities o_TempEntities;
-
+	TempEntities o_TempEntities = nullptr;
+	IsHLTV o_IsHLTV = nullptr;
 	float flAngle = 0.f;
 
 	CUtlVector<SndInfo_t> sndList;
+
+	// Fix this ghetto
+	void* retAddr;
 
     void Initialize()
     {
         g_Logger.Clear();
         g_Logger.Info ( "cheat", "initializing cheat" );
 
+		clientstate_hook = std::unique_ptr<ShadowVTManager>();
+
         hlclient_hook.setup ( g_CHLClient, "client_panorama.dll" );
         direct3d_hook.setup ( g_D3DDevice9, "shaderapidx9.dll" );
         vguipanel_hook.setup ( g_VGuiPanel, "vgui2.dll" );
         vguisurf_hook.setup ( g_VGuiSurface, "vguimatsurface.dll" );
         sound_hook.setup ( g_EngineSound, "engine.dll" );
+		engine_hook.setup(g_EngineClient, "engine.dll");
         //mdlrender_hook.setup ( g_MdlRender, "client_panorama.dll" );
 		mdlrender_hook.setup(g_StudioRender);
         clientmode_hook.setup ( g_ClientMode, "client_panorama.dll" );
@@ -106,12 +114,18 @@ namespace Hooks
         clientmode_hook.hook_index ( index::DoPostScreenSpaceEffects, hkDoPostScreenEffects );
         clientmode_hook.hook_index ( index::OverrideView, hkOverrideView );
 
+		engine_hook.hook_index(index::IsHltv, hkIsHLTV);
+
         sv_cheats.hook_index ( index::SvCheatsGetBool, hkSvCheatsGetBool );
 		firebullets_hook.hook_index(index::FireBullets, hkTEFireBulletsPostDataUpdate);
         RenderView_hook.hook_index ( index::SceneEnd, hkSceneEnd );
         ViewRender_hook.hook_index ( index::SmokeOverlay, Hooked_RenderSmokeOverlay );
         gameevents_hook.hook_index ( index::FireEvent, hkFireEvent );
 		//hlclient_hook.hook_index(index::WriteUsercmdDeltaToBuffer, hkWriteUsercmdDeltaToBuffer);
+
+		o_IsHLTV = engine_hook.get_original<IsHLTV>(index::IsHltv);
+
+		retAddr = Utils::PatternScan(GetModuleHandle(L"client_panorama.dll"), "84 C0 75 38 8B 0D ? ? ? ? 8B 01 8B 80 ? ? ? ? FF D0");
 
         g_Logger.Success ( "cheat", "cheat initialized" );
 
@@ -150,6 +164,7 @@ namespace Hooks
         RenderView_hook.unhook_all();
         ViewRender_hook.unhook_all();
         gameevents_hook.unhook_all();
+		clientstate_hook->RestoreTable();
 		sequence_hook->~recv_prop_hook();
 
     }
@@ -326,6 +341,9 @@ namespace Hooks
         }
         */
 
+		g_Saver.TickCount = cmd->tick_count;
+		g_Saver.CommandNumber = cmd->command_number;
+
         QAngle OldViewangles = cmd->viewangles;
         float OldForwardmove = cmd->forwardmove;
         float OldSidemove = cmd->sidemove;
@@ -347,28 +365,62 @@ namespace Hooks
 
 		prediction->Setup(g_Saver.PredictionData);
 
-        //prediction->run_prediction ( cmd, g_LocalPlayer );
 		prediction->RunPrediction(g_Saver.PredictionData, cmd);
 		{
-			/*static float SpawnTime = 0.0f;
-		if (g_LocalPlayer->m_flSpawnTime() != SpawnTime)
-		{
-			g_Saver.AnimState.pBaseEntity = g_LocalPlayer;
-			g_LocalPlayer->ResetAnimationState(&g_Saver.AnimState);
-			SpawnTime = g_LocalPlayer->m_flSpawnTime();
-		}*/
-
 #ifdef _DEBUG
 		//Backtrack::Get().OnCreateMove();
 #endif // _DEBUG
 
 			Misc::Get().OnCreateMove(cmd);
 
-			//if ( rbot )
 			Fakelag::Get().OnCreateMove(cmd, bSendPacket);
 
 			if (Settings::RageBot::EnabledAA)
 				AntiAim::Get().OnCreateMove(cmd, bSendPacket);
+
+			/*if (g_Saver.ShouldChoke)
+				bSendPacket = false;
+			else if (bSendPacket)
+			{
+				g_Saver.TickCount = 0;
+				//ClampUsercmd(AimwareGlobalVars, cmd);
+				if (false)
+				{
+					if (g_Saver.CanFirePrimary && cmd->buttons & IN_ATTACK)
+					{
+						if (g_Saver.CanFire)
+						{
+							if (g_Saver.CanFirePrimary)
+							{
+								++g_Saver.TickCount;
+								++g_Saver.ShootTicks;
+							}
+						}
+					}
+					if (!(cmd->buttons & IN_ATTACK))
+					{
+						g_Saver.ShootTicks = 0;
+						return;
+					}
+					cmd->tick_count = 0x7FFFFFFF;
+				}
+				if (!(cmd->buttons & IN_ATTACK))
+				{
+					g_Saver.ShootTicks = 0;
+					return;
+				}
+			}
+
+			int ChokedTicks = g_Saver.TickCount;
+			if (ChokedTicks < 14)
+			{
+				g_Saver.TickCount = ChokedTicks + 1;
+			}
+			else
+			{
+				bSendPacket = true;
+				g_Saver.TickCount = 0;
+			}*/
 
 			if (Settings::Aimbot::LegitAA > 0)
 				Lbot::Get().LegitAA(cmd, bSendPacket);
@@ -377,6 +429,7 @@ namespace Hooks
 			{
 				Rbot::Get().PrecacheShit();
 				Rbot::Get().CreateMove(cmd, bSendPacket);
+				//Rbot::Get().AccuracyBoost(cmd);
 			}
 
 			GrenadeHint::Get().Tick(cmd->buttons);
@@ -482,8 +535,6 @@ namespace Hooks
 		}
 		prediction->EndPrediction(g_Saver.PredictionData);
 		
-       // prediction->end_prediction ( g_LocalPlayer );
-
         if ( g_LocalPlayer && g_LocalPlayer->IsAlive() && ( cmd->buttons & IN_ATTACK || cmd->buttons & IN_ATTACK2 ) )
             g_Saver.LastShotEyePos = g_LocalPlayer->GetEyePos();
 
@@ -496,16 +547,16 @@ namespace Hooks
         }
 
 		
-		//if (rbot && Settings::RageBot::LagComp)
-		//{
-		//	//g_ClientState.
-		//	for (int i = 1; i <= g_GlobalVars->maxClients; i++)
-		//	{
-		//		C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(i);
-		//		if(player && player != g_LocalPlayer)
-		//			LagCompensation::Get().UpdateAnimations(player);
-		//	}
-		//}
+		if (Settings::RageBot::Enabled && Settings::RageBot::LagComp)
+		{
+			//g_ClientState.
+			for (int i = 1; i <= g_GlobalVars->maxClients; i++)
+			{
+				C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(i);
+				if(player && player != g_LocalPlayer)
+					LagCompensation::Get().UpdateAnimations(player);
+			}
+		}
 
         //OldViewangles.pitch = cmd->viewangles.pitch;
 
@@ -532,11 +583,14 @@ namespace Hooks
 
 		/*if (!o_TempEntities)
 		{
-			clientstate_hook.setup(g_ClientState + 0x8, "engine.dll");
+			/*clientstate_hook.setup(g_ClientState + 0x8, "engine.dll");
 			clientstate_hook.hook_index(index::TempEntities, hkTempEntities);
 			o_TempEntities = clientstate_hook.get_original<TempEntities>(index::TempEntities);
-		}*/
 
+			clientstate_hook->Setup((uintptr_t*)((uintptr_t)g_ClientState + 0x8));
+			clientstate_hook->Hook(index::TempEntities, hkTempEntities);
+			o_TempEntities = clientstate_hook->GetOriginal<TempEntities>(index::TempEntities);
+		}*/
     }
     //--------------------------------------------------------------------------------
     __declspec ( naked ) void __stdcall hkCreateMove_Proxy ( int sequence_number, float input_sample_frametime, bool active )
@@ -853,12 +907,9 @@ namespace Hooks
 
 	bool __fastcall hkIsHLTV(void* ECX, void* EDX)
 	{
-		static auto ofunc = nullptr;
-
-		return true;
-		//if((DWORD)_ReturnAddress() == )
-
-		//return ofunc(ECX, EDX);
+		if ( reinterpret_cast<DWORD>(_ReturnAddress()) == reinterpret_cast<DWORD>(retAddr) )
+			return true;
+		return o_IsHLTV(ECX);
 	}
 
 	void __stdcall FireBullets_PostDataUpdate(C_TEFireBullets* thisptr, DataUpdateType_t updateType)
@@ -907,15 +958,15 @@ namespace Hooks
 							g_CVar->ConsolePrintf("Bad curtime difference, EVENT: %f, RECORD: %f\n", event_time, record.m_iTickCount);
 #endif
 					}
-					//#ifdef _DEBUG
+#ifdef _DEBUG
 					g_CVar->ConsolePrintf("Calced angs: %f %f, Event angs: %f %f, CURTIME_TICKOUNT: %f, SIMTIME: %f, CALCED_TIME: %f\n", calcedAngle.pitch, calcedAngle.yaw, eyeAngles.pitch, eyeAngles.yaw, event_time, player_time, shot_time);
-					//#endif
-									/*if (!lag_records.empty())
-									{
-										int choked = floorf((event_time - player_time) / g_GlobalVars->interval_per_tick) + 0.5;
-										choked = (choked > 14 ? 14 : choked < 1 ? 0 : choked);
-										player->m_vecOrigin() = (lag_records.begin()->m_vecOrigin + (g_GlobalVars->interval_per_tick * lag_records.begin()->m_vecVelocity * choked));
-									}*/
+#endif
+					if (!lag_records.empty())
+					{
+						int choked = floorf((event_time - player_time) / g_GlobalVars->interval_per_tick) + 0.5;
+						choked = (choked > 14 ? 14 : choked < 1 ? 0 : choked);
+						player->m_vecOrigin() = (lag_records.begin()->m_vecOrigin + (g_GlobalVars->interval_per_tick * lag_records.begin()->m_vecVelocity * choked));
+					}
 
 					LagCompensation::Get().SetOverwriteTick(player, calcedAngle, shot_time, 1);
 				}
@@ -989,8 +1040,12 @@ namespace Hooks
 			return ofunc(g_GameEvents, pEvent);
 
 		// -->
-		Rbot::Get().OnFireEvent(pEvent);
-		Resolver::Get().OnFireEvent(pEvent);
+		if (Settings::RageBot::Enabled)
+		{
+			Rbot::Get().OnFireEvent(pEvent);
+			Resolver::Get().OnFireEvent(pEvent);
+		}
+			
 
 		if (!strcmp(pEvent->GetName(), "round_start"))
 			BuyBot::Get().OnRoundStart();

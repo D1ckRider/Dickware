@@ -138,6 +138,7 @@ void Settings::SaveRageBot(json& j)
 	SaveValue(j, "rbot_force_unlag", RageBot::ForceUnlag);
 	SaveValue(j, "rbot_resolver", RageBot::Resolver);
 	SaveValue(j, "rbot_lagcomp", RageBot::LagComp);
+	SaveValue(j, "rbot_lagcomp_tye", RageBot::LagCompType);
 	SaveValue(j, "rbot_backtrack", RageBot::Backtrack);
 
 	SaveValue(j, "rbot_aimstep_enabled", RageBot::AimStepEnabled);
@@ -402,6 +403,7 @@ void Settings::LoadRageBot(json& j)
 	LoadValue(j, "rbot_force_unlag", RageBot::ForceUnlag);
 	LoadValue(j, "rbot_resolver", RageBot::Resolver);
 	LoadValue(j, "rbot_lagcomp", RageBot::LagComp);
+	LoadValue(j, "rbot_lagcomp_tye", RageBot::LagCompType);
 	LoadValue(j, "rbot_backtrack", RageBot::Backtrack);
 
 	LoadValue(j, "rbot_aimstep_enabled", RageBot::AimStepEnabled);
@@ -702,6 +704,7 @@ void Settings::ResetRagebot()
 	RageBot::ForceUnlag = false;
 	RageBot::Resolver = false;
 	RageBot::LagComp = false;
+	RageBot::LagCompType = 0;
 	RageBot::Backtrack = false;
 
 	RageBot::AimStepEnabled = false;
@@ -1000,6 +1003,7 @@ namespace Settings::RageBot
 	int ShootingMode = 0;
 	bool ForceUnlag = false;
 	bool LagComp = false;
+	int LagCompType = 0;
 	bool Resolver = false;
 	bool Backtrack = false;
 

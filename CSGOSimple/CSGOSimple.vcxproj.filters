@@ -257,9 +257,6 @@
     <ClCompile Include="ui.cpp">
       <Filter>Source Files\Menu</Filter>
     </ClCompile>
-    <ClCompile Include="features\GrenadeTrajectory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="definitions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -275,8 +272,11 @@
     <ClCompile Include="features\LagCompensation.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
+    <ClCompile Include="features\GrenadeTrajectory.cpp">
+      <Filter>Source Files\Features</Filter>
+    </ClCompile>
     <ClCompile Include="features\EventLogger.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Features</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -668,6 +668,9 @@
       <Filter>Header Files\SDK</Filter>
     </ClInclude>
     <ClInclude Include="astriumwep.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowVMTHook.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

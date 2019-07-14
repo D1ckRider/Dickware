@@ -104,7 +104,16 @@ void Menu::RenderRagebot()
 
 	
 	static char* AntiAimMenus[] = { "stand", "move", "air", "misc" };
+	
+#ifdef DEBUG
+	static const char* FakelagModes[] = { "normal", "adaptive", "on peek" };
+
+#else
 	static const char* FakelagModes[] = { "normal", "adaptive" };
+#endif // DEBUG
+
+	static const char* LagCompMode[] = { "Best", "Newest", "All" };
+
 	static int AAMenuSelected = 0;
 
 	static char* WeaponConfigSelectionItems[] = { "G", "A", "J", "a", "Z", "Y", "W", "c" };
@@ -145,6 +154,8 @@ void Menu::RenderRagebot()
 		Components.ComboBox("Shooting Mode", ShootingModes, IM_ARRAYSIZE(ShootingModes), Settings::RageBot::ShootingMode);
 		Components.Checkbox("Resolver (WIP)", Settings::RageBot::Resolver);
 		Components.Checkbox("Lag compensation (WIP)", Settings::RageBot::LagComp);
+		if (Settings::RageBot::LagComp)
+			ImGui::Combo("Lag compensation type", &Settings::RageBot::LagCompType, LagCompMode, IM_ARRAYSIZE(LagCompMode));
 #ifdef _DEBUG
 		//Components.Checkbox("Lag compensation", Settings::RageBot::LagComp);
 		//Components.Checkbox("Backtrack", Settings::RageBot::Backtrack);

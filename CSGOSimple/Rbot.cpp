@@ -14,6 +14,8 @@
 #include "features\LagCompensation.h"
 #include "features\EventLogger.h"
 
+#define NEW_RBOT 0
+
 RbotMatrixData matrixData[128];
 
 TickRecord bRecord;
@@ -26,51 +28,54 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 	if (!Settings::RageBot::Enabled)
 		return;
 
-
-	this->LocalWeapon = g_LocalPlayer->m_hActiveWeapon().Get();
+#if NEW_RBOT
 	this->CurrentCmd = cmd;
 	this->CurTime = GetTickbase() * g_GlobalVars->interval_per_tick;
 
+	C_BaseCombatWeapon* weapon = g_LocalPlayer->m_hActiveWeapon();
+	this->LocalWeapon = weapon;
+
+
+	if (!weapon)
+		return;
+
 	UpdateConfigData();
-	UpdateWeaponConfig(LocalWeapon);
+	UpdateWeaponConfig(weapon);
 
 	g_Saver.bAimbotting = false;
 	g_Saver.bVisualAimbotting = false;
 	
-	if (!this->CockRevolver(cmd, LocalWeapon))
+	if (!this->CockRevolver(cmd, weapon))
 		return;
 
-	if (!LocalWeapon)
-		return;
+	/*if (!LocalWeapon)
+		return;*/
 
 	if (g_LocalPlayer->m_flNextAttack() > CurTime)
 		return;
 
-	if (LocalWeapon->IsZeus())
+	if (weapon->IsZeus())
 	{
-		ZeusBot(cmd, LocalWeapon);
+		ZeusBot(cmd, weapon);
 		return;
 	}
 
 	/* Calling SlowWalk */
-	if (LocalWeapon->GetItemDefinitionIndex() == WEAPON_SCAR20 || LocalWeapon->GetItemDefinitionIndex() == WEAPON_G3SG1)
+	if (weapon->GetItemDefinitionIndex() == WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == WEAPON_G3SG1)
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 40);
 
-	if (LocalWeapon->GetItemDefinitionIndex() == WEAPON_AWP)
+	if (weapon->GetItemDefinitionIndex() == WEAPON_AWP)
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 33);
 
-	if (LocalWeapon->GetItemDefinitionIndex() == WEAPON_SSG08)
+	if (weapon->GetItemDefinitionIndex() == WEAPON_SSG08)
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 70);
 
-	if (!LocalWeapon->IsSniper())  //for every weapon btw
+	if (!weapon->IsSniper())  //for every weapon btw
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 			SlowWalk(cmd, 34);
-
-	if (Settings::RageBot::AutoStop)
-		AutoStop(cmd);
 
 	if (Settings::RageBot::FakeDuck && InputSys::Get().IsKeyDown(Settings::RageBot::FakeDuckHotkey))
 		FakeDuck(cmd, bSendPacket);
@@ -83,8 +88,7 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		return;
 
 	TargetEntities(cmd);
-
-#if 0
+#else
 	static bool DidShotLastTick = false;
 
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
@@ -213,7 +217,7 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 
 	int tick = TIME_TO_TICKS(entity->m_flSimulationTime() + Backtrack::Get().GetLerpTime());
 
-	if (!Backtrack::Get().IsTickValid(tick))
+	if(!LagCompensation::Get().IsTickValid(tick))
 		return;
 
 	DidShotLastTick = true;
@@ -234,23 +238,6 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 
 	if (!CockRevolver(cmd, weapon))
 		return;
-
-	/*if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_REVOLVER)
-	{
-		cmd->buttons |= IN_ATTACK;
-		float fireReady = weapon->m_flPostponeFireReadyTime();
-		if (fireReady > 0 && fireReady < g_GlobalVars->curtime)
-			cmd->buttons &= ~IN_ATTACK;
-
-		/*static int delay;
-		delay++;
-
-		if (delay <= 15)
-			cmd->buttons |= IN_ATTACK;
-		else
-			delay = 0;*/
-			//}
-
 
 	cmd->buttons |= IN_ATTACK;
 
@@ -280,7 +267,7 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 	/*
 	- add mode choke after shot
 	*/
-#endif // 0
+#endif
 }
 
 void Rbot::OnFireEvent ( IGameEvent* event )
@@ -318,7 +305,6 @@ void Rbot::OnFireEvent ( IGameEvent* event )
         if ( !shooter || shooter != g_LocalPlayer )
             return;
 
-        //ShotTracer(g_LocalPlayer->GetEyePos(), p);
         if ( LastEventShotLastEntIndex > 128 )
             LastEventShotLastEntIndex = -1;
 
@@ -328,7 +314,6 @@ void Rbot::OnFireEvent ( IGameEvent* event )
         lastEventTime = g_GlobalVars->curtime;
 
         Vector p = Vector ( event->GetFloat ( "x" ), event->GetFloat ( "y" ), event->GetFloat ( "z" ) );
-        //g_LocalPlayer
 
         float Dmg = -1.f;
 
@@ -337,25 +322,11 @@ void Rbot::OnFireEvent ( IGameEvent* event )
         else
             Dmg = Autowall::Get().CanHit ( g_Saver.LastShotEyePos, p );
 
-        //Console.WriteLine("Damage");
-        //Console.WriteLine(Dmg);
         if ( Dmg == -1.f )
         {
             g_Logger.Error ( "MISS", "missed due to spread" );
 			EventLogger::Get().AddEvent("MISS", "missed due to spread", Color(255, 55, 0));
             //LastMissedDueToSpread = true;
-        }
-        else
-        {
-            /*
-            if (!g_Saver.RbotShotInfo.InLbyUpdate)
-            {
-            	g_Resolver.GResolverData[LastEventShotLastEntIndex].Shots++;
-            	g_Resolver.GResolverData[LastEventShotLastEntIndex].ShotsAtMode[(int)g_Resolver.GResolverData[LastEventShotLastEntIndex].mode]++;
-            	LastEventShotLastEntIndex = -1;
-            }
-            */
-            //LastMissedDueToSpread = false;
         }
 
         g_Resolver.GResolverData[LastEventShotLastEntIndex].Shots++;
@@ -439,13 +410,13 @@ bool Rbot::CheckTarget(int i)
 
 void Rbot::TargetEntities(CUserCmd* cmd)
 {
-	static C_BaseCombatWeapon* oldWeapon; // what is this for?
+	/*static C_BaseCombatWeapon* oldWeapon; // what is this for?
 	if (LocalWeapon != oldWeapon)
 	{
 		oldWeapon = LocalWeapon;
 		cmd->buttons &= ~IN_ATTACK;
 		return;
-	}
+	}*/
 
 	if (LocalWeapon->IsPistol() && cmd->tick_count % 2)
 	{
@@ -453,7 +424,7 @@ void Rbot::TargetEntities(CUserCmd* cmd)
 		if (cmd->buttons & IN_ATTACK)
 			lastshot++;
 
-		if (!cmd->buttons & IN_ATTACK || lastshot > 1)
+		if (!(cmd->buttons & IN_ATTACK) || lastshot > 1)
 		{
 			cmd->buttons &= ~IN_ATTACK;
 			lastshot = 0;
@@ -488,7 +459,10 @@ void Rbot::TargetEntities(CUserCmd* cmd)
 		C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(i);
 
 		if (TargetSpecificEnt(player))
+		{
+			LastRbotEnemyIndex = i;
 			return;
+		}
 	}
 }
 
@@ -539,19 +513,14 @@ bool Rbot::TargetSpecificEnt(C_BasePlayer* pEnt)
 			return false;
 
 		GetBestHitboxPoint(pEnt, CDamage, vecTarget, baim, WillKillEntity);
-
-		/*if (g_Options.rage_autobaim && firedShots > g_Options.rage_baim_after_x_shots)
-			vecTarget = GetBestHitboxPoint(pEnt, HITBOX_PELVIS, g_Options.rage_mindmg, true, matrix);
-		else
-			vecTarget = GetBestHitboxPoint(pEnt, iHitbox, g_Options.rage_mindmg, g_Options.rage_prioritize, matrix);*/
 	}
 
 	// Invalid target/no hitable points at all.
 	if (!vecTarget.IsValid())
 		return false;
 
-	/*if(Settings::RageBot::AutoStop)
-		AutoStop(CurrentCmd);*/
+	if(Settings::RageBot::AutoStop)
+		AutoStop(CurrentCmd);
 
 	if (!(CurrentCmd->buttons & IN_DUCK) && Settings::RageBot::AutoCrouch)
 		AutoCrouch(CurrentCmd);
@@ -783,6 +752,61 @@ void Rbot::SlowWalk(CUserCmd* cmd)
 		cmd->forwardmove *= speed;
 		cmd->sidemove *= speed;
 	}
+}
+
+void Rbot::AccuracyBoost(CUserCmd* cmd)
+{
+	if ( !g_LocalPlayer || !cmd)// || !G::me->has_attackable_weapon())
+		return;
+
+	//auto no_spread = [](CUserCmd* _cmd)
+	//{
+	//	//if (G::settings.antiban_enabled)
+	//		//return;
+
+	//	C_BaseCombatWeapon* weapon;
+
+	//	if ((weapon = g_LocalPlayer->m_hActiveWeapon()) == nullptr || g_Prediction.prediction_random_seed == nullptr)
+	//		return;
+
+	//	G::math.random_seed((*G::prediction_data.prediction_random_seed & 255) + 1);
+
+	//	auto s1 = G::math.random_float(0.f, 1.f), s2 = G::math.random_float(0.f, 2.f * PI), s3 = G::math.random_float(0.f, 1.f), s4 = G::math.random_float(0.f, 2.f * PI);
+
+	//	if (weapon->get_index() == WEAPON_REVOLVER && _cmd->buttons & IN_ATTACK2)
+	//	{
+	//		s1 = 1.f - s1 * s1;
+	//		s3 = 1.f - s3 * s3;
+	//	}
+	//	else if (weapon->get_index() == WEAPON_NEGEV && weapon->get_recoil_index() < 3.f)
+	//	{
+	//		for (auto i = 3; i > weapon->get_recoil_index(); i--)
+	//		{
+	//			s1 *= s1;
+	//			s3 *= s3;
+	//		}
+
+	//		s1 = 1.f - s1;
+	//		s3 = 1.f - s3;
+	//	}
+
+	//	auto random_spread = s1 * weapon->get_spread();
+	//	auto cone = s3 * weapon->get_cone();
+
+	//	auto spread = Vector3(sin(s2) * random_spread + sin(s4) * cone, cos(s2) * random_spread + cos(s4) * cone, 0.f);
+
+	//	_cmd->viewangles.p += G::math.rad_2_deg(atan(spread.length_2d()));
+	//	_cmd->viewangles.r = -G::math.rad_2_deg(atan2(spread.y, spread.x));
+	//};
+
+	auto no_recoil = [](CUserCmd* _cmd)
+	{
+		_cmd->viewangles -= g_LocalPlayer->m_aimPunchAngle() * g_CVar->FindVar("weapon_recoil_scale")->GetFloat();
+	};
+
+	no_recoil(cmd);
+
+	Math::NormalizeAngles(cmd->viewangles);
 }
 
 void Rbot::ZeusBot ( CUserCmd* cmd, C_BaseCombatWeapon* weapon )
@@ -1081,8 +1105,7 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
         bool WillKillEntity = false;
 		bool LagComp_Hitchanced = false;
 
-#ifdef _DEBUG
-        if ( !Settings::RageBot::Backtrack )
+        if ( !bBacktrack )
         {
             if ( !GetBestHitboxPoint ( entity, CDamage, CHitpos, baim, WillKillEntity ) )
                 continue;
@@ -1137,11 +1160,8 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
 
             //CUsingBacktrack = true;
         }
-#else
-	if (!GetBestHitboxPoint(entity, CDamage, CHitpos, baim, WillKillEntity))
-		continue;
-#endif
-        //g_Logger.Add("FindBestEntity", std::to_string(CDamage));
+
+		//g_Logger.Add("FindBestEntity", std::to_string(CDamage));
 
         if ( CDamage > BestDamage )
         {
@@ -1329,21 +1349,6 @@ bool Rbot::GetBestHitboxPoint ( C_BasePlayer* entity, float& damage, Vector& hit
 
         for ( size_t p = 0; p < Points.size(); p++ )
         {
-            /*
-            if (g_LocalPlayer->m_hActiveWeapon()->IsSniper() && !g_LocalPlayer->m_bIsScoped() && (g_LocalPlayer->m_fFlags() & FL_ONGROUND) && g_Config.GetBool("rbot_autoscope"))
-            {
-            	if (!(CurrentCmd->buttons & IN_ZOOM)) CurrentCmd->buttons |= IN_ZOOM;
-            	if (g_Config.GetBool("rbot_autostop")) AutoStop(CurrentCmd);
-            	if (!(CurrentCmd->buttons & IN_DUCK) && g_Config.GetBool("rbot_autocrouch")) AutoCrouch(CurrentCmd);
-            	continue;
-            }
-            if (!HitChance(Math::CalcAngle(g_LocalPlayer->GetEyePos(), Points[p].pos), entity, g_Config.GetFloat("rbot_min_hitchance")))
-            {
-            	if (g_Config.GetBool("rbot_autostop")) AutoStop(CurrentCmd);
-            	if (!(CurrentCmd->buttons & IN_DUCK) && g_Config.GetBool("rbot_autocrouch")) AutoCrouch(CurrentCmd);
-            	continue;
-            }
-            */
             float CDamage = 0.f;
             CDamage = Autowall::Get().CanHit ( Points[p].pos );
 

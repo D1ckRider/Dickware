@@ -4,6 +4,7 @@
 #include "AntiAim.h"
 #include "Settings.h"
 #include "hooks.hpp"
+#include "features/LagCompensation.h"
 
 void Chams::OnSceneEnd()
 {
@@ -140,15 +141,48 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 		// 
 		auto ent = (C_BasePlayer*)(pInfo->m_pClientEntity->GetIClientUnknown()->GetBaseEntity());
 
-		if (ent && ent->IsPlayer() && ent->IsAlive()) {
+		// Local Player chams
+		if (ent == g_LocalPlayer && Settings::Visual::LocalChams.Enabled)
+		{
+			const auto clr_front =  Color(Settings::Visual::LocalChams.Visible);
+			const auto clr_back =  Color(Settings::Visual::LocalChams.Invisible);
+			const auto flat = Settings::Visual::LocalChams.Mode == 1 || Settings::Visual::LocalChams.Mode == 7;
+			const auto metallic = Settings::Visual::LocalChams.Mode == 4 || Settings::Visual::LocalChams.Mode == 6;
+			const auto wireframe = Settings::Visual::LocalChams.Mode == 2;
+			const auto glass = Settings::Visual::LocalChams.Mode == 3;
+			bool ignoreZ = Settings::Visual::LocalChams.Mode >= 5;
+
+
+
+			if (ignoreZ)
+			{
+				MaterialManager::Get().OverrideMaterial(true, flat, wireframe, false, metallic, clr_back);
+				fnDME(g_StudioRender, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
+
+				MaterialManager::Get().OverrideMaterial(false, flat, wireframe, false, metallic, clr_front);
+			}
+			else
+			{
+				MaterialManager::Get().OverrideMaterial(false, flat, wireframe, glass, metallic, clr_front);
+			}
+
+		}
+
+		// Other Chams
+		if (ent && ent->IsPlayer() && ent->IsAlive()) 
+		{
 			const auto enemy = ent->m_iTeamNum() != g_LocalPlayer->m_iTeamNum();
+			const auto enemy_bt_enabled = Settings::Visual::EnemyChams.Enabled && Settings::RageBot::LagComp;
 			if (!enemy && !Settings::Visual::TeamChams.Enabled)
 				return;
 
-			/*if (g_Options.chams_backtrack && g_Backtrack.data.count(ent->EntIndex()) > 0) {
-				auto& data = g_Backtrack.data.at(ent->EntIndex());
-				if (data.size() > 0) {
-					if (g_Options.chams_backtrack == 2) {
+			/*if (enemy_bt_enabled && LagCompensation::Get().m_LagRecord[ent->EntIndex()].size() > 0) 
+{
+				auto& data = LagCompensation::Get().m_LagRecord[ent->EntIndex()];//g_Backtrack.data.at(ent->EntIndex());
+				if (data.size() > 0) 
+				{
+					/*if (g_Options.chams_backtrack == 2) 
+					{
 						for (auto& record : data) {
 							OverrideMaterial(
 								false,
@@ -159,18 +193,15 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 							fnDME(g_StudioRender, pResults, pInfo, record.boneMatrix, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
 						}
 					}
-					else if (g_Options.chams_backtrack == 1) {
+					else if (g_Options.chams_backtrack == 1) 
+					{
 						auto& back = data.back();
-						OverrideMaterial(
-							false,
-							g_Options.chams_backtrack_flat,
-							false,
-							false,
-							Color(g_Options.color_chams_backtrack));
-						fnDME(g_StudioRender, pResults, pInfo, back.boneMatrix, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
-					}
+						MaterialManager::Get().OverrideMaterial(true, true, false, false, false, Color::White);
+						fnDME(g_StudioRender, pResults, pInfo, back.matrix, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
+					//}
 				}
 			}*/
+
 
 			const auto clr_front = enemy ? Color(Settings::Visual::EnemyChams.Visible) : Color(Settings::Visual::TeamChams.Visible);
 			const auto clr_back = enemy ? Color(Settings::Visual::EnemyChams.Invisible) : Color(Settings::Visual::TeamChams.Invisible);
@@ -186,29 +217,13 @@ void Chams::OnDrawModelExecute(void* pResults, DrawModelInfo_t* pInfo, matrix3x4
 
 			if (ignoreZ) 
 			{
-				/*OverrideMaterial(
-					true,
-					g_Options.chams_player_flat,
-					g_Options.chams_player_wireframe,
-					false,
-					clr_back);*/
 				MaterialManager::Get().OverrideMaterial(true, flat, wireframe, false, metallic, clr_back);
 				fnDME(g_StudioRender, pResults, pInfo, pBoneToWorld, flpFlexWeights, flpFlexDelayedWeights, vrModelOrigin, iFlags);
-				/*OverrideMaterial(
-					false,
-					g_Options.chams_player_flat,
-					g_Options.chams_player_wireframe,
-					false,
-					clr_front);*/
+				
 				MaterialManager::Get().OverrideMaterial(false, flat, wireframe, false , metallic, clr_front);
 			}
-			else {
-				/*OverrideMaterial(
-					false,
-					g_Options.chams_player_flat,
-					g_Options.chams_player_wireframe,
-					g_Options.chams_player_glass,
-					clr_front);*/
+			else 
+			{
 				MaterialManager::Get().OverrideMaterial(false, flat, wireframe, glass, metallic, clr_front);
 			}
 		}

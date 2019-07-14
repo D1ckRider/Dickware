@@ -27,6 +27,7 @@ namespace index
 	constexpr auto WriteUsercmdDeltaToBuffer = 23;
 	constexpr auto SuppressLists			 = 16;
 	constexpr auto TempEntities				 = 36;
+	constexpr auto IsHltv					 = 93;
 }
 
 namespace Hooks
@@ -41,6 +42,7 @@ namespace Hooks
     extern vfunc_hook mdlrender_hook;
     extern vfunc_hook viewrender_hook;
 	extern vfunc_hook firebullets_hook;
+	extern vfunc_hook engine_hook;
 
     using EndScene             = long ( __stdcall*  ) ( IDirect3DDevice9* );
     using Reset                = long ( __stdcall*  ) ( IDirect3DDevice9*, D3DPRESENT_PARAMETERS* );
@@ -67,6 +69,7 @@ namespace Hooks
 	using TempEntities		   = bool(__thiscall* )(void*, void*/*SVC_TempEntities*/);
 
 	extern TempEntities o_TempEntities;
+	extern IsHLTV o_IsHLTV;
 
     long __stdcall hkEndScene ( IDirect3DDevice9* device );
     long __stdcall hkReset ( IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters );

@@ -235,6 +235,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="RuntimeSaver.h" />
     <ClInclude Include="Settings.h" />
+    <ClInclude Include="ShadowVMTHook.h" />
     <ClInclude Include="singleton.hpp" />
     <ClInclude Include="ThirdpersonAngleHelper.h" />
     <ClInclude Include="ui.hpp" />

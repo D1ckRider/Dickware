@@ -41,7 +41,7 @@ void AntiAim::OnCreateMove ( CUserCmd* cmd, bool& bSendPacket )
     if ( !weapon )
         return;
 
-    if ( weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && ( cmd->buttons & IN_ATTACK || cmd->buttons & IN_ATTACK2 ) )
+    if ( weapon->m_flNextPrimaryAttack() - g_GlobalVars->curtime < g_GlobalVars->interval_per_tick && ( cmd->buttons & IN_ATTACK) )// || cmd->buttons & IN_ATTACK2 ) )
         return;
 
     if ( movetype == MOVETYPE_LADDER )

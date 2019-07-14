@@ -41,6 +41,7 @@ public:
     void PrecacheShit();
     bool HitChance ( QAngle angles, C_BasePlayer* ent, float chance );
 	bool HitChance(QAngle angles, C_BasePlayer* ent);
+	void AccuracyBoost(CUserCmd* cmd);
 	BaimMode* GetBAimStatus();
 private:
 	void UpdateWeaponConfig(C_BaseCombatWeapon* weapon);
@@ -62,6 +63,8 @@ private:
 	void SlowWalk	  ( CUserCmd* cmd, float speed );
 	void SlowWalk	  ( CUserCmd* cmd );
 
+	
+	
     CUserCmd* CurrentCmd = nullptr;
 	C_BaseCombatWeapon* LocalWeapon = nullptr;
 	int PrevAimtarget = NULL;

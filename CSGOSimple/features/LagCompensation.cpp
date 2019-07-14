@@ -1,6 +1,7 @@
 #include "LagCompensation.h"
 #include "../helpers/math.hpp"
 #include "../Rbot.h"
+#include "../Settings.h"
 
 
 void LagCompensation::RageBacktrack(C_BasePlayer* target, CUserCmd* usercmd, Vector& aim_point, bool& hitchanced)
@@ -29,7 +30,7 @@ void LagCompensation::RageBacktrack(C_BasePlayer* target, CUserCmd* usercmd, Vec
 
 			if (!iter->m_bMatrixBuilt)
 			{
-				if (!target->SetupBones2(iter->matrix, 128, 256, iter->m_flSimulationTime))
+				if (!target->SetupBones(iter->matrix, 128, 256, iter->m_flSimulationTime))
 					continue;
 
 				iter->m_bMatrixBuilt = true;
@@ -40,14 +41,11 @@ void LagCompensation::RageBacktrack(C_BasePlayer* target, CUserCmd* usercmd, Vec
 
 			Rbot::Get().GetBestHitboxPoint(target, mindmg, aim_point, BaimMode::NONE, willkill, iter->matrix);
 
-			//if (g_Options.rage_autobaim && firedShots > g_Options.rage_baim_after_x_shots)
 			auto baim = Rbot::Get().GetBAimStatus();
 			if(*baim == BaimMode::FORCE_BAIM || *baim == BaimMode::BAIM)
-				//aim_point = AimRage::Get().CalculateBestPoint(target, HITBOX_PELVIS, g_Options.rage_mindmg, true, iter->matrix);
 				Rbot::Get().GetBestHitboxPoint(target, mindmg, aim_point, BaimMode::FORCE_BAIM, willkill, iter->matrix);
 			else
 				Rbot::Get().GetBestHitboxPoint(target, mindmg, aim_point, BaimMode::NONE, willkill, iter->matrix);
-				//aim_point = AimRage::Get().CalculateBestPoint(target, realHitboxSpot[g_Options.rage_hitbox], g_Options.rage_mindmg, g_Options.rage_prioritize, iter->matrix);
 
 			if (!aim_point.IsValid())
 			{
@@ -170,7 +168,7 @@ bool LagCompensation::StartLagCompensation(C_BasePlayer* player)
 	auto& m_LagRecords = this->m_LagRecord[player->EntIndex()];
 	m_RestoreLagRecord[player->EntIndex()].second.SaveRecord(player);
 
-	switch (0) // Add int option
+	switch (Settings::RageBot::LagCompType)
 	{
 	case TYPE_BEST_RECORDS:
 	{

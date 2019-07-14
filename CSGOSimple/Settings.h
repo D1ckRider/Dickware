@@ -159,6 +159,7 @@ namespace Settings
 		extern int ShootingMode;
 		extern bool ForceUnlag;
 		extern bool LagComp;
+		extern int LagCompType;
 		extern bool Backtrack;
 		extern bool Resolver;
 
