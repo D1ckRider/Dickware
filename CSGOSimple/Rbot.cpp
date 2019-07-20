@@ -215,12 +215,12 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 
 	//if (newAng.yaw == 0.f && newAng.pitch == 0.f && newAng.roll == 0.f) return;
 
-	int tick = TIME_TO_TICKS(entity->m_flSimulationTime() + Backtrack::Get().GetLerpTime());
+	int tick = TIME_TO_TICKS(entity->m_flSimulationTime() + LagCompensation::Get().GetLerpTime()); //::Get().GetLerpTime());
 
 	if(!LagCompensation::Get().IsTickValid(tick))
 		return;
 
-	DidShotLastTick = true;
+	//DidShotLastTick = true;
 
 	if (Settings::RageBot::AimStepEnabled)
 	{
@@ -242,27 +242,26 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 	cmd->buttons |= IN_ATTACK;
 
 	//DidShotLastTick = true;
-	g_Saver.RbotShotInfo.InLbyUpdate = g_Resolver.GResolverData[BestEntity].mode == ResolverModes::LBY_BREAK;
-	g_Saver.RbotShotInfo.InLc = g_Resolver.GResolverData[BestEntity].BreakingLC;
-	g_Saver.RbotShotInfo.Moving = g_Resolver.GResolverData[BestEntity].Moving;
-	g_Saver.AARealAngle = cmd->viewangles;
-	//Console.WriteLine(Backtrack::Get().GetLerpTime());
-	//cmd->tick_count = TIME_TO_TICKS(entity->m_flSimulationTime() - GetLerpTimeX());
+	//g_Saver.RbotShotInfo.InLbyUpdate = g_Resolver.GResolverData[BestEntity].mode == ResolverModes::LBY_BREAK;
+	//g_Saver.RbotShotInfo.InLc = g_Resolver.GResolverData[BestEntity].BreakingLC;
+	//g_Saver.RbotShotInfo.Moving = g_Resolver.GResolverData[BestEntity].Moving;
+	//g_Saver.AARealAngle = cmd->viewangles;
+	Console.WriteLine(LagCompensation::Get().GetLerpTime());
+	cmd->tick_count = TIME_TO_TICKS(entity->m_flSimulationTime() - LagCompensation::Get().GetLerpTime());
 
 	if (!bBacktrack)
 		cmd->tick_count = tick;
 
-	switch (rbot_shooting_mode)
+	/*switch (rbot_shooting_mode)
 	{
 	case 0:
 		bSendPacket = true;
 		break;
 
 	case 2:
-		//g_Saver.RbotDidLastShot = true;
 		g_Saver.RbotDidLastShot = true;
 		break;
-	}
+	}*/
 
 	/*
 	- add mode choke after shot
@@ -1063,7 +1062,6 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
             continue;
 
         //if (FoundGoodEntity) continue;
-
 
         float Distance = Math::VectorDistance ( g_LocalPlayer->GetEyePos(), entity->GetEyePos() );
 

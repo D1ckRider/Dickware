@@ -21,7 +21,7 @@ void KeyLoop::OnCreateMove()
 		AntiAim::Get().DesyncFlip = !AntiAim::Get().DesyncFlip;
 	}*/
 		
-	if( InputSys::Get().WasKeyPressed(Settings::RageBot::ManualAARightKey) )
+	if( (Settings::RageBot::AntiAimSettings[0].Yaw == 5 || Settings::RageBot::AntiAimSettings[1].Yaw == 5) && InputSys::Get().WasKeyPressed(Settings::RageBot::ManualAARightKey) )
     {
 		if ( Settings::RageBot::ManualAAState == 1 )
 			Settings::RageBot::ManualAAState = 0;
@@ -30,7 +30,7 @@ void KeyLoop::OnCreateMove()
         g_Saver.CurrentShouldSkipAnimations = true;
     }
 
-	if ( InputSys::Get().WasKeyPressed(Settings::RageBot::ManualAALeftKey) )
+	if ((Settings::RageBot::AntiAimSettings[0].Yaw == 5 || Settings::RageBot::AntiAimSettings[1].Yaw == 5) && InputSys::Get().WasKeyPressed(Settings::RageBot::ManualAALeftKey) )
     {
 		if ( Settings::RageBot::ManualAAState == 2 )
 			Settings::RageBot::ManualAAState = 0;
@@ -39,7 +39,7 @@ void KeyLoop::OnCreateMove()
         g_Saver.CurrentShouldSkipAnimations = true;
     }
 
-	if( InputSys::Get().WasKeyPressed(Settings::RageBot::ManualAABackKey) )
+	if((Settings::RageBot::AntiAimSettings[0].Yaw == 5 || Settings::RageBot::AntiAimSettings[1].Yaw == 5) && InputSys::Get().WasKeyPressed(Settings::RageBot::ManualAABackKey) )
     {
 		if(Settings::RageBot::ManualAAState == 3)
 			Settings::RageBot::ManualAAState = 0;

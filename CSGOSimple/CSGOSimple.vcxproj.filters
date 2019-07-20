@@ -670,9 +670,6 @@
     <ClInclude Include="astriumwep.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ShadowVMTHook.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Textures\AA_D_S.png">

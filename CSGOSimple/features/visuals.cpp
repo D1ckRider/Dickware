@@ -179,8 +179,8 @@ void Visuals::Player::RenderName()
 	std::string name = info.szName;
     auto sz = g_pDefaultFont->CalcTextSizeA ( 12.f, FLT_MAX, 0.0f, info.szName );
 
-	Render::Get().RenderTextNoOutline(name, ImVec2((ctx.bbox.left + ((ctx.bbox.right - ctx.bbox.left) / 2)) - (sz.x / 2), ctx.head_pos.y - sz.y - 4.f), 12.f, ctx.NameClr, true);
-    //VGSHelper::Get().DrawText ( info.szName, ( ctx.bbox.left + ( ( ctx.bbox.right - ctx.bbox.left ) / 2 ) ) - ( sz.x / 2 ), ctx.head_pos.y - sz.y - 4.f, ctx.NameClr, 12.f );
+	//Render::Get().RenderTextNoOutline(name, ImVec2((ctx.bbox.left + ((ctx.bbox.right - ctx.bbox.left) / 2)) - (sz.x / 2), ctx.head_pos.y - sz.y - 4.f), 12.f, ctx.NameClr, true);
+    VGSHelper::Get().DrawText ( info.szName, ( ctx.bbox.left + ( ( ctx.bbox.right - ctx.bbox.left ) / 2 ) ) - ( sz.x / 2 ), ctx.head_pos.y - sz.y - 4.f, ctx.NameClr, 12.f );
     //TextHeight += 14.f;
 }
 //--------------------------------------------------------------------------------
@@ -268,7 +268,7 @@ void Visuals::Player::DrawPlayerDebugInfo()
         return;
 
     std::string t1 = "missed shots: " + std::to_string ( g_Resolver.GResolverData[ctx.pl->EntIndex()].Shots );
-    std::string t2 = "mode: ";// +std::to_string(g_Resolver.GResolverData[ctx.pl->EntIndex()].Shots);
+	std::string t2 = "mode: "; //+ std::to_string(g_Resolver.GResolverData[ctx.pl->EntIndex()].mode);
     std::string t3 = "detected: ";
     std::string t4 = g_Resolver.GResolverData[ctx.pl->EntIndex()].Fake ? "fake" : "real";
     std::string t5 = "velocity: " + std::to_string ( ctx.pl->m_vecVelocity().Length2D() );
@@ -1031,6 +1031,9 @@ void Visuals::ManualAAIndicator()
 {
     if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive() )
         return;
+
+	if (Settings::RageBot::AntiAimSettings[0].Yaw != 5 || Settings::RageBot::AntiAimSettings[1].Yaw != 5)
+		return;
 
     //int x, y;
     //g_EngineClient->GetScreenSize ( x, y );

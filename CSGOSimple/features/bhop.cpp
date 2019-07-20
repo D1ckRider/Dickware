@@ -105,6 +105,8 @@ T clamp(T in, U low, U high)
 void BunnyHop::AutoStrafe(CUserCmd* cmd)
 {
 	if (g_LocalPlayer->m_nMoveType() == MOVETYPE_NOCLIP || g_LocalPlayer->m_nMoveType() == MOVETYPE_LADDER || !g_LocalPlayer->IsAlive()) return;
+	if (g_LocalPlayer->m_nMoveType() == MOVETYPE_LADDER) return;
+
 
 	// If we're not jumping or want to manually move out of the way/jump over an obstacle don't strafe.
 	//if (!g_InputSystem->IsButtonDown(ButtonCode_t::KEY_SPACE) ||
@@ -114,7 +116,8 @@ void BunnyHop::AutoStrafe(CUserCmd* cmd)
 	//	g_InputSystem->IsButtonDown(ButtonCode_t::KEY_W))
 	//	return;
 
-	if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND)) {
+	if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND)) 
+	{
 		if (cmd->mousedx > 1 || cmd->mousedx < -1) {
 			cmd->sidemove = clamp(cmd->mousedx < 0.f ? -400.f : 400.f, -400, 400);
 		}
