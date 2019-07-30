@@ -546,7 +546,7 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
 
 			*/
 		static bool broke_lby = false;
-		if(Settings::RageBot::DesyncType > DesyncState::STATIC)
+		if(Settings::RageBot::DesyncType > DesyncState::NONE)
 		{
 			float desyncAngle = g_LocalPlayer->GetMaxDesyncAngle();
 			//DesyncAnimation(cmd, bSendPacket, Settings::RageBot::DesyncType);

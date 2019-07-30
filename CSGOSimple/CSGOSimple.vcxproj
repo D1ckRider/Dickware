@@ -129,6 +129,7 @@
     <ClCompile Include="helpers\ItemDefinitions.cpp" />
     <ClCompile Include="helpers\KitParser.cpp" />
     <ClCompile Include="helpers\math.cpp" />
+    <ClCompile Include="helpers\ThreadTools.cpp" />
     <ClCompile Include="helpers\utils.cpp" />
     <ClCompile Include="helpers\vfunc_hook.cpp" />
     <ClCompile Include="HitPossitionHelper.cpp" />
@@ -203,6 +204,7 @@
     <ClInclude Include="helpers\ItemDefinitions.h" />
     <ClInclude Include="helpers\KitParser.h" />
     <ClInclude Include="helpers\math.hpp" />
+    <ClInclude Include="helpers\ThreadTools.h" />
     <ClInclude Include="helpers\utils.hpp" />
     <ClInclude Include="helpers\vfunc_hook.hpp" />
     <ClInclude Include="HitPossitionHelper.h" />

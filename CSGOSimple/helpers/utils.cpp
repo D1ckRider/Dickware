@@ -339,4 +339,17 @@ exit:
 		return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 	}
 
+	LONG GetStringRegKey(HKEY hKey, const std::wstring& strValueName, std::wstring& strValue, const std::wstring& strDefaultValue)
+	{
+		strValue = strDefaultValue;
+		WCHAR szBuffer[512];
+		DWORD dwBufferSize = sizeof(szBuffer);
+		ULONG nError;
+		nError = RegQueryValueExW(hKey, strValueName.c_str(), 0, NULL, (LPBYTE)szBuffer, &dwBufferSize);
+		if (ERROR_SUCCESS == nError)
+		{
+			strValue = szBuffer;
+		}
+		return nError;
+	}
 }

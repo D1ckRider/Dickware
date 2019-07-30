@@ -96,10 +96,12 @@ void Misc::SpectatorList()
 
 void Misc::NoCrouchCooldown(CUserCmd* cmd)
 {
-	if(!Settings::Misc::NoCrouchCooldown)
-        return;
+#if 0
+	if (!Settings::Misc::NoCrouchCooldown)
+		return;
 
-    cmd->buttons |= IN_BULLRUSH;
+	cmd->buttons |= IN_BULLRUSH;
+#endif // 0
 }
 
 void Misc::NoFlash()

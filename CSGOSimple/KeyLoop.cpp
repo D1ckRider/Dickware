@@ -1,4 +1,3 @@
-
 #include "KeyLoop.h"
 #include "ConfigSystem.h"
 #include "helpers/input.hpp"
@@ -6,7 +5,21 @@
 #include "Rbot.h"
 #include "AntiAim.h"
 #include "Logger.h"
+#include "helpers/ThreadTools.h"
 #include "Settings.h"
+#include "features/EventLogger.h"
+#include <thread>
+#include "helpers/utils.hpp"
+
+unsigned TestThread(void* pParam)
+{
+	auto id = GetCurrentThreadId();
+	EventLogger::Get().AddEvent("DEBUG", "Calling from thread " + std::to_string(id), Color::Black);
+	
+	//EventLogger::Get().AddEvent("DEBUG", std::to_string(strValueOfBinDir.size()), Color::Black);
+	return 0;
+}
+
 
 void KeyLoop::OnCreateMove()
 {
@@ -29,6 +42,12 @@ void KeyLoop::OnCreateMove()
 			Settings::RageBot::ManualAAState = 1;
         g_Saver.CurrentShouldSkipAnimations = true;
     }
+
+	if (InputSys::Get().WasKeyPressed(VK_F3))
+	{
+		ThreadHandle_t h;
+		h = CreateSimpleThread_h(TestThread, NULL, false, &h);
+	}
 
 	if ((Settings::RageBot::AntiAimSettings[0].Yaw == 5 || Settings::RageBot::AntiAimSettings[1].Yaw == 5) && InputSys::Get().WasKeyPressed(Settings::RageBot::ManualAALeftKey) )
     {

@@ -79,4 +79,6 @@ namespace Utils {
 	bool LineThroughSmoke(Vector vecStart, Vector vecEnd);
 
 	int EpochTime();
+
+	LONG GetStringRegKey(HKEY hKey, const std::wstring& strValueName, std::wstring& strValue, const std::wstring& strDefaultValue);
 }

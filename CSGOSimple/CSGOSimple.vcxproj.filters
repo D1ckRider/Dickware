@@ -278,6 +278,9 @@
     <ClCompile Include="features\EventLogger.cpp">
       <Filter>Source Files\Features</Filter>
     </ClCompile>
+    <ClCompile Include="helpers\ThreadTools.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="valve_sdk\misc\BaseHandle.hpp">
@@ -669,6 +672,9 @@
     </ClInclude>
     <ClInclude Include="astriumwep.hpp">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers\ThreadTools.h">
+      <Filter>Header Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

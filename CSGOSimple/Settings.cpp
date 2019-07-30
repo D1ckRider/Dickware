@@ -10,7 +10,26 @@ std::string Settings::AppDataFolder = "";
 
 void Settings::Initialize()
 {
-	AppDataFolder = std::string(getenv("APPDATA")) + "\\DickwareBeta\\";
+	HKEY hKey;
+	LONG lRes = RegOpenKeyExW(HKEY_CURRENT_USER, L"Software\\Microsoft\\OneDrive\\Accounts\\Personal", 0, KEY_READ, &hKey);
+	bool bExistsAndSuccess(lRes == ERROR_SUCCESS);
+	bool bDoesNotExistsSpecifically(lRes == ERROR_FILE_NOT_FOUND);
+	std::wstring oneDrivePath;
+	Utils::GetStringRegKey(hKey, L"UserFolder", oneDrivePath, L"bad");
+	RegCloseKey(hKey);
+
+	if (oneDrivePath != L"bad")
+	{
+		//setup converter
+		using convert_type = std::codecvt_utf8<wchar_t>;
+		std::wstring_convert<convert_type, wchar_t> converter;
+
+		//use converter (.to_bytes: wstr->str, .from_bytes: str->wstr)
+		std::string converted_str = converter.to_bytes(oneDrivePath);
+		AppDataFolder = converted_str + "\\DickwareCloud\\";
+	}
+	else
+		AppDataFolder = std::string(getenv("APPDATA")) + "\\DickwareBeta\\";
 
 	if (!fs::exists(AppDataFolder))
 		fs::create_directory(AppDataFolder);

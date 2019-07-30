@@ -631,7 +631,7 @@ void Menu::RenderMisc()
     //Components.Checkbox("Anti untrusted", "misc_antiuntrusted");*/
 
 	Components.Checkbox("Rank reveal",  Settings::Misc::RankReveal);
-	Components.Checkbox("No crouch cooldown",  Settings::Misc::NoCrouchCooldown);
+	//Components.Checkbox("No crouch cooldown",  Settings::Misc::NoCrouchCooldown);
 	Components.Checkbox("No Visual Recoil", Settings::Misc::NoVisualRecoil);
 	Components.Checkbox("AutoAccept", Settings::Misc::AutoAccept);
 

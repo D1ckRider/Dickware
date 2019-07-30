@@ -11,6 +11,10 @@ void NightMode::Apply(bool ForceUpdate)
 
 	static ConVar* sv_skyname = g_CVar->FindVar("sv_skyname");
 	sv_skyname->m_nFlags &= ~FCVAR_CHEAT; // something something dont force convars
+	static ConVar* r_3dsky = g_CVar->FindVar("r_3dsky");
+
+	
+
 
 
 	if (!g_LocalPlayer || !g_EngineClient->IsConnected() || !g_EngineClient->IsInGame())
@@ -33,6 +37,13 @@ void NightMode::Apply(bool ForceUpdate)
 				{
 					fallback_skybox = sv_skyname->GetString();
 					sv_skyname->SetValue("sky_csgo_night02");
+					if (r_3dsky != nullptr)
+					{
+						if (r_3dsky->m_nFlags & FCVAR_HIDDEN)
+							r_3dsky->m_nFlags &= ~FCVAR_HIDDEN;
+
+						r_3dsky->SetValue(0);
+					}
 					CEnvTonemapController* tonemapper = static_cast<CEnvTonemapController*>(ent);
 					tonemapper->m_bUseCustomAutoExposureMin() = 1;
 					tonemapper->m_bUseCustomAutoExposureMax() = 1;
@@ -58,8 +69,13 @@ void NightMode::Revert()
 	if (Active)
 	{
 		static ConVar* sv_skyname = g_CVar->FindVar("sv_skyname");
+		static ConVar* r_3dsky = g_CVar->FindVar("r_3dsky");
 		sv_skyname->m_nFlags &= ~FCVAR_CHEAT; // something something dont force convars
 		sv_skyname->SetValue(fallback_skybox.data());
+		if (r_3dsky != nullptr)
+		{
+			r_3dsky->SetValue(0);
+		}
 		g_ClientState->ForceFullUpdate();
 		Active = false;
 	}
