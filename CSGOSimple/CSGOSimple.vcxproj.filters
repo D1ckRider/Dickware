@@ -466,9 +466,6 @@
     <ClInclude Include="hooks.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="helpers\math.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="options.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -674,6 +671,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="helpers\ThreadTools.h">
+      <Filter>Header Files\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers\math.hpp">
       <Filter>Header Files\Helpers</Filter>
     </ClInclude>
   </ItemGroup>

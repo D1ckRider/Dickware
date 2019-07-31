@@ -1141,6 +1141,7 @@ namespace Settings::Visual
 	bool NightMode = false;
 	float NightModeBrighthness = 0.075f;
 	bool DisablePP = false;
+	bool SniperCrosshair = false;
 	bool Hitmarker = false;
 	bool HitmarkerSound = false; 
 	bool DebugInfoEnabled = false;

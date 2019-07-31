@@ -343,5 +343,86 @@ namespace Math
         }
         return false;
     }
+	bool IntersectionBoundingBox(const Vector& src, const Vector& dir, const Vector& min, const Vector& max, Vector* hit_point)
+	{
+		/*
+		Fast Ray-Box Intersection
+		by Andrew Woo
+		from "Graphics Gems", Academic Press, 1990
+		*/
+
+		constexpr auto NUMDIM = 3;
+		constexpr auto RIGHT = 0;
+		constexpr auto LEFT = 1;
+		constexpr auto MIDDLE = 2;
+
+		bool inside = true;
+		char quadrant[NUMDIM];
+		int i;
+
+		// Rind candidate planes; this loop can be avoided if
+		// rays cast all from the eye(assume perpsective view)
+		Vector candidatePlane;
+		for (i = 0; i < NUMDIM; i++) {
+			if (src[i] < min[i]) {
+				quadrant[i] = LEFT;
+				candidatePlane[i] = min[i];
+				inside = false;
+			}
+			else if (src[i] > max[i]) {
+				quadrant[i] = RIGHT;
+				candidatePlane[i] = max[i];
+				inside = false;
+			}
+			else {
+				quadrant[i] = MIDDLE;
+			}
+		}
+
+		// Ray origin inside bounding box
+		if (inside) {
+			if (hit_point)
+				* hit_point = src;
+			return true;
+		}
+
+		// Calculate T distances to candidate planes
+		Vector maxT;
+		for (i = 0; i < NUMDIM; i++) {
+			if (quadrant[i] != MIDDLE && dir[i] != 0.f)
+				maxT[i] = (candidatePlane[i] - src[i]) / dir[i];
+			else
+				maxT[i] = -1.f;
+		}
+
+		// Get largest of the maxT's for final choice of intersection
+		int whichPlane = 0;
+		for (i = 1; i < NUMDIM; i++) {
+			if (maxT[whichPlane] < maxT[i])
+				whichPlane = i;
+		}
+
+		// Check final candidate actually inside box
+		if (maxT[whichPlane] < 0.f)
+			return false;
+
+		for (i = 0; i < NUMDIM; i++) {
+			if (whichPlane != i) {
+				float temp = src[i] + maxT[whichPlane] * dir[i];
+				if (temp < min[i] || temp > max[i]) {
+					return false;
+				}
+				else if (hit_point) {
+					(*hit_point)[i] = temp;
+				}
+			}
+			else if (hit_point) {
+				(*hit_point)[i] = candidatePlane[i];
+			}
+		}
+
+		// ray hits box
+		return true;
+	}
     //--------------------------------------------------------------------------------
 }

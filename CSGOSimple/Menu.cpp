@@ -35,6 +35,49 @@ void Menu::Initialize()
     Loaded = true;
 }
 
+int GetRageWeaponType(C_BaseCombatWeapon* weapon)
+{
+	if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_DEAGLE)
+		return (int)RbotWeaponsAvailable::DEAGLE;
+	else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_REVOLVER)
+		return (int)RbotWeaponsAvailable::REVOLVER;
+	else if (weapon->IsRifle() || weapon->IsMachinegun())
+		return (int)RbotWeaponsAvailable::RIFLE;
+	else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_SSG08)
+		return (int)RbotWeaponsAvailable::SCOUT;
+	else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_AWP)
+		return (int)RbotWeaponsAvailable::AWP;
+	else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_G3SG1)
+		return (int)RbotWeaponsAvailable::AUTO;
+	else if (weapon->IsPistol())
+		return (int)RbotWeaponsAvailable::PISTOL;
+	else
+		return (int)RbotWeaponsAvailable::SHOTGUN;
+}
+
+
+int GetLegitWeaponType(C_BaseCombatWeapon* weapon)
+{
+	if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_DEAGLE)
+		return (int)LbotWeaponsAvailable::DEAGLE;
+	else if (weapon->GetItemDefinitionIndex() == ItemDefinitionIndex::WEAPON_SSG08)
+		return (int)LbotWeaponsAvailable::SCOUT;
+	else if (weapon->IsSubmachinegun())
+		return (int)LbotWeaponsAvailable::SMG;
+	else if (weapon->IsMachinegun())
+		return (int)LbotWeaponsAvailable::MG;
+	else if (weapon->IsRifle())
+		return (int)LbotWeaponsAvailable::RIFLE;
+	else if (weapon->IsPistol())
+		return (int)LbotWeaponsAvailable::PISTOL;
+	else if (weapon->IsShotgun())
+		return (int)LbotWeaponsAvailable::SHOTGUN;
+	else if (weapon->IsSniper())
+		return (int)LbotWeaponsAvailable::SNIPER;
+	else
+		return (int)LbotWeaponsAvailable::SHOTGUN;
+}
+
 void Menu::Render()
 {
     if ( !Loaded || g_Unload )
@@ -99,18 +142,13 @@ void Menu::RenderRagebot()
 #ifdef DEBUG
 	static const char* DesyncAA[] = { "none", "static", "balance", "stretch", "jitter" };
 #else
-	static const char* DesyncAA[] = { "none", "static" };
+	static const char* DesyncAA[] = { "none", "static", "balance" };
 #endif // DEBUG
 
 	
 	static char* AntiAimMenus[] = { "stand", "move", "air", "misc" };
 	
-#ifdef DEBUG
 	static const char* FakelagModes[] = { "normal", "adaptive", "on peek" };
-
-#else
-	static const char* FakelagModes[] = { "normal", "adaptive" };
-#endif // DEBUG
 
 	static const char* LagCompMode[] = { "Best", "Newest", "All" };
 
@@ -120,6 +158,10 @@ void Menu::RenderRagebot()
 	static char* WeaponConfigSelectionItemsText[] = { "Pistol", "Deagle", "R8", "Scout", "AWP", "Auto", "Rifle", "Shotgun" };
 	static int WeaponSelected = 0;
 
+	//if (g_Saver.CurrentWeaponRef)
+	//	WeaponSelected = GetRageWeaponType(g_Saver.CurrentWeaponRef);
+	//else
+	//	WeaponSelected = 0;
 
 	Components.Navbar(RageBotItems, IM_ARRAYSIZE(RageBotItems), RageBotSelected);
 
@@ -137,7 +179,8 @@ void Menu::RenderRagebot()
 		Components.Label("Movement:");
 		Components.Checkbox("Slow Walk", Settings::RageBot::SlowWalk);
 		Components.Hotkey("Slow Walk Hotkey", Settings::RageBot::SlowWalkHotkey);
-		Components.SliderFloat("Slow Walk Speed", Settings::RageBot::SlowWalkMod, 0.f, 1.f);
+		//Components.SliderFloat("Slow Walk Speed", Settings::RageBot::SlowWalkMod, 0.f, 1.f);
+		ImGui::SliderFloat("##rbot.slowalk_mod", &Settings::RageBot::SlowWalkMod, 0, 1, "Speed: %.1f");
 		Components.Checkbox("Fake Duck", Settings::RageBot::FakeDuck);
 		Components.Hotkey("Fake Duck Hotkey", Settings::RageBot::FakeDuckHotkey);
 		Components.Checkbox("Auto Scope", Settings::RageBot::AutoScope);
@@ -176,21 +219,31 @@ void Menu::RenderRagebot()
 			Components.ComboBox("Yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].Yaw);
 
 			Components.ComboBox("Yaw Add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].YawAdd);
-			Components.SliderFloat("Range", Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].Range, 0.f, 360.f);
+			
+			//Components.SliderFloat("Range", Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].Range, 0.f, 360.f);
 
-			Components.Spacing();
-			Components.SliderInt("Fakelag Ticks", Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].FakelagTicks, 0, 14);
+			//Components.Spacing();
+			//Components.SliderInt("Fakelag Ticks", Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].FakelagTicks, 0, 14);
+
+			ImGui::SliderFloat("##aa.range", &Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].Range, 0.f, 360.f, "Range: %.2f");
+			ImGui::Spacing();
+			ImGui::SliderInt("##misc.fakelag_ticks", &Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].FakelagTicks, 0, 14, "Ticks: %.0f");
 			break;
 		case RbotAntiAimAvailable::MOVING:
 			Components.ComboBox("Pitch AA", PitchAAs, IM_ARRAYSIZE(PitchAAs), Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].Pitch);
 			Components.ComboBox("Yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].Yaw);
 
 			Components.ComboBox("Yaw Add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].YawAdd);
-			Components.SliderFloat("Range", Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].Range, 0.f, 360.f);
+			/*Components.SliderFloat("Range", Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].Range, 0.f, 360.f);
 
 			Components.Spacing();
 			Components.ComboBox("Fakelag mode", FakelagModes, IM_ARRAYSIZE(FakelagModes), Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].FakelagMode);
-			Components.SliderInt("Fakelag Ticks", Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].FakelagTicks, 0, 14);
+			Components.SliderInt("Fakelag Ticks", Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].FakelagTicks, 0, 14);*/
+			ImGui::SliderFloat("##aa.range", &Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].Range, 0.f, 360.f, "Range: %.2f");
+			ImGui::Spacing();
+			Components.ComboBox("Fakelag mode", FakelagModes, IM_ARRAYSIZE(FakelagModes), Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].FakelagMode);
+			ImGui::SliderInt("##misc.fakelag_ticks", &Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].FakelagTicks, 0, 14, "Ticks: %.0f");
+
 			break;
 
 		case RbotAntiAimAvailable::AIR:
@@ -198,11 +251,15 @@ void Menu::RenderRagebot()
 			Components.ComboBox("Yaw AA", YawAAs, IM_ARRAYSIZE(YawAAs), Settings::RageBot::AntiAimSettings[AntiAimState::AIR].Yaw);
 
 			Components.ComboBox("Yaw Add", YawAddAAs, IM_ARRAYSIZE(YawAddAAs), Settings::RageBot::AntiAimSettings[AntiAimState::AIR].YawAdd);
-			Components.SliderFloat("Range", Settings::RageBot::AntiAimSettings[AntiAimState::AIR].Range, 0.f, 360.f);
+			/*Components.SliderFloat("Range", Settings::RageBot::AntiAimSettings[AntiAimState::AIR].Range, 0.f, 360.f);
 
 			Components.Spacing();
 			Components.ComboBox("Fakelag mode", FakelagModes, IM_ARRAYSIZE(FakelagModes), Settings::RageBot::AntiAimSettings[AntiAimState::AIR].FakelagMode);
-			Components.SliderInt("Fakelag Ticks", Settings::RageBot::AntiAimSettings[AntiAimState::AIR].FakelagTicks, 0, 14);
+			Components.SliderInt("Fakelag Ticks", Settings::RageBot::AntiAimSettings[AntiAimState::AIR].FakelagTicks, 0, 14);*/
+			ImGui::SliderFloat("##aa.range", &Settings::RageBot::AntiAimSettings[AntiAimState::AIR].Range, 0.f, 360.f, "Range: %.2f");
+			ImGui::Spacing();
+			Components.ComboBox("Fakelag mode", FakelagModes, IM_ARRAYSIZE(FakelagModes), Settings::RageBot::AntiAimSettings[AntiAimState::AIR].FakelagMode);
+			ImGui::SliderInt("##misc.fakelag_ticks", &Settings::RageBot::AntiAimSettings[AntiAimState::AIR].FakelagTicks, 0, 14, "Ticks: %.0f");
 			break;
 
 		case RbotAntiAimAvailable::MISC:
@@ -218,8 +275,6 @@ void Menu::RenderRagebot()
 			Components.Hotkey("Right", Settings::RageBot::ManualAARightKey, (int)HotkeyType::Tap);
 			Components.Hotkey("Left", Settings::RageBot::ManualAALeftKey, (int)HotkeyType::Tap);
 			Components.Hotkey("Back", Settings::RageBot::ManualAABackKey, (int)HotkeyType::Tap);
-			
-
 			break;
 		}
 		break;
@@ -227,8 +282,10 @@ void Menu::RenderRagebot()
 
 		Components.Columns(2, false);
 
-		Components.NavbarIcons(WeaponConfigSelectionItems, WeaponConfigSelectionItemsText, IM_ARRAYSIZE(WeaponConfigSelectionItems), WeaponSelected, IconsFont);
+		
 
+		Components.NavbarIcons(WeaponConfigSelectionItems, WeaponConfigSelectionItemsText, IM_ARRAYSIZE(WeaponConfigSelectionItems), WeaponSelected, IconsFont);
+		ImGui::BeginChild("#weapons", ImVec2(0.f, 180.f));
 		switch ((RbotWeaponsAvailable)WeaponSelected)
 		{
 		case RbotWeaponsAvailable::PISTOL:
@@ -256,6 +313,10 @@ void Menu::RenderRagebot()
 			RenderRageWeapon(WeaponType::WEAPON_SHOTGUN);
 			break;
 		}
+		ImGui::EndChild();
+		if (ImGui::Button("Current Weapon") && g_Saver.CurrentWeaponRef)
+			WeaponSelected = GetRageWeaponType(g_Saver.CurrentWeaponRef);
+
 		Components.NextColumn();
 #pragma region Hitbox Scales
 		Components.Label("Hitbox Scales");
@@ -275,21 +336,26 @@ void Menu::RenderRagebot()
 		break;
 	}
 	
+	
     Components.EndChild();
 }
 
 void Menu::RenderRageWeapon(Settings::WeaponType wtype)
 {
-	Components.SliderFloat("Hitchance", Settings::RageBot::WeaponSettings[wtype].Hitchance, 0.f, 100.f);
-	Components.SliderFloat("Min Damage", Settings::RageBot::WeaponSettings[wtype].MinDamage, 0.f, 100.f);
-	Components.SliderInt("BAim after x shots", Settings::RageBot::WeaponSettings[wtype].BAimAfterShots, 0, 10);
-	Components.SliderInt("Force BAim after x shots", Settings::RageBot::WeaponSettings[wtype].ForceBAimAfterShots, 0, 10);
-	Components.Checkbox("BAim while moving", Settings::RageBot::WeaponSettings[wtype].BAimWhileMoving);
+	//Components.SliderFloat("Hitchance", Settings::RageBot::WeaponSettings[wtype].Hitchance, 0.f, 100.f);
+	ImGui::SliderFloat("##rbot.hitchance", &Settings::RageBot::WeaponSettings[wtype].Hitchance, 0, 100, "Hitchance: %.1f");
+	ImGui::SliderFloat("##rbot.mindmg", &Settings::RageBot::WeaponSettings[wtype].MinDamage, 0.f, 100.f, "Minimal Damage: %.2f");
+	ImGui::SliderInt("##rbot.baim_after_x", &Settings::RageBot::WeaponSettings[wtype].BAimAfterShots, 0, 10, "BAim After %.0f Shots");
+	ImGui::SliderInt("##rbot.force_baim_after_x", &Settings::RageBot::WeaponSettings[wtype].ForceBAimAfterShots, 0, 10, "Force BAim After %.0f Shots");
+	ImGui::Checkbox("BAim while moving", &Settings::RageBot::WeaponSettings[wtype].BAimWhileMoving);
+	//Components.SliderFloat("Min Damage", Settings::RageBot::WeaponSettings[wtype].MinDamage, 0.f, 100.f);
+	//Components.SliderInt("BAim after x shots", Settings::RageBot::WeaponSettings[wtype].BAimAfterShots, 0, 10);
+	//Components.SliderInt("Force BAim after x shots", Settings::RageBot::WeaponSettings[wtype].ForceBAimAfterShots, 0, 10);
+	//Components.Checkbox("BAim while moving", Settings::RageBot::WeaponSettings[wtype].BAimWhileMoving);
 }
 
 void Menu::RenderRageHitboxes(std::string hitbox_name, Settings::HitboxType htype)
 {
-	//Components.Checkbox(hitbox_name, Settings::RageBot::Hitboxes[htype].Enabled);
 	ImGui::Checkbox(hitbox_name.data(), &Settings::RageBot::Hitboxes[htype].Enabled);
 	ImGui::SameLine();
 	ImGui::SameLine();
@@ -353,6 +419,8 @@ void Menu::RenderLegitWeapon(WeaponType wtype)
 
 }
 
+
+
 void Menu::RenderLegitbot()
 {
     Components.BeginChild ( "#lbot", ImVec2 ( 0, 500) );
@@ -368,12 +436,26 @@ void Menu::RenderLegitbot()
 	switch ((LbotMenuAvailable)LBotSelected)
 	{
 	case LbotMenuAvailable::Aimbot:
+		Components.Columns(3, false);
 		Components.Checkbox("Enable", Settings::Aimbot::Enabled);
+		ImGui::NextColumn();
+		if (ImGui::Button("Current Weapon") && g_Saver.CurrentWeaponRef)
+			WeaponSelected = GetLegitWeaponType(g_Saver.CurrentWeaponRef);
+		ImGui::NextColumn();
+		ImGui::EndColumns();
 		Components.NavbarIcons(WeaponConfigSelectionItems, WeaponConfigSelectionItemsText, IM_ARRAYSIZE(WeaponConfigSelectionItems), WeaponSelected, IconsFont);
 		Components.BeginChild("#lbot.weapons", ImVec2(0, 300));
 		Components.Columns(2, false);
 
+		
+		/*if (g_Saver.CurrentWeaponRef)
+			WeaponSelected = GetLegitWeaponType(g_Saver.CurrentWeaponRef);
+		else
+			WeaponSelected = 0;*/
+		//WeaponSelected = Settings::Aimbot::GetWeaponType(g_LocalPlayer->m_hActiveWeapon().Get());
+
 		Components.Hotkey("Aimkey", Settings::Aimbot::Hotkey);
+		
 
 		switch ((LbotWeaponsAvailable)WeaponSelected)
 		{
@@ -422,7 +504,6 @@ void Menu::RenderLegitbot()
 		break;
 	case LbotMenuAvailable::Backtrack:
 		Components.Columns(2, false);
-		//Components.Checkbox("Backtrack", Settings::Aimbot::Backtrack);
 		ImGui::Checkbox("Backtrack", &Settings::Aimbot::Backtrack);
 		Components.Checkbox("Aim at backtrack", Settings::Aimbot::BacktrackAtAim);
 		Components.SliderFloat("Backtrack time", Settings::Aimbot::BacktrackTick, 0.f, .2f);
@@ -578,6 +659,7 @@ void Menu::RenderVisuals()
 			Components.Checkbox("Disable Sniper Zoom",  Settings::Visual::DisableScopeZoom);
 			Components.SliderInt("Viewmodel FOV",  Settings::Visual::ViewModelFOV, 1, 150);
 			Components.SliderInt("FOV",  Settings::Visual::FOV, 1, 150);
+			ImGui::Checkbox("Sniper Crosshair", &Settings::Visual::SniperCrosshair);
 			Components.Checkbox("Hitmarker",  Settings::Visual::Hitmarker);
 			Components.Checkbox("Hitmarker Sound", Settings::Visual::HitmarkerSound);
             /*static const char* hitmarkersounds[] = { "amera", "skeet" };
@@ -669,7 +751,7 @@ void Menu::RenderMisc()
     Components.Checkbox ( "Buy zeus", Settings::Misc::BuyBotZeus);
     Components.Checkbox ( "Buy defuser", Settings::Misc::BuyBotDefuser);
 
-	if (Components.Button("unload"))
+	if (Components.Button("Unload"))
 	{
 		g_Unload = true;
 		//player.Release();

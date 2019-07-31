@@ -3,6 +3,7 @@
 #include "ConfigSystem.h"
 #include "Settings.h"
 #include "render.hpp"
+#include "Rbot.h"
 #include "imgui\imgui.h"
 
 void Misc::OnCreateMove(CUserCmd* cmd)
@@ -109,6 +110,26 @@ void Misc::NoFlash()
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive() || !Settings::Visual::NoFlash)
         return;
 
-    //g_LocalPlayer->m_flFlashMaxAlpha() = 0.f;
-    g_LocalPlayer->m_flFlashDuration() = 0.f;
+	g_LocalPlayer->m_flFlashDuration() = 0.f;
 }
+
+//
+//
+//void Misc::PunchAngleFix_RunCommand(C_BasePlayer* base_player)
+//{
+//	if (g_LocalPlayer && g_LocalPlayer->IsAlive() && g_LocalPlayer == &base_player)
+//		m_aimPunchAngle[Rbot::Get().GetTickbase() % 128] = g_LocalPlayer->m_aimPunchAngle();
+//}
+//
+//void Misc::PunchAngleFix_FSN()
+//{
+//	if (g_LocalPlayer && g_LocalPlayer->IsAlive())
+//	{
+//		QAngle new_punch_angle = m_aimPunchAngle[Rbot::Get().GetTickbase() % 128];
+//
+//		if (!new_punch_angle.IsValid())
+//			return;
+//
+//		g_LocalPlayer->m_aimPunchAngle() = new_punch_angle;
+//	}
+//}

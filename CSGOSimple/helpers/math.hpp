@@ -116,6 +116,7 @@ namespace Math
     void AngleVectors(const QAngle &angles, Vector& forward, Vector& right, Vector& up);
     void VectorAngles(const Vector& forward, QAngle& angles);
     bool WorldToScreen(const Vector& in, Vector& out);
+	bool IntersectionBoundingBox(const Vector& start, const Vector& dir, const Vector& min, const Vector& max, Vector* hit_point = nullptr);
 
 	//float TicksToTime(int tick);
 

@@ -169,6 +169,7 @@ public:
 	QAngle vecVisualAimbotAngs;
 
     bool RbotDidLastShot = false;
+	C_BaseCombatWeapon* CurrentWeaponRef;
 };
 
 extern RuntimeSaver g_Saver;

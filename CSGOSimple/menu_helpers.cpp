@@ -219,7 +219,9 @@ void MenuHelper::CreateStyle()
 	_style.Colors[ImGuiCol_CheckMark] = ImVec4(0.42f, 0.059f, 0.102f, 1.000f);
 	_style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.471f, 0.125f, 0.173f, 1.000f);
 
-	_style.Colors[ImGuiCol_Header] = ImVec4(0.260f, 0.590f, 0.980f, 0.670f);
+	_style.Colors[ImGuiCol_Header] = ImVec4(0.42f, 0.059f, 0.102f, 1.000f);
+	_style.Colors[ImGuiCol_HeaderHovered] = ImVec4(0.471f, 0.125f, 0.173f, 1.000f);
+	_style.Colors[ImGuiCol_HeaderActive] = ImVec4(0.517f, 0.204f, 0.247f, 1.000f);
 	//_style.Colors[ImGuiCol_ButtonHovered] = ImVec4(0.000f, 0.545f, 1.000f, 1.000f);
 	//_style.Colors[ImGuiCol_ButtonActive] = ImVec4(0.060f, 0.416f, 0.980f, 1.000f);
 	//_style.Colors[ImGuiCol_FrameBg] = ImVec4(0.20f, 0.25f, 0.30f, 1.0f);

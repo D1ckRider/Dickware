@@ -11,9 +11,12 @@ public:
 	void ExecuteGameConfig(const std::string& config);
 	void SetLocalPlayerReady();
 	void SpectatorList();
+	/*void PunchAngleFix_RunCommand(C_BasePlayer* base_player);
+	void PunchAngleFix_FSN();*/
 private:
 	CUserCmd* pCmd;
 
+	QAngle m_aimPunchAngle[128];
     void NoCrouchCooldown(CUserCmd* cmd);
     void NoFlash();
 };

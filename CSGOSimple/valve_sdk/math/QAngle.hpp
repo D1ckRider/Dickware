@@ -96,6 +96,10 @@ public:
         roll = vOther.roll;
         return *this;
     }
+	__inline bool IsValid() const
+	{
+		return std::isfinite(pitch) && std::isfinite(yaw) && std::isfinite(roll);
+	}
 
     QAngle operator-(void) const
     {

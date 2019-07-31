@@ -1,5 +1,6 @@
 
 #include "Fakelag.h"
+#include "helpers/math.hpp"
 #include "ConfigSystem.h"
 #include "RuntimeSaver.h"
 #include "ConsoleHelper.h"
@@ -40,6 +41,75 @@ void Fakelag::OnCreateMove(CUserCmd* cmd, bool& bSendPacket)
 
     g_Saver.FakelagCurrentlyEnabled = true;
 
+	auto LegitPeek = [ticks](CUserCmd* cmd, bool* send_packet) {
+		static bool m_bIsPeeking = false;
+		if (m_bIsPeeking) {
+			*send_packet = !(g_ClientState->chokedcommands < ticks);
+			if (*send_packet)
+				m_bIsPeeking = false;
+			return;
+		}
+
+		auto speed = g_LocalPlayer->m_vecVelocity().Length();
+		if (speed <= 100.0f)
+			return;
+
+		auto collidable = g_LocalPlayer->GetCollideable();
+
+		Vector min, max;
+		min = collidable->OBBMins();
+		max = collidable->OBBMaxs();
+
+		min += g_LocalPlayer->m_vecOrigin();
+		max += g_LocalPlayer->m_vecOrigin();
+
+		Vector center = (min + max) * 0.5f;
+
+		for (int i = 1; i <= g_GlobalVars->maxClients; ++i) {
+			auto player = C_BasePlayer::GetPlayerByIndex(i);
+			if (!player || !player->IsAlive() || player->IsDormant())
+				continue;
+			if (player == g_LocalPlayer || g_LocalPlayer->m_iTeamNum() == player->m_iTeamNum())
+				continue;
+
+			auto weapon = player->m_hActiveWeapon().Get();
+			if (!weapon || weapon->m_iClip1() <= 0)
+				continue;
+
+			auto weapon_data = weapon->GetCSWeaponData();
+			if (!weapon_data || weapon_data->WeaponType <= WEAPONTYPE_KNIFE || weapon_data->WeaponType >= WEAPONTYPE_C4)
+				continue;
+
+			auto eye_pos = player->GetEyePos();
+
+			Vector direction;
+			Math::AngleVectors(player->m_angEyeAngles(), direction);
+			direction.NormalizeInPlace();
+
+			Vector hit_point;
+			bool hit = Math::IntersectionBoundingBox(eye_pos, direction, min, max, &hit_point);
+			if (hit && eye_pos.DistTo(hit_point) <= weapon_data->flRange) {
+				Ray_t ray;
+				trace_t tr;
+				CTraceFilterSkipEntity filter((C_BasePlayer*)player);
+				ray.Init(eye_pos, hit_point);
+
+				g_EngineTrace->TraceRay(ray, MASK_SHOT_HULL | CONTENTS_HITBOX, &filter, &tr);
+				if (tr.contents & CONTENTS_WINDOW) { // skip windows
+																							// at this moment, we dont care about local player
+					filter.pSkip = tr.hit_entity;
+					ray.Init(tr.endpos, hit_point);
+					g_EngineTrace->TraceRay(ray, MASK_SHOT_HULL | CONTENTS_HITBOX, &filter, &tr);
+				}
+
+				if (tr.fraction == 1.0f || tr.hit_entity == g_LocalPlayer) {
+					m_bIsPeeking = true;
+					break;
+				}
+			}
+		}
+	};
+
     switch (mode)
     {
         case 0:
@@ -73,7 +143,11 @@ void Fakelag::OnCreateMove(CUserCmd* cmd, bool& bSendPacket)
             }
             else
                 WasLastInFakelag = false;
+			break;
         }
+		case 2:
+			LegitPeek(cmd, &bSendPacket);
+			break;
     }
 
     if (g_ClientState->chokedcommands == 0)

@@ -89,23 +89,21 @@ void Lbot::OnCreateMove(CUserCmd* cmd)
 				shot_delay = false;
 
 			if (shot_delay)
-				cmd->buttons &= IN_ATTACK;
+				cmd->buttons &= ~IN_ATTACK;
 
 			if (Settings::Aimbot::WeaponAimSetting[WeaponID].Autofire)
 			{
 				if (!Settings::Aimbot::AutofireHotkey || InputSys::Get().IsKeyDown(Settings::Aimbot::AutofireHotkey))
 				{
-					if (!weapon_data->bFullAuto) 
-					{
-						if (cmd->command_number % 2 == 0)
-							cmd->buttons &= IN_ATTACK;
-						else 
-							cmd->buttons |= ~IN_ATTACK;
+					if (cmd->command_number % 2 == 0) {
+						cmd->buttons &= ~IN_ATTACK;
 					}
-					else 
-					{
-						cmd->buttons |= ~IN_ATTACK;
+					else {
+						cmd->buttons |= IN_ATTACK;
 					}
+				}
+				else {
+					cmd->buttons |= IN_ATTACK;
 				}
 			}
 
@@ -160,7 +158,7 @@ bool Lbot::IsEnabled(CUserCmd* pCmd)
 	if (!pWeapon->HasBullets() || pWeapon->IsReloading()) 
 		return false;
 
-	return InputSys::Get().IsKeyDown(Settings::Aimbot::Hotkey);
+	return Settings::Aimbot::WeaponAimSetting[WeaponID].Autofire || InputSys::Get().IsKeyDown(Settings::Aimbot::Hotkey);
 }
 
 float Lbot::GetFovToPlayer(QAngle viewAngle, QAngle aimAngle)

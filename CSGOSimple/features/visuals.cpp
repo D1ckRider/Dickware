@@ -466,7 +466,7 @@ void Visuals::Player::RenderResolverInfo()
 void Visuals::RenderCrosshair()
 {
     //int w, h;
-	if (!g_LocalPlayer->m_hActiveWeapon()->IsSniper())
+	/*if (!g_LocalPlayer->m_hActiveWeapon()->IsSniper())
 		return;
 
     //g_EngineClient->GetScreenSize ( w, h );
@@ -475,7 +475,27 @@ void Visuals::RenderCrosshair()
     int cy = ScreenY / 2;
 	Color clr = Color::Red; //g_Config.GetColor ( "color_esp_crosshair" );
     VGSHelper::Get().DrawLine ( cx - 5, cy, cx + 5, cy, clr );
-    VGSHelper::Get().DrawLine ( cx, cy - 5, cx, cy + 5, clr );
+    VGSHelper::Get().DrawLine ( cx, cy - 5, cx, cy + 5, clr );*/
+
+	static bool active;
+	static ConVar* weapon_debug_spread_show = g_CVar->FindVar("weapon_debug_spread_show");
+	weapon_debug_spread_show->m_nFlags &= ~FCVAR_CHEAT;
+
+
+	if (!active && Settings::Visual::SniperCrosshair)
+		active = true;
+
+	if (active && Settings::Visual::SniperCrosshair)
+		active = false;
+
+	if (active != weapon_debug_spread_show->GetInt())
+	{
+		if (active && g_LocalPlayer->m_hActiveWeapon()->IsSniper())
+			g_EngineClient->ClientCmd_Unrestricted("weapon_debug_spread_show 3");
+		else
+			g_EngineClient->ClientCmd_Unrestricted("weapon_debug_spread_show 0");
+	}
+
 }
 //--------------------------------------------------------------------------------
 void Visuals::RenderWeapon ( C_BaseCombatWeapon* ent )
@@ -1128,7 +1148,31 @@ void Visuals::RenderHitmarker()
     if ( !g_LocalPlayer || !g_LocalPlayer->IsAlive() )
         return;
 
-    static int cx;
+	auto curtime = g_GlobalVars->realtime;
+	float lineSize = 8.f;
+	if (g_Saver.HitmarkerInfo.HitTime + .05f >= curtime) {
+		int screenSizeX, screenCenterX;
+		int screenSizeY, screenCenterY;
+		g_EngineClient->GetScreenSize(screenSizeX, screenSizeY);
+
+		screenCenterX = ScreenX / 2;
+		screenCenterY = ScreenY / 2;
+
+		Color bg = Color(0, 0, 0, 50);
+		Color white = Color(255, 255, 255, 255);
+
+		Render::Get().RenderLine(screenCenterX - lineSize, screenCenterY - lineSize, screenCenterX - (lineSize / 4), screenCenterY - (lineSize / 4), bg, 2.5f);
+		Render::Get().RenderLine(screenCenterX - lineSize, screenCenterY + lineSize, screenCenterX - (lineSize / 4), screenCenterY + (lineSize / 4), bg, 2.5f);
+		Render::Get().RenderLine(screenCenterX + lineSize, screenCenterY + lineSize, screenCenterX + (lineSize / 4), screenCenterY + (lineSize / 4), bg, 2.5f);
+		Render::Get().RenderLine(screenCenterX + lineSize, screenCenterY - lineSize, screenCenterX + (lineSize / 4), screenCenterY - (lineSize / 4), bg, 2.5f);
+
+		Render::Get().RenderLine(screenCenterX - lineSize, screenCenterY - lineSize, screenCenterX - (lineSize / 4), screenCenterY - (lineSize / 4), white);
+		Render::Get().RenderLine(screenCenterX - lineSize, screenCenterY + lineSize, screenCenterX - (lineSize / 4), screenCenterY + (lineSize / 4), white);
+		Render::Get().RenderLine(screenCenterX + lineSize, screenCenterY + lineSize, screenCenterX + (lineSize / 4), screenCenterY + (lineSize / 4), white);
+		Render::Get().RenderLine(screenCenterX + lineSize, screenCenterY - lineSize, screenCenterX + (lineSize / 4), screenCenterY - (lineSize / 4), white);
+	}
+
+    /*static int cx;
     static int cy;
     //static int w, h;
 
@@ -1158,7 +1202,7 @@ void Visuals::RenderHitmarker()
     Color clr = Color ( 255, 255, 255, ( int ) ( percent * 255.f ) );
 
     VGSHelper::Get().DrawLine ( cx - 3.f - addsize, cy - 3.f - addsize, cx + 3.f + addsize, cy + 3.f + addsize, clr, 1.f );
-    VGSHelper::Get().DrawLine ( cx - 3.f - addsize, cy + 3.f + addsize, cx + 3.f + addsize, cy - 3.f - addsize, clr, 1.f );
+    VGSHelper::Get().DrawLine ( cx - 3.f - addsize, cy + 3.f + addsize, cx + 3.f + addsize, cy - 3.f - addsize, clr, 1.f );*/
 }
 
 
@@ -1459,8 +1503,8 @@ void Visuals::AddToDrawList()
 	if(Settings::Visual::DamageIndicator)
 		RenderDamageIndicators();
 
-	//if (g_LocalPlayer)
-   //	RenderCrosshair();
+	/*if (g_LocalPlayer)
+		RenderCrosshair();*/
 
     CurrentIndicatorHeight = 0.f;
    
@@ -1483,13 +1527,13 @@ void VGSHelper::Init()
 	for (size_t size = 1; size < 128; size++)
 	{
 		LogBase[size] = g_VGuiSurface->CreateFont_();
-		g_VGuiSurface->SetFontGlyphSet(LogBase[size], "Tahoma", size, 700, 0, 0, FONTFLAG_DROPSHADOW);
+		g_VGuiSurface->SetFontGlyphSet(LogBase[size], "Verdana", size, 700, 0, 0, FONTFLAG_DROPSHADOW);
 	}
 
 	for (size_t size = 1; size < 128; size++)
 	{
 		LogHeader[size] = g_VGuiSurface->CreateFont_();
-		g_VGuiSurface->SetFontGlyphSet(LogHeader[size], "Tahoma", size, 700, 0, 0, FONTFLAG_DROPSHADOW);
+		g_VGuiSurface->SetFontGlyphSet(LogHeader[size], "Verdana", size, 700, 0, 0, FONTFLAG_DROPSHADOW);
 	}
 
 	Inited = true;

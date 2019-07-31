@@ -339,6 +339,7 @@ namespace Hooks
         }
         */
 
+		g_Saver.CurrentWeaponRef = g_LocalPlayer->m_hActiveWeapon().Get();
 		g_Saver.TickCount = cmd->tick_count;
 		g_Saver.CommandNumber = cmd->command_number;
 
@@ -350,6 +351,9 @@ namespace Hooks
 
 		Rbot::Get().GetTickbase(cmd);
         KeyLoop::Get().OnCreateMove();
+
+		if(MenuHelper::Get().IsVisible())
+			cmd->buttons &= ~(IN_ATTACK | IN_ATTACK2);
 
 		g_Saver.PredictionData.reset();
 		if (Settings::Misc::BHop)
@@ -692,6 +696,12 @@ namespace Hooks
 
 		Skinchanger::Get().OnFrameStageNotify(stage);
 
+		QAngle aim_punch_old;
+		QAngle view_punch_old;
+
+		QAngle* aim_punch = nullptr;
+		QAngle* view_punch = nullptr;
+
         //if (g_ClientState->m_nDeltaTick != -1) return  ofunc(g_CHLClient, stage);
         if ( !g_EngineClient->IsConnected() || !g_EngineClient->IsInGame() )
             return ofunc ( g_CHLClient, stage );
@@ -715,6 +725,7 @@ namespace Hooks
 
             case FRAME_NET_UPDATE_POSTDATAUPDATE_START:
             {
+				//Misc::Get().PunchAngleFix_FSN();
 				break;
             }
 
@@ -1094,8 +1105,7 @@ namespace Hooks
 			SEQUENCE_BOWIE_IDLE1 = 1,
 		};
 		if (strstr(model, "models/weapons/v_knife_butterfly.mdl")) {
-			switch (sequence)
-			{
+			switch (sequence) {
 			case SEQUENCE_DEFAULT_DRAW:
 				return random_sequence(SEQUENCE_BUTTERFLY_DRAW, SEQUENCE_BUTTERFLY_DRAW2);
 			case SEQUENCE_DEFAULT_LOOKAT01:
@@ -1105,8 +1115,7 @@ namespace Hooks
 			}
 		}
 		else if (strstr(model, "models/weapons/v_knife_falchion_advanced.mdl")) {
-			switch (sequence)
-			{
+			switch (sequence) {
 			case SEQUENCE_DEFAULT_IDLE2:
 				return SEQUENCE_FALCHION_IDLE1;
 			case SEQUENCE_DEFAULT_HEAVY_MISS1:
@@ -1121,8 +1130,7 @@ namespace Hooks
 			}
 		}
 		else if (strstr(model, "models/weapons/v_knife_push.mdl")) {
-			switch (sequence)
-			{
+			switch (sequence) {
 			case SEQUENCE_DEFAULT_IDLE2:
 				return SEQUENCE_DAGGERS_IDLE1;
 			case SEQUENCE_DEFAULT_LIGHT_MISS1:
@@ -1141,10 +1149,8 @@ namespace Hooks
 				return sequence + 2;
 			}
 		}
-		else if (strstr(model, "models/weapons/v_knife_survival_bowie.mdl")) 
-		{
-			switch (sequence)
-			{
+		else if (strstr(model, "models/weapons/v_knife_survival_bowie.mdl")) {
+			switch (sequence) {
 			case SEQUENCE_DEFAULT_DRAW:
 			case SEQUENCE_DEFAULT_IDLE1:
 				return sequence;
@@ -1154,40 +1160,9 @@ namespace Hooks
 				return sequence - 1;
 			}
 		}
-		else if (strstr(model, "models/weapons/v_knife_ursus.mdl"))
-		{
-			switch (sequence)
-			{
-			case SEQUENCE_DEFAULT_DRAW:
-				return random_sequence(SEQUENCE_BUTTERFLY_DRAW, SEQUENCE_BUTTERFLY_DRAW2);
-				break;
-			case SEQUENCE_DEFAULT_LOOKAT01:
-				return random_sequence(SEQUENCE_BUTTERFLY_LOOKAT01, 14);
-				break;
-			default:
-				return sequence + 1;
-			}
-		}
-		else if (strstr(model, "models/weapons/v_knife_stiletto.mdl"))
-		{
-			switch (sequence)
-			{
-			case SEQUENCE_DEFAULT_LOOKAT01:
-				return random_sequence(12, 13);
-				break;
-			}
-		}
-		else if (strstr(model, "models/weapons/v_knife_widowmaker.mdl"))
-		{
-			switch (sequence)
-			{
-			case SEQUENCE_DEFAULT_LOOKAT01:
-				return random_sequence(14, 15);
-				break;
-			}
-		}
-		else
+		else {
 			return sequence;
+		}
 	}
 
 	void hkRecvProxy(const CRecvProxyData* pData, void* entity, void* output)

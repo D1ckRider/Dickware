@@ -318,6 +318,7 @@ namespace Settings
 		extern int ViewModelFOV;
 		extern int FOV;
 		extern bool NoSmoke;
+		extern bool SniperCrosshair;
 		extern bool Hitmarker;
 		extern bool HitmarkerSound;
 		extern bool DebugInfoEnabled;

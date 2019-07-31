@@ -93,7 +93,7 @@ namespace Interfaces
         g_VGuiPanel           = get_interface<IPanel>              (vgui2Factory, "VGUI_Panel009");
         g_VGuiSurface         = get_interface<ISurface>            (vguiFactory, "VGUI_Surface031");
         g_PhysSurface         = get_interface<IPhysicsSurfaceProps>(vphysicsFactory, "VPhysicsSurfaceProps001");
-        g_pMemAlloc			  = *(IMemAlloc**)(GetProcAddress(GetModuleHandleW(L"tier0.dll"), "g_pMemAlloc"));
+        g_pMemAlloc			  = *(IMemAlloc * *)GetProcAddress(GetModuleHandleA("tier0.dll"), "g_pMemAlloc");
 		g_SpatialPartition	  = get_interface<uintptr_t>			(engineFactory, "SpatialPartition001");
 		g_StudioRender		  = get_interface< IStudioRender >(studioFactory, "VStudioRender026");
 		
