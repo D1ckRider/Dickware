@@ -1,8 +1,7 @@
-
+#pragma once
 #include "valve_sdk/csgostructs.hpp"
 #include <Windows.h>
 
-#pragma once
 
 struct FakeLagData
 {

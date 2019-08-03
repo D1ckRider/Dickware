@@ -541,10 +541,8 @@ void AntiAim::DoAntiAim ( CUserCmd* cmd, bool& bSendPacket )
         static QAngle LastRealAngle = QAngle ( 0, 0, 0 );
 
 		/*if (InputSys::Get().WasKeyPressed(Settings::RageBot::DesyncFlipHotkey))
-			side = -side;
+			side = -side;			*/
 
-
-			*/
 		static bool broke_lby = false;
 		if(Settings::RageBot::DesyncType > DesyncState::NONE)
 		{

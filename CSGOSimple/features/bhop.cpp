@@ -2,6 +2,7 @@
 #include "bhop.hpp"
 #include "../helpers/math.hpp"
 #include "../MovementFix.h"
+#include "../helpers/input.hpp"
 #include "../Settings.h"
 
 void BunnyHop::OnCreateMove(CUserCmd* cmd)
@@ -105,16 +106,14 @@ T clamp(T in, U low, U high)
 void BunnyHop::AutoStrafe(CUserCmd* cmd)
 {
 	if (g_LocalPlayer->m_nMoveType() == MOVETYPE_NOCLIP || g_LocalPlayer->m_nMoveType() == MOVETYPE_LADDER || !g_LocalPlayer->IsAlive()) return;
-	if (g_LocalPlayer->m_nMoveType() == MOVETYPE_LADDER) return;
-
 
 	// If we're not jumping or want to manually move out of the way/jump over an obstacle don't strafe.
-	//if (!g_InputSystem->IsButtonDown(ButtonCode_t::KEY_SPACE) ||
-	//	g_InputSystem->IsButtonDown(ButtonCode_t::KEY_A) ||
-	//	g_InputSystem->IsButtonDown(ButtonCode_t::KEY_D) ||
-	//	g_InputSystem->IsButtonDown(ButtonCode_t::KEY_S) ||
-	//	g_InputSystem->IsButtonDown(ButtonCode_t::KEY_W))
-	//	return;
+	if (!InputSys::Get().IsKeyDown(VK_SPACE))// ||
+		/*InputSys::Get().IsKeyDown(VK) ||
+		g_InputSystem->IsButtonDown(ButtonCode_t::KEY_D) ||
+		g_InputSystem->IsButtonDown(ButtonCode_t::KEY_S) ||
+		g_InputSystem->IsButtonDown(ButtonCode_t::KEY_W))*/
+		return;
 
 	if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND)) 
 	{

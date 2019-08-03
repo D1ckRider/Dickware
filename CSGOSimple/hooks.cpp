@@ -1,4 +1,3 @@
-
 #include "hooks.hpp"
 #include <intrin.h>
 #include "options.hpp"
@@ -111,7 +110,7 @@ namespace Hooks
 
         clientmode_hook.hook_index ( index::DoPostScreenSpaceEffects, hkDoPostScreenEffects );
         clientmode_hook.hook_index ( index::OverrideView, hkOverrideView );
-
+		clientmode_hook.hook_index(index::ShouldDrawFog, hkShouldDrawFog);
 		engine_hook.hook_index(index::IsHltv, hkIsHLTV);
 
         sv_cheats.hook_index ( index::SvCheatsGetBool, hkSvCheatsGetBool );
@@ -151,6 +150,7 @@ namespace Hooks
         //clientstate_hook.unhook_all();
 
         Glow::Get().Shutdown();
+		//g_Saver.MediaPlayer.Release();
         hlclient_hook.unhook_all();
         direct3d_hook.unhook_all();
         vguipanel_hook.unhook_all();
@@ -218,6 +218,8 @@ namespace Hooks
         static auto phys_pushscale_cvar = g_CVar->FindVar ( "phys_pushscale" );
         static auto phys_pushscale_org = phys_pushscale_cvar->Get<int>();
         static auto engine_no_focus_sleep_cvar = g_CVar->FindVar ( "engine_no_focus_sleep" );
+		static auto cl_csm_enabled = g_CVar->FindVar("cl_csm_enabled");
+		static auto weapon_debug_spread_show = g_CVar->FindVar("weapon_debug_spread_show");
         engine_no_focus_sleep_cvar->SetValue ( 0 );
         //static auto cl_extrapolate_cvar = g_CVar->FindVar("cl_extrapolate");//->SetValue(0);
         //cl_extrapolate_cvar->m_fnChangeCallbacks.m_Size = 0;
@@ -250,6 +252,39 @@ namespace Hooks
         	g_CVar->FindVar("cl_smoothtime")->SetValue(0.01f);
         }
         */
+		
+		
+		// FPS Optimization
+		static bool activeLow = false;
+		
+		if (Settings::Visual::DisablePP && !activeLow)
+		{
+			cl_csm_enabled->m_nFlags &= ~FCVAR_CHEAT;
+			cl_csm_enabled->SetValue(0);
+			activeLow = true;
+		}
+		if (!Settings::Visual::DisablePP && activeLow)
+		{
+			cl_csm_enabled->m_nFlags &= ~FCVAR_CHEAT;
+			cl_csm_enabled->SetValue(1);
+			activeLow = false;
+		}
+
+
+		static bool activeSniper = false;
+		if (Settings::Visual::SniperCrosshair && !activeSniper)
+		{
+			weapon_debug_spread_show->m_nFlags &= ~FCVAR_CHEAT;
+			weapon_debug_spread_show->SetValue(2);
+			activeSniper = true;
+		}
+		if (!Settings::Visual::SniperCrosshair && activeSniper)
+		{
+			weapon_debug_spread_show->m_nFlags &= ~FCVAR_CHEAT;
+			weapon_debug_spread_show->SetValue(0);
+			activeSniper = false;
+		}
+			
 
         #ifdef _DEBUG
         phys_pushscale_cvar->m_fnChangeCallbacks.m_Size = 0;
@@ -360,7 +395,7 @@ namespace Hooks
 			BunnyHop::Get().OnCreateMove(cmd);
 		
 		if (Settings::Misc::AutoStrafe)
-			BunnyHop::Get().AutoStrafe(cmd, cmd->viewangles);
+			BunnyHop::Get().AutoStrafe(cmd);
 
 		QAngle wish_angle = cmd->viewangles;
 		cmd->viewangles = org_angle;
@@ -587,10 +622,6 @@ namespace Hooks
 			clientstate_hook.setup((uintptr_t*)((uintptr_t)g_ClientState + 0x8));
 			clientstate_hook.hook_index(index::TempEntities, hkTempEntities);
 			o_TempEntities = clientstate_hook.get_original<TempEntities>(index::TempEntities);
-
-			/*clientstate_hook->Setup((uintptr_t*)((uintptr_t)g_ClientState + 0x8));
-			clientstate_hook->Hook(index::TempEntities, hkTempEntities);
-			o_TempEntities = clientstate_hook->GetOriginal<TempEntities>(index::TempEntities);*/
 		}
     }
     //--------------------------------------------------------------------------------
@@ -618,6 +649,8 @@ namespace Hooks
         static auto panelId = vgui::VPANEL{ 0 };
         static auto oPaintTraverse = vguipanel_hook.get_original<PaintTraverse> ( index::PaintTraverse );
 
+		//static ConVar* cl_csm_enabled = g_CVar->FindVar("cl_csm_enabled ");
+
 		if( Settings::Visual::NoScopeOverlay && !strcmp("HudZoom", g_VGuiPanel->GetName(panel)) )
             return;
 
@@ -644,7 +677,6 @@ namespace Hooks
 
             if ( bSkip )
                 return;
-
 			if ( g_LocalPlayer && InputSys::Get().IsKeyDown(VK_TAB) && Settings::Misc::RankReveal )
                 Utils::RankRevealAll();
 
@@ -918,6 +950,11 @@ namespace Hooks
 		if ( reinterpret_cast<DWORD>(_ReturnAddress()) == reinterpret_cast<DWORD>(retAddr) )
 			return true;
 		return o_IsHLTV(ECX);
+	}
+
+	bool __fastcall hkShouldDrawFog(void* ecx, void* edx)
+	{
+		return !Settings::Visual::DisablePP;
 	}
 
 	void __stdcall FireBullets_PostDataUpdate(C_TEFireBullets* thisptr, DataUpdateType_t updateType)

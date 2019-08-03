@@ -69,5 +69,8 @@ void KeyLoop::OnCreateMove()
     }
 
 	if (InputSys::Get().WasKeyPressed(Settings::Misc::RadioPauseHotkey))
+	{
 		g_Saver.RadioPaused = !g_Saver.RadioPaused;
+	}
+		
 }

@@ -310,6 +310,7 @@ void Settings::SaveVisual(json& j)
 	SaveValue(j, "vis_damage_ind_enabled", Visual::DamageIndicator);
 	SaveColorValue(j, "vis_damage_ind_color", Visual::DamageIndicatorColor);
 	SaveValue(j, "vis_disable_scoop_zoom", Visual::DisableScopeZoom);
+	SaveValue(j, "vis_sniper_crosshair", Visual::SniperCrosshair);
 	SaveValue(j, "vis_fov", Visual::FOV);
 	SaveValue(j, "vis_viewmodel_fov", Visual::ViewModelFOV);
 	SaveValue(j, "vis_nosmoke", Visual::NoSmoke);
@@ -575,6 +576,7 @@ void Settings::LoadVisual(json& j)
 	LoadValue(j, "vis_damage_ind_enabled", Visual::DamageIndicator);
 	LoadColorValue(j, "vis_damage_ind_color", Visual::DamageIndicatorColor);
 	LoadValue(j, "vis_disable_scoop_zoom", Visual::DisableScopeZoom);
+	LoadValue(j, "vis_sniper_crosshair", Visual::SniperCrosshair);
 	LoadValue(j, "vis_fov", Visual::FOV);
 	LoadValue(j, "vis_viewmodel_fov", Visual::ViewModelFOV);
 	LoadValue(j, "vis_nosmoke", Visual::NoSmoke);
@@ -824,6 +826,7 @@ void Settings::ResetVisuals()
 	Visual::RagdollForce = 0;
 	Visual::HealthPos = 0;
 	Visual::ArmorPos = 0;
+	Visual::SniperCrosshair = false;
 
 
 	Visual::LocalChams.Enabled = false;

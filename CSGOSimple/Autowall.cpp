@@ -2,6 +2,7 @@
 #include "Autowall.h"
 #include "helpers/math.hpp"
 #include "options.hpp"
+#include "helpers/ThreadTools.h"
 
 #define    HITGROUP_GENERIC    0
 #define    HITGROUP_HEAD        1
@@ -306,6 +307,7 @@ void Autowall::ScaleDamage(CGameTrace& enterTrace, CCSWeaponInfo* weaponData, fl
 }
 
 ////////////////////////////////////// Main Autowall Functions //////////////////////////////////////
+
 bool Autowall::trace_to_exit(CGameTrace& enterTrace, CGameTrace& exitTrace, Vector startPosition, Vector direction)
 {
     Vector start, end;
@@ -402,7 +404,7 @@ bool Autowall::HandleBulletPenetration(CCSWeaponInfo* weaponData, CGameTrace& en
     float thickness, modifier, lostDamage, finalDamageModifier, combinedPenetrationModifier;
     bool isSolidSurf = ((enterTrace.contents >> 3) & CONTENTS_SOLID);
     bool isLightSurf = ((enterTrace.surface.flags >> 7) & SURF_LIGHT);
-
+	
     if (possibleHitsRemaining <= 0
             || (enterTrace.surface.name == (const char*)0x2227c261 && exitTrace.surface.name == (const char*)0x2227c868)
             || (!possibleHitsRemaining && !isLightSurf && !isSolidSurf && enterMaterial != CHAR_TEX_GRATE && enterMaterial != CHAR_TEX_GLASS)

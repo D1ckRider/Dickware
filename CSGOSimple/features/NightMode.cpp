@@ -8,14 +8,10 @@ std::string fallback_skybox = "";
 void NightMode::Apply(bool ForceUpdate)
 {
 	static bool perfomed = false, bLastSetting;
-
+	bool optMode = false;
 	static ConVar* sv_skyname = g_CVar->FindVar("sv_skyname");
 	sv_skyname->m_nFlags &= ~FCVAR_CHEAT; // something something dont force convars
 	static ConVar* r_3dsky = g_CVar->FindVar("r_3dsky");
-
-	
-
-
 
 	if (!g_LocalPlayer || !g_EngineClient->IsConnected() || !g_EngineClient->IsInGame())
 	{
@@ -23,7 +19,6 @@ void NightMode::Apply(bool ForceUpdate)
 		return;
 	}
 		
-
 	// Add revert option
 	if (!Active || ForceUpdate)
 	{
@@ -44,18 +39,15 @@ void NightMode::Apply(bool ForceUpdate)
 
 						r_3dsky->SetValue(0);
 					}
+
 					CEnvTonemapController* tonemapper = static_cast<CEnvTonemapController*>(ent);
 					tonemapper->m_bUseCustomAutoExposureMin() = 1;
 					tonemapper->m_bUseCustomAutoExposureMax() = 1;
 					tonemapper->m_flCustomAutoExposureMax() = Settings::Visual::NightModeBrighthness;//0.08f;
 					tonemapper->m_flCustomAutoExposureMin() = Settings::Visual::NightModeBrighthness;//0.08f;
 					Active = true;
+
 				}
-				/*if (ent->GetClientClass()->m_ClassID == ClassId::CPostProcessController)
-				{
-					CPostProcessController* controller = static_cast<CPostProcessController*>(ent);
-					controller->m_flSetScreenBlurStrength() = 1;
-				}*/
 			}
 		}
 	}

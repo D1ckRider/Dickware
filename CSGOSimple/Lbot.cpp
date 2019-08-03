@@ -93,6 +93,8 @@ void Lbot::OnCreateMove(CUserCmd* cmd)
 
 			if (Settings::Aimbot::WeaponAimSetting[WeaponID].Autofire)
 			{
+				if(weapon->IsSniper())
+					cmd->buttons |= IN_ATTACK2;
 				if (!Settings::Aimbot::AutofireHotkey || InputSys::Get().IsKeyDown(Settings::Aimbot::AutofireHotkey))
 				{
 					if (cmd->command_number % 2 == 0) {

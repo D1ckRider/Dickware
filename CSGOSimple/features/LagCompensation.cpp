@@ -535,7 +535,7 @@ bool LagCompensation::IsPlayerValid(C_BasePlayer* player)
 
 float LagCompensation::GetLerpTime()
 {
-	int ud_rate = g_CVar->FindVar("cl_updaterate")->GetInt();
+	/*int ud_rate = g_CVar->FindVar("cl_updaterate")->GetInt();
 	ConVar* min_ud_rate = g_CVar->FindVar("sv_minupdaterate");
 	ConVar* max_ud_rate = g_CVar->FindVar("sv_maxupdaterate");
 
@@ -554,7 +554,18 @@ float LagCompensation::GetLerpTime()
 	if (c_min_ratio && c_max_ratio && c_min_ratio->GetFloat() != 1)
 		ratio = clamp(ratio, c_min_ratio->GetFloat(), c_max_ratio->GetFloat());
 
-	return std::max(lerp, (ratio / ud_rate));
+	return std::max(lerp, (ratio / ud_rate));*/
+	static auto cl_interp = g_CVar->FindVar("cl_interp");
+	static auto cl_interp_ratio = g_CVar->FindVar("cl_interp_ratio");
+	static auto sv_client_min_interp_ratio = g_CVar->FindVar("sv_client_min_interp_ratio");
+	static auto sv_client_max_interp_ratio = g_CVar->FindVar("sv_client_max_interp_ratio");
+	static auto cl_updaterate = g_CVar->FindVar("cl_updaterate");
+	static auto sv_minupdaterate = g_CVar->FindVar("sv_minupdaterate");
+	static auto sv_maxupdaterate = g_CVar->FindVar("sv_maxupdaterate");
+
+	auto updaterate = std::clamp(cl_updaterate->GetFloat(), sv_minupdaterate->GetFloat(), sv_maxupdaterate->GetFloat());
+	auto lerp_ratio = std::clamp(cl_interp_ratio->GetFloat(), sv_client_min_interp_ratio->GetFloat(), sv_client_max_interp_ratio->GetFloat());
+	return std::clamp(lerp_ratio / updaterate, cl_interp->GetFloat(), 1.0f);
 }
 
 void LagRecord::SaveRecord(C_BasePlayer* player)

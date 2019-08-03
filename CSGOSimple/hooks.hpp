@@ -28,6 +28,7 @@ namespace index
 	constexpr auto SuppressLists			 = 16;
 	constexpr auto TempEntities				 = 36;
 	constexpr auto IsHltv					 = 93;
+	constexpr auto ShouldDrawFog			 = 17;
 }
 
 namespace Hooks
@@ -68,6 +69,7 @@ namespace Hooks
 	using IsHLTV			   = bool(__thiscall*)(void*);
 	using TempEntities		   = bool(__thiscall* )(void*, void*/*SVC_TempEntities*/);
 
+ 
 	extern TempEntities o_TempEntities;
 	extern IsHLTV o_IsHLTV;
 
@@ -86,7 +88,7 @@ namespace Hooks
     bool __fastcall hkSvCheatsGetBool ( PVOID pConVar, void* edx );
 	bool __fastcall hkIsHLTV(void* ECX, void* EDX);
 
-
+	bool __fastcall hkShouldDrawFog(void* ecx, void* edx);
 	void __stdcall FireBullets_PostDataUpdate(C_TEFireBullets* thisptr, DataUpdateType_t updateType);
 	void __stdcall hkTEFireBulletsPostDataUpdate(DataUpdateType_t updateType);
 	void __stdcall hkSuppressLists(int a2, bool a3);
