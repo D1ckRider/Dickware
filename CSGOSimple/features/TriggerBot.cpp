@@ -46,7 +46,6 @@ void TriggerBot::OnCreateMove(CUserCmd * cmd)
 
 			if (didHit && (tr.hit_entity->GetBaseEntity()->m_iTeamNum() != g_LocalPlayer->m_iTeamNum()))
 			{
-				//if (key > 0 && GetAsyncKeyState(key) & 0x8000 && enable)
 				if ( Settings::TriggerBot::Enabled && InputSys::Get().IsKeyDown(Settings::TriggerBot::Key) )
 				{
 					cmd->buttons |= IN_ATTACK;

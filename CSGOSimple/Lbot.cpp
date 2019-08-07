@@ -58,7 +58,6 @@ void Lbot::OnCreateMove(CUserCmd* cmd)
 	if (!weapon_data)
 		return;
 	WeaponID = Settings::Aimbot::GetWeaponType(weapon);
-	UpdateWeaponConfig(weapon);
 
 	bool should_do_rcs = false;
 	QAngle angles = cmd->viewangles;
@@ -91,9 +90,10 @@ void Lbot::OnCreateMove(CUserCmd* cmd)
 			if (shot_delay)
 				cmd->buttons &= ~IN_ATTACK;
 
+#ifdef _DEBUG
 			if (Settings::Aimbot::WeaponAimSetting[WeaponID].Autofire)
 			{
-				if(weapon->IsSniper())
+				if (weapon->IsSniper())
 					cmd->buttons |= IN_ATTACK2;
 				if (!Settings::Aimbot::AutofireHotkey || InputSys::Get().IsKeyDown(Settings::Aimbot::AutofireHotkey))
 				{
@@ -108,10 +108,7 @@ void Lbot::OnCreateMove(CUserCmd* cmd)
 					cmd->buttons |= IN_ATTACK;
 				}
 			}
-
-			/*if (settings.autostop) {
-				cmd->forwardmove = cmd->sidemove = 0;
-			}*/
+#endif // _DEBUG
 		}
 	}
 
@@ -150,12 +147,9 @@ bool Lbot::IsEnabled(CUserCmd* pCmd)
 
 	auto weaponData = pWeapon->GetCSWeaponData();
 	auto weapontype = weaponData->WeaponType;
-	//settings = g_Options.legitbot_items[pWeapon->m_Item().m_iItemDefinitionIndex()];
 	if (!Settings::Aimbot::Enabled)
 		return false;
 
-	//if ((pWeapon->m_Item().m_iItemDefinitionIndex() == WEAPON_AWP || pWeapon->m_Item().m_iItemDefinitionIndex() == WEAPON_SSG08) && settings.only_in_zoom && !g_LocalPlayer->m_bIsScoped()) 
-	//	return false;
 
 	if (!pWeapon->HasBullets() || pWeapon->IsReloading()) 
 		return false;
@@ -188,37 +182,6 @@ float Lbot::GetFov()
 	if (!Settings::Aimbot::WeaponAimSetting[WeaponID].Silent) return Settings::Aimbot::WeaponAimSetting[WeaponID].FOV;
 	return Settings::Aimbot::WeaponAimSetting[WeaponID].SilentFOV > Settings::Aimbot::WeaponAimSetting[WeaponID].FOV ? Settings::Aimbot::WeaponAimSetting[WeaponID].SilentFOV
 																													 : Settings::Aimbot::WeaponAimSetting[WeaponID].FOV;
-}
-
-void Lbot::UpdateWeaponConfig(C_BaseCombatWeapon* weapon)
-{
-	//int WeaponID = Settings::Aimbot::GetWeaponType(weapon);
-
-	/*WeaponFov = Settings::Aimbot::WeaponAimSetting[WeaponID].FOV;
-	WeaponSmoothType = Settings::Aimbot::WeaponAimSetting[WeaponID].SmoothType;
-	WeaponFOVType = Settings::Aimbot::WeaponAimSetting[WeaponID].FOVType;
-	WeaponSmooth = Settings::Aimbot::WeaponAimSetting[WeaponID].Smooth;
-	WeaponSilent = Settings::Aimbot::WeaponAimSetting[WeaponID].Silent;
-	WeaponSilentFOV = Settings::Aimbot::WeaponAimSetting[WeaponID].SilentFOV;
-	WeaponRandomness = Settings::Aimbot::WeaponAimSetting[WeaponID].Randomize;
-	WeaponDelay = Settings::Aimbot::WeaponAimSetting[WeaponID].Delay;
-	WeaponKillDelay = Settings::Aimbot::WeaponAimSetting[WeaponID].KillDelay;
-	WeaponAutopistol = Settings::Aimbot::WeaponAimSetting[WeaponID].Autopistol;
-	WeaponAutowall = Settings::Aimbot::WeaponAimSetting[WeaponID].AutowallEnabled;
-	WeaponHitbox = Settings::Aimbot::WeaponAimSetting[WeaponID].Hitbox;
-	WeaponAimType = Settings::Aimbot::WeaponAimSetting[WeaponID].AimType;
-	WeaponMinDamage = Settings::Aimbot::WeaponAimSetting[WeaponID].MinDamage;
-	WeaponAutoFire = Settings::Aimbot::WeaponAimSetting[WeaponID].Autofire;
-
-	WeaponRcs = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS;
-	WeaponRCSBullet = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_Bullet;
-	WeaponRCSType = Settings::Aimbot::WeaponAimSetting[WeaponID].RCSType;
-	WeaponRecoilX = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_X;
-	WeaponRecoilY = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_Y;
-	WeaponRCSFOVEnabled = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_FOVEnabled;
-	WeaponRCSFOV = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_FOV;
-	WeaponRCSSmoothEnabled = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_SmoothEnabled;
-	WeaponRCSSmooth = Settings::Aimbot::WeaponAimSetting[WeaponID].RCS_Smooth;*/
 }
 
 void Lbot::RCS(QAngle& angle, C_BasePlayer* target, bool should_run)
@@ -400,6 +363,7 @@ C_BasePlayer* Lbot::GetClosestPlayer(CUserCmd* cmd, int& bestBone)
 
 void Lbot::LegitAA(CUserCmd * cmd, bool & bSendPacket)
 {
+#ifdef _DEBUG
 	QAngle OldAngles = cmd->viewangles;
 	if (cmd->buttons & (IN_ATTACK | IN_ATTACK2 | IN_USE) ||
 		g_LocalPlayer->m_nMoveType() == MOVETYPE_LADDER || g_LocalPlayer->m_nMoveType() == MOVETYPE_NOCLIP
@@ -478,8 +442,7 @@ void Lbot::LegitAA(CUserCmd * cmd, bool & bSendPacket)
 		}
 	}
 	Math::FixAngles(cmd->viewangles);
-	Math::MovementFix(cmd, OldAngles, cmd->viewangles);
-
+	MovementFix::Get().FixMovement(cmd, cmd->viewangles);
 
 	auto anim_state = g_LocalPlayer->GetPlayerAnimState();
 	if (anim_state) 
@@ -502,9 +465,10 @@ void Lbot::LegitAA(CUserCmd * cmd, bool & bSendPacket)
 		*anim_state = anim_state_backup;
 	}
 
-	/*if (bSendPacket) 
+	if (bSendPacket) 
 	{
-		real_angle = g_AnimState.m_flGoalFeetYaw;
-		view_angle = g_AnimState.m_flEyeYaw;
-	}*/
+		g_Saver.RealYaw = g_Saver.AnimState.m_flGoalFeetYaw;
+		g_Saver.DesyncYaw = g_Saver.AnimState.m_flEyeYaw;
+	}
+#endif
 }

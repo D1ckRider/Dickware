@@ -16,7 +16,7 @@ using WeaponType = Settings::WeaponType;
 using HitboxType = Settings::HitboxType;
 using AntiAimState = Settings::RageBot::AntiAimType;
 
-const std::string Version = "190802.01d";
+const std::string Version = "190807.01f";
 std::string CurrentConfig = "None";
 
 ImFont* IconsFont;
@@ -170,14 +170,14 @@ void Menu::RenderRagebot()
 	{
 	case RbotMenuAvailable::GENERAL:
 		Components.Columns(2, false);
-		Components.Spacing();
-		Components.Label("BAim:");
+		Components.Label("Body Aiming General:");
+		ImGui::BeginChild("##rbot.baim", ImVec2(0, 87.f), true);
 		Components.ComboBox("BAim Mode", BaimModes, IM_ARRAYSIZE(BaimModes), Settings::RageBot::BAimMode);
 		Components.Checkbox("Air BAim", Settings::RageBot::AirBAim);
 		Components.Hotkey("Force BAim hotkey", Settings::RageBot::BAimHotkey, (int)HotkeyType::Tap);
-
-		Components.Spacing();
+		ImGui::EndChild();
 		Components.Label("Movement:");
+		ImGui::BeginChild("##rbot.movement", ImVec2(0, 204), true);
 		Components.Checkbox("Slow Walk", Settings::RageBot::SlowWalk);
 		Components.Hotkey("Slow Walk Hotkey", Settings::RageBot::SlowWalkHotkey);
 		ImGui::SliderFloat("##rbot.slowalk_mod", &Settings::RageBot::SlowWalkMod, 0, 1, "Speed: %.1f");
@@ -186,28 +186,19 @@ void Menu::RenderRagebot()
 		Components.Checkbox("Auto Scope", Settings::RageBot::AutoScope);
 		Components.Checkbox("Auto Stop", Settings::RageBot::AutoStop);
 		Components.Checkbox("Auto Crouch", Settings::RageBot::AutoCrouch);
-
-#ifdef _DEBUG
-		Components.Checkbox("Aim Step", Settings::RageBot::AimStepEnabled);
-		Components.SliderInt("Aim Step Value", Settings::RageBot::AimStepValue, 0, 20);
-#endif // _DEBUG
-
-		Components.Checkbox("Fakelag prediction", Settings::RageBot::FakelagPrediction);
-		//Components.ComboBox("Shooting Mode", ShootingModes, IM_ARRAYSIZE(ShootingModes), Settings::RageBot::ShootingMode);
-		Components.Checkbox("Resolver (WIP)", Settings::RageBot::Resolver);
-		Components.Checkbox("Lag compensation (WIP)", Settings::RageBot::LagComp);
+		ImGui::EndChild();
+		Components.Label("Resolving:");
+		ImGui::BeginChild("##rbot.resolving", ImVec2(0, 87.f), true);
+		Components.Checkbox("Resolver", Settings::RageBot::Resolver);
+		Components.Checkbox("Backtrack", Settings::RageBot::LagComp);
 		if (Settings::RageBot::LagComp)
-			ImGui::Combo("Lag compensation type", &Settings::RageBot::LagCompType, LagCompMode, IM_ARRAYSIZE(LagCompMode));
-#ifdef _DEBUG
-
-		Components.Checkbox("Force unlag", Settings::RageBot::ForceUnlag);
-#endif // _DEBUG
-
+			ImGui::Combo("Records selection", &Settings::RageBot::LagCompType, LagCompMode, IM_ARRAYSIZE(LagCompMode));
+		ImGui::EndChild();
 		Components.NextColumn();
 
-		Components.Checkbox("Enable AA", Settings::RageBot::EnabledAA);
-		Components.Spacing();
+		Components.Checkbox("Enable Anti-Aim", Settings::RageBot::EnabledAA);
 
+		ImGui::BeginChild("##rbot.aa", ImVec2(0, 250), true);
 		Components.Navbar(AntiAimMenus, IM_ARRAYSIZE(AntiAimMenus), AAMenuSelected);
 		switch ( (RbotAntiAimAvailable)AAMenuSelected )
 		{
@@ -246,13 +237,11 @@ void Menu::RenderRagebot()
 			Components.Hotkey("Back", Settings::RageBot::ManualAABackKey, (int)HotkeyType::Tap);
 			break;
 		}
+		ImGui::EndChild();
 		break;
 	case RbotMenuAvailable::WEAPONS:
 
 		Components.Columns(2, false);
-
-		
-
 		Components.NavbarIcons(WeaponConfigSelectionItems, WeaponConfigSelectionItemsText, IM_ARRAYSIZE(WeaponConfigSelectionItems), WeaponSelected, IconsFont);
 		Components.BeginChild("#weapons", ImVec2(0.f, 180.f));
 		switch ((RbotWeaponsAvailable)WeaponSelected)
@@ -290,7 +279,7 @@ void Menu::RenderRagebot()
 #pragma region Hitbox Scales
 		Components.Label("Hitbox Scales");
 		Components.BeginChild("#hitboxes", ImVec2(0.f, 204.f));
-
+		ImGui::PushItemWidth(-1);
 		RenderRageHitboxes("Head", HitboxType::HEAD);
 		RenderRageHitboxes("Neck", HitboxType::NECK);
 		RenderRageHitboxes("Chest", HitboxType::CHEST);
@@ -299,7 +288,7 @@ void Menu::RenderRagebot()
 		RenderRageHitboxes("Arm", HitboxType::ARM);
 		RenderRageHitboxes("Leg", HitboxType::LEG);
 		RenderRageHitboxes("Foot", HitboxType::FOOT);
-
+		ImGui::PopItemWidth();
 		Components.EndChild();
 #pragma endregion
 		break;
@@ -311,17 +300,18 @@ void Menu::RenderRagebot()
 
 void Menu::RenderRageWeapon(Settings::WeaponType wtype)
 {
+	ImGui::PushItemWidth(-1);
 	ImGui::SliderFloat("##rbot.hitchance", &Settings::RageBot::WeaponSettings[wtype].Hitchance, 0, 100, "Hitchance: %.1f");
 	ImGui::SliderFloat("##rbot.mindmg", &Settings::RageBot::WeaponSettings[wtype].MinDamage, 0.f, 100.f, "Minimal Damage: %.2f");
 	ImGui::SliderInt("##rbot.baim_after_x", &Settings::RageBot::WeaponSettings[wtype].BAimAfterShots, 0, 10, "BAim After %.0f Shots");
 	ImGui::SliderInt("##rbot.force_baim_after_x", &Settings::RageBot::WeaponSettings[wtype].ForceBAimAfterShots, 0, 10, "Force BAim After %.0f Shots");
+	ImGui::PopItemWidth();
 	ImGui::Checkbox("BAim while moving", &Settings::RageBot::WeaponSettings[wtype].BAimWhileMoving);
 }
 
 void Menu::RenderRageHitboxes(std::string hitbox_name, Settings::HitboxType htype)
 {
 	ImGui::Checkbox(hitbox_name.data(), &Settings::RageBot::Hitboxes[htype].Enabled);
-	ImGui::SameLine();
 	ImGui::SameLine();
 	std::string id = "##rbot.scale_" + std::to_string(htype);
 	ImGui::SliderFloat(id.data(), &Settings::RageBot::Hitboxes[htype].Scale, 0.f, 1.f, "Scale: %.2f");
@@ -399,9 +389,12 @@ void Menu::RenderLegitbot()
 	{
 	case LbotMenuAvailable::Aimbot:
 		Components.Checkbox("Enable", Settings::Aimbot::Enabled);
-		ImGui::SameLine();
-		if (ImGui::Button("Current Weapon") && g_Saver.CurrentWeaponRef)
-			WeaponSelected = GetLegitWeaponType(g_Saver.CurrentWeaponRef);
+		if (g_Saver.CurrentWeaponRef)
+		{
+			ImGui::SameLine();
+			if (ImGui::Button("Current Weapon"))
+				WeaponSelected = GetLegitWeaponType(g_Saver.CurrentWeaponRef);
+		}
 		Components.NavbarIcons(WeaponConfigSelectionItems, WeaponConfigSelectionItemsText, IM_ARRAYSIZE(WeaponConfigSelectionItems), WeaponSelected, IconsFont);
 		Components.BeginChild("#lbot.weapons", ImVec2(0, 300));
 		Components.Columns(2, false);
@@ -494,15 +487,14 @@ void Menu::RenderVisuals()
         {
 			Components.Columns(3, false);
 			Components.Label("Chams");
-			Components.BeginChild("##esp.local.chams", ImVec2(0, 250.f));
+			Components.BeginChild("##esp.local.chams", ImVec2(0, 68));
 			Components.ColorCheckbox2("Enable", Settings::Visual::LocalChams.Enabled, Settings::Visual::LocalChams.Visible, Settings::Visual::LocalChams.Invisible);
 			Components.ComboBox("Chams Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), Settings::Visual::LocalChams.Mode);
-			//Components.ColorCheckbox("Ghost Chams", Settings::Visual::GhostEnabled, Settings::Visual::GhostColor);
 			Components.EndChild();
 			Components.NextColumn();
 
 			Components.Label("ESP");
-			Components.BeginChild("##esp.local.esp", ImVec2(0, 400.f));
+			Components.BeginChild("##esp.local.esp", ImVec2(0, 180));
 			Components.Checkbox("Enable ",  Settings::Visual::LocalESP.Enabled);
 			Components.ColorCheckbox("Box", Settings::Visual::LocalESP.BoxEnabled, Settings::Visual::LocalESP.BoxColor);
 			Components.ComboBox("Box Type", BoxTypes, IM_ARRAYSIZE(BoxTypes), Settings::Visual::LocalESP.BoxType);
@@ -518,7 +510,7 @@ void Menu::RenderVisuals()
         {
 			Components.Columns(3, false);
 			Components.Label("Chams");
-			Components.BeginChild("##esp.enemy.chams", ImVec2(0, 250.f));
+			Components.BeginChild("##esp.enemy.chams", ImVec2(0, 128.f));
 			Components.ColorCheckbox2("Enable", Settings::Visual::EnemyChams.Enabled, Settings::Visual::EnemyChams.Visible, Settings::Visual::EnemyChams.Invisible);
 			Components.ComboBox("Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), Settings::Visual::EnemyChams.Mode);
 			Components.Label("Glow");
@@ -528,7 +520,7 @@ void Menu::RenderVisuals()
 			Components.NextColumn();
 
 			Components.Label("ESP");
-			Components.BeginChild("##esp.enemy.esp", ImVec2(0, 400.f));
+			Components.BeginChild("##esp.enemy.esp", ImVec2(0, 252.f));
 			Components.Checkbox("Enable ",  Settings::Visual::EnemyESP.Enabled);
 			Components.ColorCheckbox("Box", Settings::Visual::EnemyESP.BoxEnabled, Settings::Visual::EnemyESP.BoxColor);
 			Components.ComboBox("Box Type", BoxTypes, IM_ARRAYSIZE(BoxTypes), Settings::Visual::EnemyESP.BoxType);
@@ -549,7 +541,7 @@ void Menu::RenderVisuals()
         {
 			Components.Columns(3, false);
 			Components.Label("Chams");
-			Components.BeginChild("##esp.team.chams", ImVec2(0, 250.f));
+			Components.BeginChild("##esp.team.chams", ImVec2(0, 128.f));
 			Components.ColorCheckbox2("Enable", Settings::Visual::TeamChams.Enabled, Settings::Visual::TeamChams.Visible, Settings::Visual::TeamChams.Invisible);
 			Components.ComboBox("Type", ChamsTypes, IM_ARRAYSIZE(ChamsTypes), Settings::Visual::TeamChams.Mode);
 			Components.Label("Glow");
@@ -559,7 +551,7 @@ void Menu::RenderVisuals()
 			Components.NextColumn();
 
 			Components.Label("ESP");
-			Components.BeginChild("##esp.team.esp", ImVec2(0, 400.f));
+			Components.BeginChild("##esp.team.esp", ImVec2(0, 205.f));
 			Components.Checkbox("Enable ", Settings::Visual::TeamESP.Enabled);
 			Components.ColorCheckbox("Box", Settings::Visual::TeamESP.BoxEnabled, Settings::Visual::TeamESP.BoxColor);
 			Components.ComboBox("Box Type", BoxTypes, IM_ARRAYSIZE(BoxTypes), Settings::Visual::TeamESP.BoxType);
@@ -603,9 +595,13 @@ void Menu::RenderVisuals()
 			Components.Checkbox("Bullet Tracers",  Settings::Visual::BulletTracers);
 			Components.Checkbox("No Flash",  Settings::Visual::NoFlash);
 			Components.Checkbox("No Smoke",  Settings::Visual::NoSmoke);
-			Components.Checkbox("Disable Post-processing", Settings::Visual::DisablePP);
-			if(!Settings::Visual::DisablePP)
+			Components.Checkbox("FPS Boost", Settings::Visual::DisablePP);
+			if (!Settings::Visual::DisablePP)
+			{
 				ImGui::Checkbox("Night Mode", &Settings::Visual::NightMode);
+				if(Settings::Visual::NightMode)
+					ImGui::SliderFloat("##vis.misc.nm_br", &Settings::Visual::NightModeBrighthness, 0.1f, .3f, "Brightness: %.2f");
+			}
 			Components.ColorCheckbox("Nade Trajectory", Settings::Visual::NadeTracerEnabled, Settings::Visual::NadeTracerColor);
 			Components.ColorCheckbox("Spread Circle", Settings::Visual::SpreadCircleEnabled, Settings::Visual::SpreadCircleColor);
 			Components.ColorCheckbox("Damage Indicators", Settings::Visual::DamageIndicator, Settings::Visual::DamageIndicatorColor);
@@ -654,14 +650,11 @@ void Menu::RenderMisc()
 
 	Components.Checkbox("BHop",  Settings::Misc::BHop);
 	Components.Checkbox("Autostrafe",  Settings::Misc::AutoStrafe);
-	/*if(Settings::Misc::AutoStrafe)
-		ImGui::SliderFloat("Retrack speed", &Settings::Misc::Retrack, 2.0f, 8.0f, "%.1f");*/
 
     Components.Spacing();
 
     Components.Spacing();
 
-    //Components.Checkbox("Anti untrusted", "misc_antiuntrusted");*/
 
 	Components.Checkbox("Rank reveal",  Settings::Misc::RankReveal);
 	Components.Checkbox("No Visual Recoil", Settings::Misc::NoVisualRecoil);
@@ -715,20 +708,25 @@ void Menu::RenderMisc()
 
 	Components.Navbar(FakelagMenu, IM_ARRAYSIZE(FakelagMenu), FakelagSelected);
 
+	
 	switch (FakelagSelected)
 	{
 	case 0:
+		ImGui::PushItemWidth(-1);
 		ImGui::SliderInt("##misc.fakelag_ticks", &Settings::RageBot::AntiAimSettings[AntiAimState::STANDING].FakelagTicks, 0, 14, "Ticks: %.0f");
 		break;
 	case 1:
 		Components.ComboBox("Fakelag mode", FakelagModesMove, IM_ARRAYSIZE(FakelagModesMove), Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].FakelagMode);
+		ImGui::PushItemWidth(-1);
 		ImGui::SliderInt("##misc.fakelag_ticks", &Settings::RageBot::AntiAimSettings[AntiAimState::MOVING].FakelagTicks, 0, 14, "Ticks: %.0f");
 		break;
 	case 2:
 		Components.ComboBox("Fakelag mode", FakelagModesAir, IM_ARRAYSIZE(FakelagModesAir), Settings::RageBot::AntiAimSettings[AntiAimState::AIR].FakelagMode);
+		ImGui::PushItemWidth(-1);
 		ImGui::SliderInt("##misc.fakelag_ticks", &Settings::RageBot::AntiAimSettings[AntiAimState::AIR].FakelagTicks, 0, 14, "Ticks: %.0f");
 		break;
 	}
+	ImGui::PopItemWidth();
 	Components.EndChild();
 
 	// Radio feature
@@ -779,7 +777,6 @@ void Menu::RenderMisc()
 		}
 		Components.SameLine();
 		ImGui::SliderInt("##radio.volume", &Settings::Misc::RadioVolume, 0, 100, "Volume: %d %");
-		//Components.SliderInt("Volume", Settings::Misc::RadioVolume, 0, 100);
 		Components.EndChild();
 	}
 	else
@@ -800,7 +797,6 @@ void Menu::RenderSkinchanger()
 	if (k_skins.size() == 0)
 		initialize_kits();
 
-
 	auto& entries = Settings::Skins::m_items;
 	static auto definition_vector_index = 0;
 	ImGui::Columns(2, nullptr, false);
@@ -817,12 +813,12 @@ void Menu::RenderSkinchanger()
 		}
 		ImGui::ListBoxFooter();
 		if (ImGui::Button("Update"))
-			g_ClientState->ForceFullUpdate();
+			g_Saver.RequestForceUpdate = true;
 
-		if (Components.Button("Save Config"))
+		if (ImGui::Button("Save Config"))
 			Settings::SaveSkinsSettings();
-		Components.SameLine();
-		if (Components.Button("Load Config"))
+		ImGui::SameLine();
+		if (ImGui::Button("Load Config"))
 			Settings::LoadSkinsSettings();
 
 
@@ -892,14 +888,12 @@ void Menu::RenderSettings()
 {
     Components.BeginChild ( "#settings", ImVec2 ( 0, 500) );
 
-    Components.Label ( "Settings" );
     Components.Spacing();
 
     Components.Columns ( 3, false );
-
+	Components.Label("Available configs");
     Components.BeginChild ( "#allConfigs", ImVec2 ( 0.f, 250.f ) );
 
-    //for() Configs
     static int Selected = -1;
     int i = 0;
 
@@ -914,14 +908,23 @@ void Menu::RenderSettings()
     Components.NextColumn();
 
     static char str0[128] = "";
+	Components.Label("Configs managment");
+	Components.Spacing();
+	Components.Spacing();
+	Components.Spacing();
+	ImGui::PushItemWidth(-1);
     Components.Label ( "Name " );
     Components.SameLine();
-	ImGui::InputText ( "  ", str0, IM_ARRAYSIZE ( str0 ) );
+	ImGui::InputText ( " ", str0, IM_ARRAYSIZE ( str0 ) );
 
-	if ( Components.Button("Create") && str0 != "" )
+	auto buttonSize = ImVec2(ImGui::GetColumnWidth() - 12.5f, 31);
+
+	if(ImGui::Button("Create", buttonSize))
 		Settings::CreateConfig(str0);
 
-	if (Components.Button("Save") && Selected != -1)
+	buttonSize = ImVec2(ImGui::GetColumnWidth() / 2 - 12.5f, 31);
+
+	if (ImGui::Button("Save", buttonSize) && Selected != -1)
 	{
 		/*if (ImGui::BeginPopup("WARNING", ImGuiWindowFlags_AlwaysAutoResize))
 		{
@@ -940,22 +943,24 @@ void Menu::RenderSettings()
 
 	Components.SameLine();
 
-	if (Components.Button("Load") && Selected != -1)
+	if (ImGui::Button("Load", buttonSize) && Selected != -1)
 	{
 		Settings::LoadSettings(Settings::Configs[Selected]);
 		CurrentConfig = Settings::Configs[Selected];
 	}
+	buttonSize = ImVec2(ImGui::GetColumnWidth() - 12.5f, 31);
 
-	if ( Components.Button("Refresh") )
+
+	if (ImGui::Button("Refresh", buttonSize))
 		Settings::RefreshConfigList();
 
-	if ( Components.Button("Reset") )
+	if (ImGui::Button("Reset", buttonSize) )
 		Settings::ResetConfig();
 
-	Components.SameLine();
-
-	if (Components.Button("Load Game CFG"))
+	if ( ImGui::Button("Load Game Settings", buttonSize) )
 		g_EngineClient->ExecuteClientCmd(Settings::LoadGameCfg().data());
+
+	ImGui::PopItemWidth();
 
     Components.EndChild();
 }

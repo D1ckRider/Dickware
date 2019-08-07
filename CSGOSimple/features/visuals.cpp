@@ -567,31 +567,31 @@ void Visuals::RenderPlantedC4 ( C_BaseEntity* ent )
         return;
 
 	Color clr = Settings::Visual::GlobalESP.BombColor;
-	Color timerClr = Color::Green;
-    float bombTimer = ent->m_flC4Blow() - g_GlobalVars->curtime;
+	//Color timerClr = Color::Green;
+ //   float bombTimer = ent->m_flC4Blow() - g_GlobalVars->curtime;
 
-    if ( bombTimer < 0.f )
-        return;
+ //   if ( bombTimer < 0.f )
+ //       return;
 
-    //Render::Get().RenderBox(bbox, clr);
-    //VGSHelper::Get().DrawBox ( bbox.left, bbox.top, bbox.right, bbox.bottom, clr );
+ //   //Render::Get().RenderBox(bbox, clr);
+ //   //VGSHelper::Get().DrawBox ( bbox.left, bbox.top, bbox.right, bbox.bottom, clr );
 
-    std::string timer = std::to_string ( bombTimer );
+ //   std::string timer = std::to_string ( bombTimer );
 
-	if (bombTimer <= 5.f)
-		timerClr = Color::Red;
-	else if (bombTimer <= 10.f)
-		timerClr = Color(255, 153, 0);
-	
+	//if (bombTimer <= 5.f)
+	//	timerClr = Color::Red;
+	//else if (bombTimer <= 10.f)
+	//	timerClr = Color(255, 153, 0);
+	//
 
-    auto sz = g_pDefaultFont->CalcTextSizeA ( 12.f, FLT_MAX, 0.0f, timer.c_str() );
+    auto sz = g_pDefaultFont->CalcTextSizeA ( 12.f, FLT_MAX, 0.0f, "00" );
     int w = bbox.right - bbox.left;
 
-	//int x, y;
-	//g_EngineClient->GetScreenSize(x, y);
-	ImVec2 t = g_pDefaultFont->CalcTextSizeA(34.f, FLT_MAX, 0.0f, timer.data());
+	////int x, y;
+	////g_EngineClient->GetScreenSize(x, y);
+	//ImVec2 t = g_pDefaultFont->CalcTextSizeA(34.f, FLT_MAX, 0.0f, timer.data());
 
-	Render::Get().RenderTextNoOutline(timer.data(), ImVec2(ScreenX - 150, ScreenY / 2 - 340.f), 34.f, timerClr);
+	//Render::Get().RenderTextNoOutline(timer.data(), ImVec2(ScreenX - 150, ScreenY / 2 - 340.f), 34.f, timerClr);
 
     //VGSHelper::Get().DrawText ( timer, ( bbox.left + w * 0.5f ) - sz.x * 0.5f, bbox.bottom + 1, clr, 12 );
 	VGSHelper::Get().DrawIcon((wchar_t)'o', (bbox.left + w * 0.5f) - sz.x * 0.5f, bbox.bottom + 1, clr, 12);
@@ -626,6 +626,51 @@ void Visuals::RenderSoundESP()
 		VGSHelper::Get().DrawText("step", Pos2D.x, Pos2D.y, Color::White);
 		if(g_GlobalVars->curtime > g_Saver.StepInfo[i].Time + 1.5f)
 			g_Saver.StepInfo.erase(g_Saver.StepInfo.begin() + i);
+	}
+}
+
+void Visuals::RenderBombESP(C_BaseEntity* ent)
+{
+	float flblow = ent->m_flC4Blow();//the time when the bomb will detonate
+	float ExplodeTimeRemaining = flblow - (g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick);//subtract current time to get time remaining
+
+	float fldefuse = ent->m_flDefuseCountDown();//time bomb is expected to defuse. if defuse is cancelled and started again this will be changed to the new value
+	float DefuseTimeRemaining = fldefuse - (g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick);//subtract current time to get time remaining
+
+	char TimeToExplode[64]; sprintf_s(TimeToExplode, "%.1f", ExplodeTimeRemaining);//Text we gonna display for explosion
+
+	char TimeToDefuse[64]; sprintf_s(TimeToDefuse, "%.1f", DefuseTimeRemaining);//Text we gonna display for defuse
+
+	int width, height;//text width and height for rendering in correct place. your cheat may get text height as a rect with both width and height
+	ImVec2 t = g_pDefaultFont->CalcTextSizeA(34.f, FLT_MAX, 0.0f, TimeToExplode);
+
+	if (ExplodeTimeRemaining > 0 && !ent->m_bBombDefused())//there is a period when u cant defuse the bomb and it hasn't exploded. > 0 check stops text showing then
+	{									                      //also need to check if the bomb has been defused, cos otherwise it will just display time remaining when bomb was defused
+
+		float fraction = ExplodeTimeRemaining / ent->m_flTimerLength(); //the proportion of time remaining, use fltimerlength cos bomb detonation time can vary by gamemode
+		int onscreenwidth = fraction * ScreenX; //the width of the bomb timer bar. proportion of time remaining multiplied by width of screen
+
+		float red = 255 - (fraction * 255); //make our bar fade from complete green to complete red
+		float green = fraction * 255;
+
+
+		g_VGuiSurface->DrawSetColor(red, green, 0, 140);
+		g_VGuiSurface->DrawFilledRect(0, 0, onscreenwidth, 10);//rectangle from top left to the width of the bar and down 10 pixels
+		Render::Get().RenderText(std::string(TimeToExplode), onscreenwidth - 10.f, 0.f, 12.f, Color::White); //render the time remaining as text beneath the end of the bar.
+	}//could remove the "explode in" but why make things more complicated
+
+
+	t = g_pDefaultFont->CalcTextSizeA(34.f, FLT_MAX, 0.0f, TimeToDefuse); //now we gonna do defuse bar. why add a new variable for text width when we can use the old one...
+	C_BasePlayer* Defuser = (C_BasePlayer*)C_BasePlayer::get_entity_from_handle(ent->m_hBombDefuser());//this is the player whos is defusing the bomb
+
+	if (Defuser) //if there is a player defusing the bomb. this check is needed or it will continue showing time if a player stops defusing
+	{
+		float fraction = DefuseTimeRemaining / ent->m_flTimerLength();
+		int onscreenwidth = fraction * ScreenX;
+
+		g_VGuiSurface->DrawSetColor(3, 117, 193, 140);//pick any color. lama uses blue so...
+		g_VGuiSurface->DrawFilledRect(0, 10, onscreenwidth, 20);
+		Render::Get().RenderText(std::string(TimeToDefuse), onscreenwidth - 10.f, 10.f, 12.f, Color::White); //once again, could be simplidied to just a number
 	}
 }
 
@@ -1055,13 +1100,9 @@ void Visuals::ManualAAIndicator()
 	if (Settings::RageBot::AntiAimSettings[0].Yaw != 5 || Settings::RageBot::AntiAimSettings[1].Yaw != 5)
 		return;
 
-    //int x, y;
-    //g_EngineClient->GetScreenSize ( x, y );
     float cx = ScreenX / 2.f;
     float cy = ScreenY / 2.f;
 
-	//auto d_us = C_Texture(AA_D_US, 64, 64);
-	//auto d_s = C_Texture(AA_D_S, 64, 64);
 
 	switch (Settings::RageBot::ManualAAState)
 	{
@@ -1069,24 +1110,20 @@ void Visuals::ManualAAIndicator()
 			VGSHelper::Get().DrawText(">", cx + 34, cy - 20, Color::Red);
 			VGSHelper::Get().DrawText("<", cx - 64, cy - 20, Color::White);
 			VGSHelper::Get().DrawText("v", cx - 12, cy + 30, Color::White);
-			//d_us.paint(cx - 12, cy + 30);
 			break;
 		case 2:
 			VGSHelper::Get().DrawText(">", cx + 34, cy - 20, Color::White);
 			VGSHelper::Get().DrawText("<", cx - 64, cy - 20, Color::Red);
-			//d_us.paint(cx - 12, cy + 30);
 			VGSHelper::Get().DrawText("v", cx - 12, cy + 30, Color::White);
 			break;
 		case 3:
 			VGSHelper::Get().DrawText(">", cx + 34, cy - 20, Color::White);
 			VGSHelper::Get().DrawText("<", cx - 64, cy - 20, Color::White);
-			//d_s.paint(cx - 12, cy + 30);
 			VGSHelper::Get().DrawText("v", cx - 12, cy + 30, Color::Red);
 			break;
 		default:
 			VGSHelper::Get().DrawText(">", cx + 34, cy - 20, Color::White);
 			VGSHelper::Get().DrawText("<", cx - 64, cy - 20, Color::White);
-			//d_us.paint(cx - 12, cy + 30);
 			VGSHelper::Get().DrawText("v", cx - 12, cy + 30, Color::White);
 			break;
 	}
@@ -1115,11 +1152,8 @@ void Visuals::SpreadCircle()
     if ( spread == 0.f )
         return;
 
-    //int x, y;
-    //g_EngineClient->GetScreenSize ( x, y );
     float cx = ScreenX / 2.f;
     float cy = ScreenY / 2.f;
-	//VGSHelper::Get().DrawCircle(cx, cy, spread, 35, Settings::Visual::SpreadCircleColor);
 	VGSHelper::Get().DrawFilledCircle(cx, cy, spread, 35, Settings::Visual::SpreadCircleColor);
 }
 
@@ -1130,9 +1164,6 @@ void Visuals::RenderNoScoopeOverlay()
 
     static int cx;
     static int cy;
-    //static int w, h;
-
-   // g_EngineClient->GetScreenSize ( w, h );
     cx = ScreenX / 2;
     cy = ScreenY / 2;
 
@@ -1171,38 +1202,6 @@ void Visuals::RenderHitmarker()
 		Render::Get().RenderLine(screenCenterX + lineSize, screenCenterY + lineSize, screenCenterX + (lineSize / 4), screenCenterY + (lineSize / 4), white);
 		Render::Get().RenderLine(screenCenterX + lineSize, screenCenterY - lineSize, screenCenterX + (lineSize / 4), screenCenterY - (lineSize / 4), white);
 	}
-
-    /*static int cx;
-    static int cy;
-    //static int w, h;
-
-    //g_EngineClient->GetScreenSize ( w, h );
-    cx = ScreenX / 2;
-    cy = ScreenY / 2;
-
-    //g_Saver.HitmarkerInfo.HitTime
-    if ( g_GlobalVars->realtime - g_Saver.HitmarkerInfo.HitTime > .5f )
-        return;
-
-    float percent = ( g_GlobalVars->realtime - g_Saver.HitmarkerInfo.HitTime ) / .5f;
-    float percent2 = percent;
-
-    if ( percent > 1.f )
-    {
-        percent = 1.f;
-        percent2 = 1.f;
-    }
-
-    percent = 1.f - percent;
-    float addsize = percent2 * 5.f;
-
-	//g_LocalPlayer->m_flHealthShotBoostExpirationTime() = 2.f;
-	//Console.WriteLine(g_LocalPlayer->m_flHealthShotBoostExpirationTime());
-
-    Color clr = Color ( 255, 255, 255, ( int ) ( percent * 255.f ) );
-
-    VGSHelper::Get().DrawLine ( cx - 3.f - addsize, cy - 3.f - addsize, cx + 3.f + addsize, cy + 3.f + addsize, clr, 1.f );
-    VGSHelper::Get().DrawLine ( cx - 3.f - addsize, cy + 3.f + addsize, cx + 3.f + addsize, cy - 3.f - addsize, clr, 1.f );*/
 }
 
 
@@ -1317,7 +1316,7 @@ void Visuals::AddToDrawList()
     bool esp_misc_dangerzone_item_esp = false;
     float esp_misc_dangerzone_item_esp_dist = 0.f;
     #ifdef _DEBUG
-	bool misc_debug_overlay = Settings::Visual::DebugInfoEnabled;//g_Config.GetBool ( "misc_debug_overlay" );
+	bool misc_debug_overlay = Settings::Visual::DebugInfoEnabled;
     #endif // _DEBUG
     bool IsDangerzone = g_LocalPlayer && g_LocalPlayer->InDangerzone();
 
@@ -1327,7 +1326,6 @@ void Visuals::AddToDrawList()
 		esp_misc_dangerzone_item_esp_dist = Settings::Visual::GlobalESP.DZRange;
     }
 
-    //bool esp_outline = g_Config.GetBool("esp_misc_outline");
 	bool rbot_resolver = Settings::RageBot::Resolver; 
 
 	bool esp_dropped_weapons = Settings::Visual::GlobalESP.DropedWeaponsEnabled;
@@ -1434,26 +1432,26 @@ void Visuals::AddToDrawList()
         else if ( entity->IsPlantedC4() && esp_planted_c4 )
             RenderPlantedC4 ( entity );
 
+		if (entity->GetClientClass()->m_ClassID == ClassId::CPlantedC4 && Settings::Visual::GlobalESP.Enabled && Settings::Visual::GlobalESP.BombEnabled)
+			RenderBombESP(entity);
+
         if ( IsDangerzone && esp_misc_dangerzone_item_esp )
             DrawDangerzoneItem ( entity, esp_misc_dangerzone_item_esp_dist );
 
-        // grenade esp
         if ( GrenadeEsp )
             DrawGrenade ( entity );
 		
-		// Add Check
 		if(Settings::Visual::GlobalESP.SoundESPEnabled)
 			RenderSoundESP();
     }
 
 	if ( Settings::RageBot::Enabled )
     {
-        //LbyIndicator();
-        //PingIndicator();
 		BAimIndicator();
 		if(Settings::RageBot::DesyncType > 0)
 			DesyncIndicator();
 		
+		/* Not showing as intended
 		auto drawAngleLine = [&](const Vector& origin, const Vector& w2sOrigin, const float& angle, const char* text, Color clr) {
 			Vector forward;
 			Math::AngleVectors(QAngle(0.0f, angle, 0.0f), forward);
@@ -1464,7 +1462,6 @@ void Visuals::AddToDrawList()
 			{
 				Render::Get().RenderLine(w2sOrigin.x, w2sOrigin.y, w2sReal.x, w2sReal.y, Color::White, 1.0f);
 				Render::Get().RenderBoxFilled(w2sReal.x - 5.0f, w2sReal.y - 5.0f, w2sReal.x + 5.0f, w2sReal.y + 5.0f, Color::White);
-				//Render::Get().RenderText(text, w2sReal.x, w2sReal.y - 5.0f, 14.0f, clr, true, true);
 				Render::Get().RenderText(text, ImVec2(w2sReal.x, w2sReal.y - 5.0f), 14.f, clr, true);
 			}
 		};
@@ -1478,16 +1475,11 @@ void Visuals::AddToDrawList()
 				drawAngleLine(g_LocalPlayer->m_vecOrigin(), w2sOrigin, g_LocalPlayer->m_flLowerBodyYawTarget(), "lby", Color(0.0f, 0.0f, 1.0f, 1.0f));
 				drawAngleLine(g_LocalPlayer->m_vecOrigin(), w2sOrigin, g_Saver.RealYaw, "real", Color(0.0f, 1.0f, 0.0f, 1.0f));
 			}
-		}
+		}*/
 
-
-        //if ( g_Config.GetInt ( "misc_fakelag_mode" ) == 1 )
 		if (Settings::RageBot::AntiAimSettings[0].FakelagTicks || Settings::RageBot::AntiAimSettings[1].FakelagTicks || Settings::RageBot::AntiAimSettings[2].FakelagTicks)
             LCIndicator();
     }
-
-    if ( g_Config.GetBool ( "vis_misc_autowall_crosshair" ) )
-        AutowallCrosshair();
 
 	if (Settings::RageBot::Enabled && Settings::RageBot::EnabledAA)
 		ManualAAIndicator();
@@ -1502,9 +1494,6 @@ void Visuals::AddToDrawList()
         RenderHitmarker();
 	if(Settings::Visual::DamageIndicator)
 		RenderDamageIndicators();
-
-	/*if (g_LocalPlayer)
-		RenderCrosshair();*/
 
     CurrentIndicatorHeight = 0.f;
    
@@ -1544,7 +1533,6 @@ void VGSHelper::DrawText ( std::string text, float x, float y, Color color, int 
     if ( !Inited )
         Init();
 
-    //int size = text.size() + 1;
     g_VGuiSurface->DrawClearApparentDepth();
     wchar_t buf[256];
     g_VGuiSurface->DrawSetTextFont (Fonts[size] );
@@ -1562,7 +1550,6 @@ void VGSHelper::DrawLogHeader(std::string text, float x, float y, Color color, i
 	if (!Inited)
 		Init();
 
-	//int size = text.size() + 1;
 	g_VGuiSurface->DrawClearApparentDepth();
 	wchar_t buf[256];
 	g_VGuiSurface->DrawSetTextFont(LogHeader[size]);
@@ -1580,7 +1567,6 @@ void VGSHelper::DrawLogBase(std::string text, float x, float y, Color color, int
 	if (!Inited)
 		Init();
 
-	//int size = text.size() + 1;
 	g_VGuiSurface->DrawClearApparentDepth();
 	wchar_t buf[256];
 	g_VGuiSurface->DrawSetTextFont(LogBase[size]);
@@ -1595,14 +1581,6 @@ void VGSHelper::DrawLogBase(std::string text, float x, float y, Color color, int
 
 void VGSHelper::DrawLine ( float x1, float y1, float x2, float y2, Color color, float size )
 {
-    /*
-    if (outline) {
-    	g_VGuiSurface->DrawSetColor(Color::Black);
-    	//g_VGuiSurface->DrawSetApparentDepth(size + 1.f);
-    	//g_VGuiSurface->DrawLine(x1, y1, x2, y2);
-    	g_VGuiSurface->DrawFilledRect(x1 - size, y1 - size, x2 + size, y2 + size);
-    }
-    */
     g_VGuiSurface->DrawSetColor ( color );
 
     if ( size == 1.f )
@@ -1612,18 +1590,6 @@ void VGSHelper::DrawLine ( float x1, float y1, float x2, float y2, Color color, 
 }
 void VGSHelper::DrawBox ( float x1, float y1, float x2, float y2, Color clr, float size )
 {
-    /*
-    if (outline) {
-    	g_VGuiSurface->DrawSetColor(Color::Black);
-    	g_VGuiSurface->DrawFilledRect(x1 - 1.f, y1, x1 + 1.f, y2); // left
-    	g_VGuiSurface->DrawFilledRect(x2 - 1.f, y1, x2 + 1.f, y2); // right
-    	g_VGuiSurface->DrawFilledRect(x1, y1 - 1.f, x2, y1 + 1.f); // top
-    	g_VGuiSurface->DrawFilledRect(x1, y2 - 1.f, x2, y2 + 1.f); // bottom
-    }
-    */
-    //g_VGuiSurface->DrawSetColor(clr);
-    //g_VGuiSurface->DrawSetApparentDepth(size);
-    //g_VGuiSurface->DrawOutlinedRect(static_cast<int>(x1), static_cast<int>(y1), static_cast<int>(x2), static_cast<int>(y2));
     DrawLine ( x1, y1, x2, y1, clr, size );
     DrawLine ( x1, y2, x2, y2, clr, size );
     DrawLine ( x1, y1, x1, y2, clr, size );
@@ -1652,7 +1618,6 @@ void VGSHelper::DrawBoxEdges ( float x1, float y1, float x2, float y2, Color clr
 {
     if ( fabs ( x1 - x2 ) < ( edge_size * 2 ) )
     {
-        //x2 = x1 + fabs(x1 - x2);
         edge_size = fabs ( x1 - x2 ) / 4.f;
     }
 

@@ -17,57 +17,8 @@ public:
 
     void LegitAA(CUserCmd* cmd, bool & bSendPackets);
 private:
-    //bool CanShoot(C_BaseCombatWeapon* weapon);
-    void UpdateWeaponConfig(C_BaseCombatWeapon* weapon);
-    //int GetBestTarget(C_BasePlayer* local, C_BaseCombatWeapon* weapon, CUserCmd* cmd, Vector& hitpos);
-
-    //void ResetRecoil(CUserCmd* cmd);
-	//void AutoPistol(CUserCmd* cmd);
-    //void RemoveRecoil(C_BasePlayer* local, CUserCmd* cmd);
-    //void DoAimbot(CUserCmd* cmd, C_BasePlayer* local, C_BaseCombatWeapon* weapon);
-
-
-
-
     /* weapon settings */
 	int WeaponID = -1;
-	
-	/*bool WeaponEnabled = false;
-	
-	bool WeaponSilent;
-    float WeaponFov = 0.f;
-	int WeaponFOVType = 0;
-	float WeaponSilentFOV;
-	int WeaponAimType = 0;
-	int WeaponHitbox = 0;
-	int WeaponSmoothType = 0;
-    float WeaponSmooth = 1.f;
-    float WeaponRandomness = 0.f;
-    int WeaponDelay = 0;
-	int WeaponKillDelay = 0;
-    bool WeaponAutopistol = false;
-	bool WeaponAutowall = false;
-	int WeaponMinDamage = 0;
-	bool WeaponAutoFire = false;
-
-    bool WeaponRcs = false;
-	int WeaponRCSType = 0;
-	int WeaponRCSBullet = 0;
-	bool WeaponRCSSmoothEnabled = false;
-	bool WeaponRCSFOVEnabled = false;
-	float WeaponRCSFOV = 0.f;
-	float WeaponRCSSmooth = 0.f;
-    int WeaponRecoilX = 1.f;
-    int WeaponRecoilY = 1.f;
-
-    bool WeaponHitboxHead = false;
-    bool WeaponHitboxNeck = false;
-    bool WeaponHitboxChest = false;
-    bool WeaponHitboxPelvis = false;
-    bool WeaponHitboxStomach = false;
-    bool WeaponHitboxArm = false;
-    bool WeaponHitboxLeg = false;
-    bool WeaponHitboxFoot = false;*/
 	
 	void RCS(QAngle& angle, C_BasePlayer* target, bool should_run);
 	bool IsLineGoesThroughSmoke(Vector vStartPos, Vector vEndPos);

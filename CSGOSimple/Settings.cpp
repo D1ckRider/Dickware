@@ -1,6 +1,7 @@
 #include "Settings.h"
 #include <filesystem>
 #include "Logger.h"
+#include "RuntimeSaver.h"
 
 namespace fs = std::filesystem;
 
@@ -682,7 +683,8 @@ void Settings::LoadSkinsSettings()
 				Skins::m_items.insert({ id, temp_settings });
 				//LoadNestedValue(j, std::to_string(i), "custom_name", temp_settings.custom_name);
 			}
-			g_ClientState->ForceFullUpdate();
+			g_Saver.RequestForceUpdate = true;
+			//g_ClientState->ForceFullUpdate();
 		}
 	}
 	catch (const std::exception&)

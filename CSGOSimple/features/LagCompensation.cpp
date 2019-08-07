@@ -4,7 +4,7 @@
 #include "../Settings.h"
 
 
-void LagCompensation::RageBacktrack(C_BasePlayer* target, CUserCmd* usercmd, Vector& aim_point, bool& hitchanced)
+void LagCompensation::RageBacktrack(C_BasePlayer* target, CUserCmd* usercmd, Vector& aim_point, float& damage, bool& hitchanced)
 {
 	auto firedShots = g_LocalPlayer->m_iShotsFired();
 	float CDamage = 0.f;
@@ -36,16 +36,16 @@ void LagCompensation::RageBacktrack(C_BasePlayer* target, CUserCmd* usercmd, Vec
 				iter->m_bMatrixBuilt = true;
 			}
 
-			float mindmg = 20;
+			//float mindmg = 20;
 			bool willkill = true;
 
-			Rbot::Get().GetBestHitboxPoint(target, mindmg, aim_point, BaimMode::NONE, willkill, iter->matrix);
+			Rbot::Get().GetBestHitboxPoint(target, damage, aim_point, BaimMode::NONE, willkill, iter->matrix);
 
 			auto baim = Rbot::Get().GetBAimStatus();
 			if(*baim == BaimMode::FORCE_BAIM || *baim == BaimMode::BAIM)
-				Rbot::Get().GetBestHitboxPoint(target, mindmg, aim_point, BaimMode::FORCE_BAIM, willkill, iter->matrix);
+				Rbot::Get().GetBestHitboxPoint(target, damage, aim_point, BaimMode::FORCE_BAIM, willkill, iter->matrix);
 			else
-				Rbot::Get().GetBestHitboxPoint(target, mindmg, aim_point, BaimMode::NONE, willkill, iter->matrix);
+				Rbot::Get().GetBestHitboxPoint(target, damage, aim_point, BaimMode::NONE, willkill, iter->matrix);
 
 			if (!aim_point.IsValid())
 			{
@@ -523,7 +523,6 @@ bool LagCompensation::IsPlayerValid(C_BasePlayer* player)
 	if (!player->IsAlive())
 		return false;
 
-	//if (player->IsTeamMate())
 	if(player->m_iTeamNum() == g_LocalPlayer->m_iTeamNum())
 		return false;
 
@@ -535,26 +534,6 @@ bool LagCompensation::IsPlayerValid(C_BasePlayer* player)
 
 float LagCompensation::GetLerpTime()
 {
-	/*int ud_rate = g_CVar->FindVar("cl_updaterate")->GetInt();
-	ConVar* min_ud_rate = g_CVar->FindVar("sv_minupdaterate");
-	ConVar* max_ud_rate = g_CVar->FindVar("sv_maxupdaterate");
-
-	if (min_ud_rate && max_ud_rate)
-		ud_rate = max_ud_rate->GetInt();
-
-	float ratio = g_CVar->FindVar("cl_interp_ratio")->GetFloat();
-
-	if (ratio == 0)
-		ratio = 1.0f;
-
-	float lerp = g_CVar->FindVar("cl_interp")->GetFloat();
-	ConVar* c_min_ratio = g_CVar->FindVar("sv_client_min_interp_ratio");
-	ConVar* c_max_ratio = g_CVar->FindVar("sv_client_max_interp_ratio");
-
-	if (c_min_ratio && c_max_ratio && c_min_ratio->GetFloat() != 1)
-		ratio = clamp(ratio, c_min_ratio->GetFloat(), c_max_ratio->GetFloat());
-
-	return std::max(lerp, (ratio / ud_rate));*/
 	static auto cl_interp = g_CVar->FindVar("cl_interp");
 	static auto cl_interp_ratio = g_CVar->FindVar("cl_interp_ratio");
 	static auto sv_client_min_interp_ratio = g_CVar->FindVar("sv_client_min_interp_ratio");

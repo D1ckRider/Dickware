@@ -65,8 +65,6 @@ namespace Math
 		return delta;
 	}
 
-
-	void MovementFix(CUserCmd* cmd, QAngle desiredAngle, QAngle oldAngle);
 	float VectorDistance(const Vector& v1, const Vector& v2);
 	QAngle CalcAngle(const Vector& src, const Vector& dst);
 	Vector CalcAngleV(const Vector& src, const Vector& dst);

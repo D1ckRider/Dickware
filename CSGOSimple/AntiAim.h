@@ -67,8 +67,6 @@ private:
     void Pitch(CUserCmd* cmd);
     void Yaw(CUserCmd* cmd, bool fake);
     void YawAdd(CUserCmd* cmd, bool fake);
-	void DesyncAnimation(CUserCmd* cmd, bool& bSendPacket, int type);
-	bool DesyncRotate(float rotation, int direction, CUserCmd* cmd, bool& bSendPacket);
     int GetFPS();
 	int GetTickBase(CUserCmd* cmd);
 
@@ -98,7 +96,4 @@ private:
 
 	bool m_bAutomaticDir = false;
 	int m_iAutoDirection = 0;
-
-
-    //void Friction(Vector &outVel);
 };

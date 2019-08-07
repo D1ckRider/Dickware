@@ -78,7 +78,7 @@ struct LagRecord
 class LagCompensation : public Singleton<LagCompensation>
 {
 public:
-	void RageBacktrack(C_BasePlayer* target, CUserCmd* usercmd, Vector& aim_point, bool& hitchanced);
+	void RageBacktrack(C_BasePlayer* target, CUserCmd* usercmd, Vector& aim_point, float& damage, bool& hitchanced);
 
 	std::deque<LagRecord> m_LagRecord[64]; // All records
 	std::pair<LagRecord, LagRecord> m_RestoreLagRecord[64]; // Used to restore/change

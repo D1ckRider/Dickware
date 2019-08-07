@@ -115,16 +115,17 @@ void Render::BeginScene()
 	if (g_EngineClient->IsInGame() && g_LocalPlayer && Settings::Aimbot::DrawFov)
 		Visuals::Get().DrawFOV();
 
-	if (g_EngineClient->IsInGame() && g_LocalPlayer && Settings::Aimbot::LegitAA > 0)
+	if (g_EngineClient->IsInGame() && g_LocalPlayer && (Settings::Aimbot::LegitAA > 0 || Settings::RageBot::DesyncType > 0))
 	{
-		int PosDesyncY;
+		
+		int x, y;
+		g_EngineClient->GetScreenSize ( x, y );
+		float cx = x / 2.f;
+		float cy = y / 2.f;
 
-		//if (g_Options.misc_watermark)
-			//PosDesyncY = 25;
-		//else PosDesyncY = 5;
-		PosDesyncY = 5;
+		Render::Get().RenderText("<", cx - 35, cy, 20.f, Settings::Aimbot::AaSide > 0.f ? Color::Red : Color::White);
+		Render::Get().RenderText(">", cx + 35, cy, 20.f, Settings::Aimbot::AaSide < 0.f ? Color::Red : Color::White);
 
-		Render::Get().RenderText(Settings::Aimbot::AaSide > 0.0f ? "LEFT" : "RIGHT", 8, PosDesyncY, 18.0f, Color::White);
 	}
 
     render_mutex.lock();

@@ -7,9 +7,6 @@ void EventLogger::PaintTraverse()
 		return;
 
 	auto last_y = 6;
-	//const auto font = fonts[rolexTEXT];
-	//const auto name_font = fonts[rolexBOLD];
-	//auto name_size = render::get().text_width(name_font, "[rolex]");
 	
 	for (size_t i = 0; i < Log.size(); i++)
 	{
@@ -36,17 +33,10 @@ void EventLogger::PaintTraverse()
 
 		const auto pre = msg.Type.c_str();
 		const auto text = msg.Message.c_str();
-
-		//auto front_color = g_cfg.menu.menu_theme[0];
-		//front_color.SetAlpha(msg.Color.a());
 		auto name_size = VGSHelper::Get().GetSize(msg.Type);
 		
-		//VGSHelper::Get().DrawTextW(pre, msg.X, last_y + msg.Y, msg.Color);
 		VGSHelper::Get().DrawLogHeader(pre, msg.X, last_y + msg.Y, msg.Color);
-		VGSHelper::Get().DrawLogBase(text, msg.X + 3 + name_size.x, last_y + msg.Y, Color::White);
-
-		//render::get().text(name_font, log.x, last_y + log.y, front_color, HFONT_CENTERED_NONE, "[rolex]");
-		//render::get().text(font, log.x + 3 + name_size, last_y + log.y, log.color, HFONT_CENTERED_NONE, text);
+		VGSHelper::Get().DrawLogBase(text, msg.X + 10 + name_size.x, last_y + msg.Y, Color::White);
 
 		last_y += 14;
 	}

@@ -141,6 +141,10 @@ public:
 	NETVAR(CHandle<C_BasePlayer>, m_hOwnerEntity, "DT_BaseEntity", "m_hOwnerEntity");
 	NETVAR(bool, m_bSpotted, "DT_BaseEntity", "m_bSpotted");
 	NETVAR(float_t, m_flC4Blow, "DT_PlantedC4", "m_flC4Blow");
+	NETVAR(float_t, m_flDefuseCountDown, "DT_PlantedC4", "m_flDefuseCountDown");
+	NETVAR(bool, m_bBombDefused, "DT_PlantedC4", "m_bBombDefused");
+	NETVAR(CHandle<C_BasePlayer>, m_hBombDefuser, "DT_PlantedC4", "m_hBombDefuser");
+	NETVAR(float_t, m_flTimerLength, "DT_PlantedC4", "m_flTimerLength");
 
 
 	const matrix3x4_t& m_rgflCoordinateFrame()
@@ -304,6 +308,7 @@ public:
 	NETVAR(int32_t, m_lifeState, "DT_BasePlayer", "m_lifeState");
 	NETVAR(int32_t, m_fFlags, "DT_BasePlayer", "m_fFlags");
 	NETVAR(int32_t, m_nTickBase, "DT_BasePlayer", "m_nTickBase");
+	NETVAR(int32_t, m_iTicksAllowedForProcessing, "DT_BasePlayer", "m_iTicksAllowedForProcessing");
 	NETVAR(Vector, m_vecViewOffset, "DT_BasePlayer", "m_vecViewOffset[0]");
 	NETVAR(QAngle, m_viewPunchAngle, "DT_BasePlayer", "m_viewPunchAngle");
 	NETVAR(QAngle, m_aimPunchAngle, "DT_BasePlayer", "m_aimPunchAngle");

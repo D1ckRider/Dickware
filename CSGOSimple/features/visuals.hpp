@@ -86,12 +86,12 @@ public:
 	void RenderDefuseKit(C_BaseEntity* ent);
 	void RenderPlantedC4(C_BaseEntity* ent);
 	void RenderSoundESP();
+	void RenderBombESP(C_BaseEntity* ent);
 	void DrawFOV();
 	void RenderOffscreenESP(C_BasePlayer* ent);
 	void DrawGrenade(C_BaseEntity* ent);
 	void DrawDangerzoneItem(C_BaseEntity* ent, float maxRange);
 	void ThirdPerson();
-	void DrawHitboxes(C_BaseEntity* ent);
 
 	/* Local indicators */
 	void LbyIndicator();

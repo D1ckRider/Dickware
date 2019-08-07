@@ -53,46 +53,42 @@ void Misc::SetLocalPlayerReady()
 
 void Misc::SpectatorList()
 {
-	if (!g_EngineClient->IsInGame() || !g_LocalPlayer)
-		return;
+	int specs = 0;
+	std::string spect = "";
 
-	std::string spectators;
-
-	for (int i = 0; i < g_EngineClient->GetMaxClients(); i++)
+	if (g_EngineClient->IsInGame() && g_EngineClient->IsConnected()) 
 	{
-		C_BasePlayer* entity = C_BasePlayer::GetPlayerByIndex(i);
+		
+		if (g_LocalPlayer)
+		{
+			for (int i = 0; i < g_EngineClient->GetMaxClients(); i++) {
+				C_BasePlayer* pBaseEntity = C_BasePlayer::GetPlayerByIndex(i);
+				if (!pBaseEntity)										     continue;
+				if (pBaseEntity->m_iHealth() > 0)							 continue;
+				if (pBaseEntity == g_LocalPlayer)							 continue;
+				if (pBaseEntity->IsDormant())								 continue;
+				if (pBaseEntity->m_hObserverTarget() != g_LocalPlayer)		 continue;
+				player_info_t pInfo;
+				g_EngineClient->GetPlayerInfo(pBaseEntity->EntIndex(), &pInfo);
+				if (pInfo.ishltv) continue;
 
-		if (!entity)
-			continue;
-
-		if (entity->IsAlive())
-			continue;
-
-		if (entity->IsDormant())
-			continue;
-
-		if (!entity->m_hObserverTarget())
-			continue;
-
-		C_BasePlayer* target = entity->m_hObserverTarget();
-
-		if (!target->IsPlayer())
-			continue;
-
-		player_info_t entityinfo = entity->GetPlayerInfo();
-		player_info_t targetinfo = target->GetPlayerInfo();
-
-		spectators += std::string(entityinfo.szName) + " > " + targetinfo.szName + "\n";
+				spect += pInfo.szName;
+				spect += "\n";
+				specs++;
+			}
+		}
 	}
-
-	auto size = g_pDefaultFont->CalcTextSizeA(16.f, FLT_MAX, NULL, spectators.c_str()); // 16 на размер шрифта меняете и Menu::Get().globalFont на ваш шрифт
-
-	ImGui::SetNextWindowSize(ImVec2(300, size.y + 40.f));
-	if (ImGui::Begin("Spectator List", NULL, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse))
+	ImGui::PushStyleVar(ImGuiStyleVar_WindowTitleAlign, ImVec2(0.5f, 0.5f));
+	if (ImGui::Begin("Spectator List", nullptr, ImVec2(0, 0), 0.4F, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoScrollbar)) 
 	{
-		ImGui::Text(spectators.c_str());
-		ImGui::End();
+		if (specs > 0) spect += "\n";
+
+		ImVec2 size = ImGui::CalcTextSize(spect.c_str());
+		ImGui::SetWindowSize(ImVec2(200, 25 + size.y));
+		ImGui::Text(spect.c_str());
 	}
+	ImGui::End();
+	ImGui::PopStyleVar();
 }
 
 void Misc::NoCrouchCooldown(CUserCmd* cmd)

@@ -1,5 +1,6 @@
 #include "NightMode.h"
 #include <string>
+#include "..\\RuntimeSaver.h"
 #include "..\valve_sdk\csgostructs.hpp"
 #include "..\Settings.h"
 
@@ -43,8 +44,8 @@ void NightMode::Apply(bool ForceUpdate)
 					CEnvTonemapController* tonemapper = static_cast<CEnvTonemapController*>(ent);
 					tonemapper->m_bUseCustomAutoExposureMin() = 1;
 					tonemapper->m_bUseCustomAutoExposureMax() = 1;
-					tonemapper->m_flCustomAutoExposureMax() = Settings::Visual::NightModeBrighthness;//0.08f;
-					tonemapper->m_flCustomAutoExposureMin() = Settings::Visual::NightModeBrighthness;//0.08f;
+					tonemapper->m_flCustomAutoExposureMax() =   Settings::Visual::NightModeBrighthness;//0.08f;
+					tonemapper->m_flCustomAutoExposureMin() =   Settings::Visual::NightModeBrighthness;//0.08f;
 					Active = true;
 
 				}
@@ -68,7 +69,8 @@ void NightMode::Revert()
 		{
 			r_3dsky->SetValue(0);
 		}
-		g_ClientState->ForceFullUpdate();
+		
+		g_Saver.RequestForceUpdate = true;
 		Active = false;
 	}
 }

@@ -104,6 +104,7 @@ class RuntimeSaver
 public:
     QAngle AARealAngle = QAngle(0, 0, 0);
     QAngle AADesyncAngle = QAngle(0, 0, 0);
+	QAngle viewangles = QAngle(0, 0, 0);
     bool FakelagCurrentlyEnabled = false;
     FakeLagData FakelagData;
     float curtime = 0.f;
@@ -168,6 +169,7 @@ public:
 	QAngle vecVisualAimbotAngs;
 
     bool RbotDidLastShot = false;
+	bool RequestForceUpdate = false;
 	C_BaseCombatWeapon* CurrentWeaponRef;
 };
 

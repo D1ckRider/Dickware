@@ -99,7 +99,7 @@ namespace Hooks
 
         hlclient_hook.hook_index ( index::FrameStageNotify, hkFrameStageNotify );
         hlclient_hook.hook_index ( index::CreateMove, hkCreateMove_Proxy );
-		partition_hook.hook_index(index::SuppressLists, hkSuppressLists);
+		//partition_hook.hook_index(index::SuppressLists, hkSuppressLists);
 
         vguipanel_hook.hook_index ( index::PaintTraverse, hkPaintTraverse );
 
@@ -415,49 +415,7 @@ namespace Hooks
 			if (Settings::RageBot::EnabledAA)
 				AntiAim::Get().OnCreateMove(cmd, bSendPacket);
 
-			/*if (g_Saver.ShouldChoke)
-				bSendPacket = false;
-			else if (bSendPacket)
-			{
-				g_Saver.TickCount = 0;
-				//ClampUsercmd(AimwareGlobalVars, cmd);
-				if (false)
-				{
-					if (g_Saver.CanFirePrimary && cmd->buttons & IN_ATTACK)
-					{
-						if (g_Saver.CanFire)
-						{
-							if (g_Saver.CanFirePrimary)
-							{
-								++g_Saver.TickCount;
-								++g_Saver.ShootTicks;
-							}
-						}
-					}
-					if (!(cmd->buttons & IN_ATTACK))
-					{
-						g_Saver.ShootTicks = 0;
-						return;
-					}
-					cmd->tick_count = 0x7FFFFFFF;
-				}
-				if (!(cmd->buttons & IN_ATTACK))
-				{
-					g_Saver.ShootTicks = 0;
-					return;
-				}
-			}
-
-			int ChokedTicks = g_Saver.TickCount;
-			if (ChokedTicks < 14)
-			{
-				g_Saver.TickCount = ChokedTicks + 1;
-			}
-			else
-			{
-				bSendPacket = true;
-				g_Saver.TickCount = 0;
-			}*/
+			Lbot::Get().OnCreateMove(cmd);
 
 			if (Settings::Aimbot::LegitAA > 0)
 				Lbot::Get().LegitAA(cmd, bSendPacket);
@@ -477,11 +435,11 @@ namespace Hooks
 				cmd->viewangles.yaw = std::remainderf(cmd->viewangles.yaw, 360.0f);
 			}
 
-			/*if ((Settings::Aimbot::LegitAA > 0 || Settings::RageBot::DesyncType > 0) && g_ClientState->chokedcommands >= 14)
+			if ((Settings::Aimbot::LegitAA > 0 || Settings::RageBot::DesyncType > 0) && g_ClientState->chokedcommands >= 14)
 			{
 				bSendPacket = true;
 				cmd->viewangles = g_ClientState->viewangles;
-			}*/
+			}
 
 
 			if (!Settings::RageBot::Enabled && Settings::Aimbot::Enabled)
@@ -548,7 +506,7 @@ namespace Hooks
 					cmd->mousedx = mousedx;
 				}
 
-				Lbot::Get().OnCreateMove(cmd);
+				
 
 				if (Settings::Aimbot::Backtrack)
 					Backtrack::Get().FinishLegitBacktrack(cmd);
@@ -594,20 +552,8 @@ namespace Hooks
 			}
 		}*/
 
-        //OldViewangles.pitch = cmd->viewangles.pitch;
-
-        //AntiAim::Get().LbyBreakerPrediction ( cmd, bSendPacket );
-
-        //QAngle oldVang = cmd->viewangles;
         Math::NormalizeAngles ( cmd->viewangles );
 
-        /*if ( g_LocalPlayer && g_LocalPlayer->m_nMoveType() != MOVETYPE_LADDER && g_LocalPlayer->m_nMoveType() != MOVETYPE_NOCLIP )
-        {
-			if ( Settings::Misc::AutoStrafe )
-                BunnyHop::Get().AutoStrafe ( cmd, OldViewangles );
-            else
-                MovementFix::Get().Correct ( OldViewangles, cmd, OldForwardmove, OldSidemove );
-        }*/
 
 		if ( Settings::RageBot::SlideWalk )
             AntiAim::Get().SlideWalk ( cmd );
@@ -616,6 +562,26 @@ namespace Hooks
 
         verified->m_cmd = *cmd;
         verified->m_crc = cmd->GetChecksum();
+
+		/* Force updating in game thread */
+		static float updateTime = g_GlobalVars->curtime + .1f;
+		static bool shouldForceUpdate = false;
+
+		if (g_Saver.RequestForceUpdate)
+		{
+			g_Saver.RequestForceUpdate = false;
+			updateTime = g_GlobalVars->curtime + .1f;
+			shouldForceUpdate = true;
+		}
+
+		if (shouldForceUpdate)
+		{
+			if (g_GlobalVars->curtime > updateTime)
+			{
+				shouldForceUpdate = false;
+				g_ClientState->ForceFullUpdate();
+			}
+		}
 
 		if (!o_TempEntities)
 		{
@@ -812,7 +778,10 @@ namespace Hooks
                         //ThirdpersonAngleHelper::Get().AnimFix();
 
 						g_Prediction->SetLocalViewAngles(g_LocalPlayer->m_angEyeAngles());
-						g_LocalPlayer->SetAbsAngles(QAngle(0.f, g_LocalPlayer->GetPlayerAnimState()->m_flGoalFeetYaw, 0.f));
+						if(Settings::RageBot::DesyncType > 0 || Settings::Aimbot::LegitAA > 0)
+							g_LocalPlayer->SetAbsAngles(QAngle(0.f, g_Saver.DesyncYaw, 0.f));
+						else
+							g_LocalPlayer->SetAbsAngles(QAngle(0.f, g_LocalPlayer->GetPlayerAnimState()->m_flGoalFeetYaw, 0.f));
 						g_LocalPlayer->UpdateClientSideAnimation();
 
 						if (!g_LocalPlayer->IsAlive())
@@ -850,7 +819,7 @@ namespace Hooks
                     auto old_curtime = g_GlobalVars->curtime;
                     auto old_frametime = g_GlobalVars->frametime;
 
-                    for ( int i = 1; i < g_EngineClient->GetMaxClients(); i++ )
+                    /*for ( int i = 1; i < g_EngineClient->GetMaxClients(); i++ )
                     {
                         auto entity = static_cast<C_BasePlayer*> ( g_EntityList->GetClientEntity ( i ) );
 
@@ -865,7 +834,7 @@ namespace Hooks
                         }
                         else
                             entity->m_bClientSideAnimation() = true;
-                    }
+                    }*/
 
                     g_GlobalVars->curtime = old_curtime;
                     g_GlobalVars->frametime = old_frametime;
@@ -881,6 +850,7 @@ namespace Hooks
 					NightMode::Get().Revert();
                 break;
         }
+		
 
         ofunc ( g_CHLClient, stage );
 		if (Settings::Misc::NoVisualRecoil)
@@ -1072,7 +1042,6 @@ namespace Hooks
         // |
         // v
         // code here
-        //Chams::Get().OnSceneEnd();
     }
 
 
@@ -1262,11 +1231,6 @@ namespace Hooks
 
 		/*never used, so we fix those peoples compiling problems :)*/
 
-		/*auto CL_ParseEventDelta = [](void *RawData, void *pToData, RecvTable *pRecvTable)
-		{
-			
-		};*/
-
 		if (!Settings::RageBot::LagComp || !g_LocalPlayer->IsAlive())
 			return ret;
 
@@ -1368,6 +1332,8 @@ namespace Hooks
 	{
 		static auto ofunc = hlclient_hook.get_original<WriteUsercmdDeltaToBuffer_t>(index::WriteUsercmdDeltaToBuffer);
 		return true;
+	}
+
 		//static DWORD WriteUsercmdDeltaToBufferReturn = (DWORD)Utils::PatternScan(GetModuleHandle("engine.dll"), "84 C0 74 04 B0 01 EB 02 32 C0 8B FE 46 3B F3 7E C9 84 C0 0F 84 ? ? ? ?"); //     84 DB 0F 84 ? ? ? ? 8B 8F ? ? ? ? 8B 01 8B 40 1C FF D0
 
 		/*if (nTickBaseShift <= 0 || (DWORD)_ReturnAddress() != ((DWORD)GetModuleHandleA("engine.dll") + 0xCCCA6))
@@ -1474,7 +1440,7 @@ namespace Hooks
 			toCmd.tick_count++;
 		}
 
-		return true;*/
+		return true;
 	}
     //--------------------------------------------------------------------------------
 

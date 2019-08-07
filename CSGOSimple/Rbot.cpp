@@ -110,6 +110,9 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 		ZeusBot(cmd, weapon);
 		return;
 	}
+	
+	if (!CockRevolver(cmd, weapon))
+		return;
 
 	/* Calling SlowWalk */
 	if (weapon->GetItemDefinitionIndex() == WEAPON_SCAR20 || weapon->GetItemDefinitionIndex() == WEAPON_G3SG1)
@@ -155,11 +158,12 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 	QAngle newAng = Math::CalcAngle(g_LocalPlayer->GetEyePos(), hitpos);
 
 	//float recoil_scale = g_CVar->FindVar("weapon_recoil_scale")->GetFloat();
-	QAngle a = (g_LocalPlayer->m_aimPunchAngle() * 2);
+	//QAngle a = (g_LocalPlayer->m_aimPunchAngle() * 2);
 	//Math::NormalizeAngles(a);
-	a.roll = 0.f;
-	newAng -= a;
-
+	//a.roll = 0.f;
+	//newAng -= a;
+	
+	Rbot::AccuracyBoost(cmd);
 	//Vector v;
 	//Math::AngleVectors(a, v);
 
@@ -236,8 +240,7 @@ void Rbot::CreateMove(CUserCmd* cmd, bool& bSendPacket)
 	else
 		cmd->viewangles = newAng;
 
-	if (!CockRevolver(cmd, weapon))
-		return;
+	
 
 	cmd->buttons |= IN_ATTACK;
 
@@ -503,7 +506,7 @@ bool Rbot::TargetSpecificEnt(C_BasePlayer* pEnt)
 	bool WillKillEntity = false;
 	if (Settings::RageBot::LagComp)
 	{
-		LagCompensation::Get().RageBacktrack(pEnt, CurrentCmd, vecTarget, LagComp_Hitchanced);
+		LagCompensation::Get().RageBacktrack(pEnt, CurrentCmd, vecTarget, CDamage, LagComp_Hitchanced);
 	}
 	else
 	{
@@ -765,21 +768,21 @@ void Rbot::AccuracyBoost(CUserCmd* cmd)
 
 	//	C_BaseCombatWeapon* weapon;
 
-	//	if ((weapon = g_LocalPlayer->m_hActiveWeapon()) == nullptr || g_Prediction.prediction_random_seed == nullptr)
+	//	if ((weapon = g_LocalPlayer->m_hActiveWeapon()) == nullptr || g_Saver.PredictionData.prediction_random_seed == nullptr)
 	//		return;
 
-	//	G::math.random_seed((*G::prediction_data.prediction_random_seed & 255) + 1);
+	//	((*g_Saver.PredictionData.prediction_random_seed & 255) + 1);
 
-	//	auto s1 = G::math.random_float(0.f, 1.f), s2 = G::math.random_float(0.f, 2.f * PI), s3 = G::math.random_float(0.f, 1.f), s4 = G::math.random_float(0.f, 2.f * PI);
+	//	auto s1 = Math::RandomFloat(0.f, 1.f), s2 = Math::RandomFloat(0.f, 2.f * DirectX::XM_PI), s3 = Math::RandomFloat(0.f, 1.f), s4 = Math::RandomFloat(0.f, 2.f * DirectX::XM_PI);
 
-	//	if (weapon->get_index() == WEAPON_REVOLVER && _cmd->buttons & IN_ATTACK2)
+	//	if (weapon->m_iItemDefinitionIndex() == WEAPON_REVOLVER && _cmd->buttons & IN_ATTACK2)
 	//	{
 	//		s1 = 1.f - s1 * s1;
 	//		s3 = 1.f - s3 * s3;
 	//	}
-	//	else if (weapon->get_index() == WEAPON_NEGEV && weapon->get_recoil_index() < 3.f)
+	//	else if (weapon->m_iItemDefinitionIndex() == WEAPON_NEGEV && weapon->m_flRecoilIndex() < 3.f)
 	//	{
-	//		for (auto i = 3; i > weapon->get_recoil_index(); i--)
+	//		for (auto i = 3; i > weapon->m_flRecoilIndex(); i--)
 	//		{
 	//			s1 *= s1;
 	//			s3 *= s3;
@@ -789,13 +792,13 @@ void Rbot::AccuracyBoost(CUserCmd* cmd)
 	//		s3 = 1.f - s3;
 	//	}
 
-	//	auto random_spread = s1 * weapon->get_spread();
-	//	auto cone = s3 * weapon->get_cone();
+	//	auto random_spread = s1 * weapon->GetSpread();
+	//	//auto cone = s3 * weapon->get_cone();
 
-	//	auto spread = Vector3(sin(s2) * random_spread + sin(s4) * cone, cos(s2) * random_spread + cos(s4) * cone, 0.f);
+	//	auto spread = Vector(sin(s2) * random_spread + sin(s4) * cone, cos(s2) * random_spread + cos(s4) * cone, 0.f);
 
-	//	_cmd->viewangles.p += G::math.rad_2_deg(atan(spread.length_2d()));
-	//	_cmd->viewangles.r = -G::math.rad_2_deg(atan2(spread.y, spread.x));
+	//	_cmd->viewangles.pitch += DirectX::XMConvertToDegrees(atan(spread.Length2D()));
+	//	_cmd->viewangles.roll = -DirectX::XMConvertToDegrees(atan2(spread.y, spread.x));
 	//};
 
 	auto no_recoil = [](CUserCmd* _cmd)
@@ -1103,14 +1106,14 @@ int Rbot::FindBestEntity ( CUserCmd* cmd, C_BaseCombatWeapon* weapon, Vector& hi
         bool WillKillEntity = false;
 		bool LagComp_Hitchanced = false;
 
-        if ( !bBacktrack )
+        if ( !Settings::RageBot::LagComp )
         {
             if ( !GetBestHitboxPoint ( entity, CDamage, CHitpos, baim, WillKillEntity ) )
                 continue;
         }
         else
         {
-			LagCompensation::Get().RageBacktrack(entity, cmd, CHitpos, LagComp_Hitchanced);
+			LagCompensation::Get().RageBacktrack(entity, cmd, CHitpos, CDamage, LagComp_Hitchanced);
 
             /*bool ShouldSkip = true;
             Vector NormalHitpos = Vector ( 0, 0, 0 );

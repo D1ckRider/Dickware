@@ -43,7 +43,7 @@ std::map<int, wchar_t> g_WeaponIcons =
 	{ ItemDefinitionIndex::WEAPON_INC, 'n'},
 	{ ItemDefinitionIndex::WEAPON_KNIFE_M9_BAYONET, '5'},
 	{ ItemDefinitionIndex::WEAPON_KNIFE_KARAMBIT, '4'},
-	{ ItemDefinitionIndex::WEAPON_DECOY, 'M'},
+	{ ItemDefinitionIndex::WEAPON_DECOY, 'm'},
 	{ ItemDefinitionIndex::WEAPON_ELITE, 'B'},
 	{ ItemDefinitionIndex::WEAPON_AK47, 'W'},
 	//{ItemDefinitionIndex::WEAPON_KNIFE_BAY, 'r'},

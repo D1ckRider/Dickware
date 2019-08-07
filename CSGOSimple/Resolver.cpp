@@ -659,17 +659,25 @@ void Resolver::OnFramestageNotify()
             continue;
         }
 
-        bool InFakeLag = true;
+        bool InFakeLag = false;
+		
+		if(TIME_TO_TICKS(fmax( 0, (entity->m_flOldSimulationTime() - entity->m_flSimulationTime()))))
+			InFakeLag = true;
 
-        if ( SavedResolverData[i].LastSimtime != entity->m_flSimulationTime() )
-            InFakeLag = false;
+        /*if ( SavedResolverData[i].LastSimtime != entity->m_flSimulationTime() )
+            InFakeLag = false;*/
 
+		// Ghetto desync detector
+		g_Resolver.GResolverData[i].Fake = InFakeLag;
         SavedResolverData[i].LastPos = entity->m_vecOrigin();
 
         if ( InFakeLag )
             g_Resolver.GResolverData[i].BreakingLC = ( entity->m_vecOrigin() - SavedResolverData[i].LastPos ).LengthSqr() > 4096.f;
 
         SavedResolverData[i].LastSimtime = entity->m_flSimulationTime();
+
+		if (!g_Resolver.GResolverData[i].Fake)
+			continue;
 
         //SavedResolverData[i].UsingAA
 
@@ -699,7 +707,6 @@ void Resolver::OnFramestageNotify()
 		if (animstate)
 		{
 			// missed shot <= 2
-			//if (MissedShots[entity->index()] <= 2)
 			if(g_Resolver.GResolverData[entity->EntIndex()].Shots <= 2)
 			{
 				float speed;
@@ -824,7 +831,7 @@ void Resolver::OnFramestageNotify()
             }
         }*/
 
-        g_Resolver.GResolverData[i].Fake = !g_Resolver.GResolverData[i].Resolved;
+        //g_Resolver.GResolverData[i].Fake = !g_Resolver.GResolverData[i].Resolved;
     }
 }
 #endif // FakeAnglesEnabled
